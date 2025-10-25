@@ -50,9 +50,6 @@ public class CrearPedidoDTO {
     @NotNull(message = "El método de envío es obligatorio")
     private Integer metodoEnvioId;
     
-    // Cupón de descuento (opcional)
-    private String codigoCupon;
-    
     // Notas adicionales (opcional)
     private String notas;
     

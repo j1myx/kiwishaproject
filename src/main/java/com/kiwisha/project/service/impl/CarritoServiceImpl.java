@@ -6,10 +6,8 @@ import com.kiwisha.project.dto.CarritoItemDTO;
 import com.kiwisha.project.exception.BusinessException;
 import com.kiwisha.project.exception.ResourceNotFoundException;
 import com.kiwisha.project.model.CarritoItem;
-import com.kiwisha.project.model.Cupon;
 import com.kiwisha.project.model.Producto;
 import com.kiwisha.project.repository.CarritoItemRepository;
-import com.kiwisha.project.repository.CuponRepository;
 import com.kiwisha.project.repository.ProductoRepository;
 import com.kiwisha.project.service.CarritoService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +34,6 @@ public class CarritoServiceImpl implements CarritoService {
 
     private final CarritoItemRepository carritoItemRepository;
     private final ProductoRepository productoRepository;
-    private final CuponRepository cuponRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -143,56 +140,6 @@ public class CarritoServiceImpl implements CarritoService {
         // Calcular totales
         calcularTotales(carritoDTO);
 
-        return carritoDTO;
-    }
-
-    @Override
-    public CarritoDTO aplicarCupon(String sessionId, String codigoCupon) {
-        log.info("Aplicando cupón {} al carrito: {}", codigoCupon, sessionId);
-
-        Cupon cupon = cuponRepository.findByCodigo(codigoCupon)
-                .orElseThrow(() -> new ResourceNotFoundException("Cupón", "codigo", codigoCupon));
-
-        if (!cupon.esValido()) {
-            throw new BusinessException("El cupón no es válido o ha expirado");
-        }
-
-        if (cupon.getCantidadMaximaUsos() != null && 
-            cupon.getCantidadUsosActual() >= cupon.getCantidadMaximaUsos()) {
-            throw new BusinessException("El cupón ha alcanzado el límite de usos");
-        }
-
-        List<CarritoItem> items = carritoItemRepository.findBySesionId(sessionId);
-        if (items.isEmpty()) {
-            throw new BusinessException("No hay items en el carrito");
-        }
-
-        // Guardar el código del cupón en los items del carrito (temporal)
-        // En un escenario real, podríamos tener una tabla de carritos o guardar en sesión
-        CarritoDTO carritoDTO = obtenerCarrito(sessionId);
-        carritoDTO.setCodigoCupon(codigoCupon);
-        
-        // Calcular descuento
-        BigDecimal subtotal = carritoDTO.getSubtotal();
-        BigDecimal descuentoCupon = cupon.calcularDescuento(subtotal);
-        carritoDTO.setDescuento(descuentoCupon);
-        
-        // Recalcular totales
-        calcularTotales(carritoDTO);
-
-        log.info("Cupón aplicado exitosamente. Descuento: {}", descuentoCupon);
-        return carritoDTO;
-    }
-
-    @Override
-    public CarritoDTO removerCupon(String sessionId) {
-        log.info("Removiendo cupón del carrito: {}", sessionId);
-        
-        CarritoDTO carritoDTO = obtenerCarrito(sessionId);
-        carritoDTO.setCodigoCupon(null);
-        carritoDTO.setDescuento(BigDecimal.ZERO);
-        calcularTotales(carritoDTO);
-        
         return carritoDTO;
     }
 

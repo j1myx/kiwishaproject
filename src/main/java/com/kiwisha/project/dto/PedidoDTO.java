@@ -40,12 +40,9 @@ public class PedidoDTO {
     
     // Totales
     private BigDecimal subtotal;
-    private BigDecimal descuento;
+    private BigDecimal descuento;  // Reservado para descuentos futuros
     private BigDecimal costoEnvio;
     private BigDecimal total;
-    
-    // Cupón
-    private String codigoCupon;
     
     // Estado
     private String estado;

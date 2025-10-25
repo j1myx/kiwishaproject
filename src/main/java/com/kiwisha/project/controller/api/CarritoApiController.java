@@ -110,40 +110,6 @@ public class CarritoApiController {
         );
     }
 
-    @PostMapping("/cupon/aplicar")
-    @Operation(summary = "Aplicar cupón de descuento", description = "Aplica un cupón de descuento al carrito")
-    public ResponseEntity<ApiResponseDTO<CarritoDTO>> aplicarCupon(
-            @Parameter(description = "Código del cupón") @RequestParam String codigoCupon,
-            HttpSession session) {
-        
-        String sessionId = session.getId();
-        CarritoDTO carrito = carritoService.aplicarCupon(sessionId, codigoCupon);
-        
-        return ResponseEntity.ok(
-            ApiResponseDTO.<CarritoDTO>builder()
-                .success(true)
-                .message("Cupón aplicado exitosamente")
-                .data(carrito)
-                .build()
-        );
-    }
-
-    @DeleteMapping("/cupon/remover")
-    @Operation(summary = "Remover cupón", description = "Remueve el cupón de descuento aplicado al carrito")
-    public ResponseEntity<ApiResponseDTO<CarritoDTO>> removerCupon(HttpSession session) {
-        String sessionId = session.getId();
-        carritoService.removerCupon(sessionId);
-        CarritoDTO carrito = carritoService.obtenerCarrito(sessionId);
-        
-        return ResponseEntity.ok(
-            ApiResponseDTO.<CarritoDTO>builder()
-                .success(true)
-                .message("Cupón removido exitosamente")
-                .data(carrito)
-                .build()
-        );
-    }
-
     @GetMapping("/validar-stock")
     @Operation(summary = "Validar stock del carrito", description = "Verifica que todos los productos del carrito tengan stock disponible")
     public ResponseEntity<ApiResponseDTO<Boolean>> validarStock(HttpSession session) {

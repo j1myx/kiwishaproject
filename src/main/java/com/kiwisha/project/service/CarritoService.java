@@ -29,16 +29,6 @@ public interface CarritoService {
     CarritoDTO obtenerCarrito(String sessionId);
 
     /**
-     * Aplica un cupón de descuento al carrito.
-     */
-    CarritoDTO aplicarCupon(String sessionId, String codigoCupon);
-
-    /**
-     * Remueve el cupón aplicado del carrito.
-     */
-    CarritoDTO removerCupon(String sessionId);
-
-    /**
      * Limpia todos los items del carrito.
      */
     void limpiarCarrito(String sessionId);

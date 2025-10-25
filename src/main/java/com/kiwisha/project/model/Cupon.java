@@ -11,7 +11,13 @@ import java.time.LocalDateTime;
 /**
  * Entidad que representa cupones de descuento.
  * Permite aplicar descuentos porcentuales o de monto fijo a las compras.
+ * 
+ * @deprecated Funcionalidad de cupones removida en v1.5.1 para alinear con diseño UI real.
+ *             Esta entidad se mantiene en el código para preservar el esquema de base de datos
+ *             y permitir futura reactivación de la funcionalidad si es requerida.
+ *             Ver: ANALISIS_PANTALLAS_NUEVAS.md
  */
+@Deprecated
 @Entity
 @Table(name = "cupones")
 @Getter

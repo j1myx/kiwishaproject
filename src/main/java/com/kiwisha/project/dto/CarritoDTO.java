@@ -17,8 +17,7 @@ public class CarritoDTO {
     private List<CarritoItemDTO> items;
     private Integer cantidadItems;
     private BigDecimal subtotal;
-    private BigDecimal descuento;
+    private BigDecimal descuento;  // Reservado para descuentos futuros
     private BigDecimal costoEnvio;
     private BigDecimal total;
-    private String codigoCupon;
 }

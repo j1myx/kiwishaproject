@@ -37,7 +37,6 @@ public class PedidoServiceImpl implements PedidoService {
     private final ProductoRepository productoRepository;
     private final ClienteRepository clienteRepository;
     private final MetodoEnvioRepository metodoEnvioRepository;
-    private final CuponRepository cuponRepository;
     private final CarritoService carritoService;
     private final ModelMapper modelMapper;
 
@@ -66,21 +65,8 @@ public class PedidoServiceImpl implements PedidoService {
                 .map(CarritoItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 5. Aplicar cupón si existe
+        // 5. Calcular descuento (actualmente sin cupones - reservado para futuro)
         BigDecimal descuento = BigDecimal.ZERO;
-        Cupon cupon = null;
-        if (crearPedidoDTO.getCodigoCupon() != null && !crearPedidoDTO.getCodigoCupon().isEmpty()) {
-            cupon = cuponRepository.findByCodigo(crearPedidoDTO.getCodigoCupon())
-                    .orElseThrow(() -> new ResourceNotFoundException("Cupón", "codigo", 
-                            crearPedidoDTO.getCodigoCupon()));
-
-            if (!cupon.esValido()) {
-                throw new BusinessException("El cupón no es válido o ha expirado");
-            }
-
-            descuento = cupon.calcularDescuento(subtotal);
-            log.info("Cupón {} aplicado. Descuento: {}", cupon.getCodigo(), descuento);
-        }
 
         // 6. Calcular total
         BigDecimal costoEnvio = metodoEnvio.getCosto() != null ? metodoEnvio.getCosto() : BigDecimal.ZERO;
@@ -113,7 +99,6 @@ public class PedidoServiceImpl implements PedidoService {
                 .descuento(descuento)
                 .costoEnvio(costoEnvio)
                 .total(total)
-                .cupon(cupon)
                 .estado(Pedido.EstadoPedido.PENDIENTE)
                 .notas(crearPedidoDTO.getNotas())
                 .build();
@@ -142,13 +127,7 @@ public class PedidoServiceImpl implements PedidoService {
             pedido.agregarElemento(elemento);
         }
 
-        // 10. Incrementar contador de usos del cupón si se aplicó
-        if (cupon != null) {
-            cupon.setCantidadUsosActual(cupon.getCantidadUsosActual() + 1);
-            cuponRepository.save(cupon);
-        }
-
-        // 11. Guardar el pedido
+        // 10. Guardar el pedido
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
         log.info("Pedido creado exitosamente con código: {}", codigoPedido);
 
@@ -294,11 +273,6 @@ public class PedidoServiceImpl implements PedidoService {
         if (pedido.getMetodoEnvio() != null) {
             dto.setMetodoEnvioId(pedido.getMetodoEnvio().getMetodoEnvioId());
             dto.setMetodoEnvioNombre(pedido.getMetodoEnvio().getNombre());
-        }
-
-        // Mapear cupón si existe
-        if (pedido.getCupon() != null) {
-            dto.setCodigoCupon(pedido.getCupon().getCodigo());
         }
 
         // Mapear elementos del pedido
