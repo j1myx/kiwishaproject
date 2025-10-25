@@ -1,41 +1,66 @@
 package com.kiwisha.project.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-@Data
+import java.math.BigDecimal;
+
+/**
+ * Entidad que representa un elemento individual de un pedido.
+ */
 @Entity
 @Table(name = "pedido_elementos")
-public class PedidoElemento {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PedidoElemento extends AuditableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pedido_elemento_id")
     private Integer pedidoElementoId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pedido_id")
+    @JoinColumn(name = "pedido_id", nullable = false)
+    @NotNull(message = "El pedido es obligatorio")
     private Pedido pedido;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producto_id")
+    @JoinColumn(name = "producto_id", nullable = false)
+    @NotNull(message = "El producto es obligatorio")
     private Producto producto;
 
-    @Column(name = "precio")
-    private Float precio;
+    @Column(nullable = false, precision = 10, scale = 2)
+    @NotNull(message = "El precio es obligatorio")
+    private BigDecimal precio;
 
-    @Column(name = "cantidad")
+    @Column(nullable = false)
+    @Min(value = 1, message = "La cantidad debe ser al menos 1")
     private Integer cantidad;
 
-    @Column(name = "creado_por")
-    private Integer creadoPor;
+    @Column(precision = 5, scale = 2)
+    private BigDecimal descuento = BigDecimal.ZERO;
 
-    @Column(name = "creado_en")
-    private LocalDateTime creadoEn;
+    /**
+     * Calcula el subtotal del elemento (precio × cantidad)
+     */
+    public BigDecimal getSubtotal() {
+        return precio.multiply(BigDecimal.valueOf(cantidad));
+    }
 
-    @Column(name = "actualizado_por")
-    private Integer actualizadoPor;
-
-    @Column(name = "actualizado_en")
-    private LocalDateTime actualizadoEn;
+    /**
+     * Calcula el subtotal con descuento aplicado
+     */
+    public BigDecimal getSubtotalConDescuento() {
+        BigDecimal subtotal = getSubtotal();
+        if (descuento != null && descuento.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal montoDescuento = subtotal.multiply(descuento).divide(BigDecimal.valueOf(100));
+            return subtotal.subtract(montoDescuento);
+        }
+        return subtotal;
+    }
 }
