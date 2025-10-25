@@ -123,8 +123,12 @@ La aplicación estará disponible en: `http://localhost:8080`
 ## 🔑 Credenciales por Defecto
 
 ### Administrador
-- **Usuario**: admin
+- **Email**: admin@kiwisha.com
 - **Contraseña**: admin123
+- **Rol**: ADMIN
+- **Acceso**: Panel administrativo completo
+
+⚠️ **Importante**: Cambiar la contraseña por defecto en producción
 
 ## 📚 Documentación API
 
@@ -203,9 +207,48 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
    - SlugGenerator: Generación de URLs SEO-friendly
    - SessionIdGenerator: Generación de IDs únicos con UUID
 
-### ✅ Fase 3: Servicios Adicionales (Completada)
+### ✅ Fase 4: Spring Security (Completada)
 
-1. **CategoriaService (7 métodos)**
+1. **SecurityConfig (Configuración de Seguridad)**
+   - HttpSecurity con rutas públicas y protegidas
+   - Rutas públicas: /productos/**, /carrito/**, /checkout/**, recursos estáticos
+   - Rutas admin: /admin/**, /api/admin/** (requieren rol ADMIN)
+   - Rutas cliente: /mi-cuenta/**, /mis-pedidos/** (requieren autenticación)
+   - CSRF habilitado para formularios, deshabilitado para APIs REST
+
+2. **Autenticación y Autorización**
+   - Login basado en email y contraseña
+   - BCryptPasswordEncoder para hash de contraseñas
+   - Remember-me con validez de 7 días
+   - Redirección a /admin/dashboard tras login exitoso
+   - Página de acceso denegado personalizada (/error/403)
+
+3. **CustomUserDetailsService**
+   - Integración con entidades Usuario, Rol y RolUsuario
+   - Carga de usuarios desde base de datos
+   - Validación de usuarios activos
+   - Mapeo de roles con prefijo ROLE_ (ROLE_ADMIN, ROLE_CLIENTE)
+
+4. **DataInitializer (Datos Iniciales)**
+   - Creación automática de roles ADMIN y CLIENTE
+   - Usuario administrador por defecto:
+     - Email: admin@kiwisha.com
+     - Password: admin123
+     - Rol: ADMIN
+
+5. **Repositorios de Seguridad**
+   - RolRepository con búsqueda por nombre
+   - RolUsuarioRepository para relación usuario-rol
+
+## 🔐 Credenciales de Acceso
+
+### Administrador (Por Defecto)
+- **Email**: admin@kiwisha.com
+- **Contraseña**: admin123
+- **Rol**: ADMIN
+- **Acceso**: Panel administrativo completo
+
+⚠️ **Importante**: Cambiar la contraseña por defecto en producción
    - CRUD completo de categorías
    - Listado con/sin paginación
    - Contador de productos por categoría
@@ -228,13 +271,14 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 ## 📊 Estadísticas del Proyecto
 
-- **Archivos Java**: 69 archivos
-- **Líneas de código**: ~7,500 líneas
+- **Archivos Java**: 74 archivos
+- **Líneas de código**: ~8,200 líneas
 - **Entidades**: 16 entidades JPA
-- **Repositorios**: 11 repositorios Spring Data JPA
-- **Servicios**: 6 servicios completos (18 interfaces + implementaciones)
+- **Repositorios**: 13 repositorios Spring Data JPA
+- **Servicios**: 6 servicios completos + 1 CustomUserDetailsService
 - **DTOs**: 16 DTOs con validaciones
-- **Tiempo de compilación**: ~4.5 segundos
+- **Configuraciones**: 3 (JpaConfig, OpenAPIConfig, SecurityConfig)
+- **Tiempo de compilación**: ~5 segundos
 - **Errores**: 0 errores de compilación
 - **Test coverage**: Pendiente
 
@@ -261,14 +305,17 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - [x] ClienteService (CRUD, búsqueda, validaciones)
 - [x] ReviewService (moderación, promedios, aprobación)
 
-### Fase 4: Seguridad (En progreso)
-- [ ] Spring Security configurado
-- [ ] Autenticación y autorización
-- [ ] BCryptPasswordEncoder
-- [ ] Rutas públicas y protegidas
-- [ ] Login form y remember-me
+### Fase 4: Seguridad ✅ (Completada)
+- [x] Spring Security configurado
+- [x] Autenticación y autorización basada en roles
+- [x] BCryptPasswordEncoder para contraseñas
+- [x] Rutas públicas y protegidas
+- [x] Login form y remember-me (7 días)
+- [x] CustomUserDetailsService con integración a BD
+- [x] DataInitializer para usuario admin por defecto
+- [x] RolRepository y RolUsuarioRepository
 
-### Fase 5: APIs REST Controllers
+### Fase 5: APIs REST Controllers (En progreso)
 - [ ] ProductoApiController
 - [ ] CarritoApiController
 - [ ] PedidoApiController
@@ -330,5 +377,5 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 ---
 
 **Última actualización**: 25 de Octubre 2025
-**Versión**: 1.3.0 (Fases 1, 2 y 3 Completadas)
-**Estado**: En desarrollo activo - Fase 4 en progreso
+**Versión**: 1.4.0 (Fases 1, 2, 3 y 4 Completadas)
+**Estado**: En desarrollo activo - Fase 5 en progreso
