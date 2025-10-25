@@ -249,6 +249,64 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - **Acceso**: Panel administrativo completo
 
 ⚠️ **Importante**: Cambiar la contraseña por defecto en producción
+
+### ✅ Fase 5: REST API Controllers (Completada)
+
+**6 Controladores REST API con 50 endpoints totales:**
+
+1. **ProductoApiController (13 endpoints)**
+   - **Públicos (8)**: listar productos, buscar por ID/slug/categoría/título, filtrar por precio, productos destacados/nuevos/ofertas
+   - **Admin (5)**: crear, actualizar, eliminar, actualizar stock, productos con stock bajo
+   - Documentación OpenAPI completa
+   - Validación de DTOs
+   - Respuestas estandarizadas
+
+2. **CarritoApiController (8 endpoints públicos)**
+   - Obtener carrito actual (sesión HTTP)
+   - Agregar producto al carrito
+   - Actualizar cantidad de items
+   - Eliminar item del carrito
+   - Limpiar carrito completo
+   - Aplicar cupón de descuento
+   - Remover cupón
+   - Validar stock del carrito
+
+3. **PedidoApiController (9 endpoints)**
+   - **Públicos (3)**: crear pedido desde carrito, buscar por código, buscar por email
+   - **Admin (6)**: listar todos, obtener por ID, por cliente, por estado, actualizar estado, cancelar con restauración de stock
+   - Manejo de estados: PENDIENTE, CONFIRMADO, ENVIADO, ENTREGADO, CANCELADO
+
+4. **CategoriaApiController (8 endpoints)**
+   - **Públicos (5)**: listar todas, con paginación, por ID, contador de productos
+   - **Admin (3)**: crear, actualizar, eliminar (con validación de productos asociados)
+   - Slugs SEO-friendly
+
+5. **ClienteApiController (9 endpoints - solo ADMIN)**
+   - Listar con paginación
+   - Obtener por ID
+   - Buscar por email/teléfono
+   - Contador de pedidos
+   - CRUD completo
+   - Protección contra eliminación con pedidos
+
+6. **ReviewApiController (11 endpoints)**
+   - **Públicos (4)**: crear review, obtener por producto, promedio de calificación, contador
+   - **Admin (7)**: listar todas, pendientes de aprobación, obtener por ID, aprobar, rechazar, eliminar
+   - Sistema de moderación completo
+   - Calificación 1-5 con validación
+
+**Características de los REST APIs:**
+- ✅ Documentación OpenAPI/Swagger automática
+- ✅ Validación con Jakarta Bean Validation
+- ✅ Respuestas estandarizadas con ApiResponseDTO
+- ✅ Seguridad con @PreAuthorize (ROLE_ADMIN)
+- ✅ Paginación con Spring Data Pageable
+- ✅ Manejo de sesiones HTTP para carrito
+- ✅ Manejo de errores centralizado
+
+### ✅ Fase 3: Servicios Adicionales (Completada)
+
+1. **CategoriaService (7 métodos)**
    - CRUD completo de categorías
    - Listado con/sin paginación
    - Contador de productos por categoría
@@ -271,14 +329,15 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 ## 📊 Estadísticas del Proyecto
 
-- **Archivos Java**: 74 archivos
-- **Líneas de código**: ~8,200 líneas
+- **Archivos Java**: 80 archivos
+- **Líneas de código**: ~9,300 líneas
 - **Entidades**: 16 entidades JPA
 - **Repositorios**: 13 repositorios Spring Data JPA
 - **Servicios**: 6 servicios completos + 1 CustomUserDetailsService
 - **DTOs**: 16 DTOs con validaciones
+- **REST API Controllers**: 6 controladores con 50 endpoints
 - **Configuraciones**: 3 (JpaConfig, OpenAPIConfig, SecurityConfig)
-- **Tiempo de compilación**: ~5 segundos
+- **Tiempo de compilación**: ~5.3 segundos
 - **Errores**: 0 errores de compilación
 - **Test coverage**: Pendiente
 
@@ -315,16 +374,19 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - [x] DataInitializer para usuario admin por defecto
 - [x] RolRepository y RolUsuarioRepository
 
-### Fase 5: APIs REST Controllers (En progreso)
-- [ ] ProductoApiController
-- [ ] CarritoApiController
-- [ ] PedidoApiController
-- [ ] CategoriaApiController
-- [ ] ClienteApiController
-- [ ] ReviewApiController
-- [ ] Documentación OpenAPI completa
+### Fase 5: APIs REST Controllers ✅ (Completada)
+- [x] ProductoApiController (13 endpoints: 8 públicos + 5 admin)
+- [x] CarritoApiController (8 endpoints públicos)
+- [x] PedidoApiController (9 endpoints: 3 públicos + 6 admin)
+- [x] CategoriaApiController (8 endpoints: 5 públicos + 3 admin)
+- [x] ClienteApiController (9 endpoints solo admin)
+- [x] ReviewApiController (11 endpoints: 4 públicos + 7 admin)
+- [x] Documentación OpenAPI completa
+- [x] Validación de DTOs con Jakarta Validation
+- [x] Respuestas estandarizadas con ApiResponseDTO
+- [x] Seguridad por roles con @PreAuthorize
 
-### Fase 6: Web Controllers y Frontend
+### Fase 6: Web Controllers y Frontend (Próxima)
 - [ ] ProductoWebController
 - [ ] CarritoWebController
 - [ ] CheckoutWebController
@@ -377,5 +439,5 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 ---
 
 **Última actualización**: 25 de Octubre 2025
-**Versión**: 1.4.0 (Fases 1, 2, 3 y 4 Completadas)
-**Estado**: En desarrollo activo - Fase 5 en progreso
+**Versión**: 1.5.0 (Fases 1, 2, 3, 4 y 5 Completadas)
+**Estado**: En desarrollo activo - Fase 6 próximamente
