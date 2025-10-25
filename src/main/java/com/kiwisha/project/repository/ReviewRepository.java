@@ -28,6 +28,11 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByAprobadoFalseOrderByCreadoEnAsc();
 
     /**
+     * Obtiene reviews pendientes de aprobación con paginación
+     */
+    Page<Review> findByAprobadoFalseAndActivoTrueOrderByCreadoEnDesc(Pageable pageable);
+
+    /**
      * Obtiene reviews de un cliente
      */
     List<Review> findByClienteClienteIdOrderByCreadoEnDesc(Integer clienteId);
@@ -42,6 +47,12 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
      */
     @Query("SELECT AVG(r.calificacion) FROM Review r WHERE r.producto.productoId = :productoId AND r.aprobado = true AND r.activo = true")
     Double obtenerPromedioCalificacion(@Param("productoId") Integer productoId);
+
+    /**
+     * Calcula el promedio de calificación de un producto (nombre alternativo)
+     */
+    @Query("SELECT AVG(r.calificacion) FROM Review r WHERE r.producto.productoId = :productoId AND r.aprobado = true AND r.activo = true")
+    Double calcularPromedioCalificacion(@Param("productoId") Integer productoId);
 
     /**
      * Verifica si un cliente ya ha dejado una review para un producto
