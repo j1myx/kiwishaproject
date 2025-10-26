@@ -55,4 +55,21 @@ public class CrearProductoDTO {
     
     @Size(max = 500, message = "La meta descripción no puede exceder 500 caracteres")
     private String metaDescripcion;
+    
+    // Métodos adicionales para compatibilidad con Lombok
+    public Boolean getPublicado() {
+        return publicado;
+    }
+    
+    public Boolean getDestacado() {
+        return destacado;
+    }
+    
+    public Boolean getNuevo() {
+        return nuevo;
+    }
+    
+    public Boolean getEnOferta() {
+        return enOferta;
+    }
 }

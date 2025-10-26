@@ -152,10 +152,10 @@ public class ProductoServiceImpl implements ProductoService {
                 .build();
 
         // Configurar valores booleanos con valores seguros
-        producto.setPublicado(crearProductoDTO.getPublicado() != null ? crearProductoDTO.getPublicado() : false);
-        producto.setDestacado(crearProductoDTO.getDestacado() != null ? crearProductoDTO.getDestacado() : false);
-        producto.setNuevo(crearProductoDTO.getNuevo() != null ? crearProductoDTO.getNuevo() : false);
-        producto.setEnOferta(crearProductoDTO.getEnOferta() != null ? crearProductoDTO.getEnOferta() : false);
+        producto.setPublicado(Boolean.TRUE.equals(crearProductoDTO.getPublicado()));
+        producto.setDestacado(Boolean.TRUE.equals(crearProductoDTO.getDestacado()));
+        producto.setNuevo(Boolean.TRUE.equals(crearProductoDTO.getNuevo()));
+        producto.setEnOferta(Boolean.TRUE.equals(crearProductoDTO.getEnOferta()));
 
         // Generar slug único
         String baseSlug = SlugGenerator.generateSlug(crearProductoDTO.getTitulo());
