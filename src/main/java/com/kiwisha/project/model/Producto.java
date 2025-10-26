@@ -73,6 +73,11 @@ public class Producto extends AuditableEntity {
     @Column(name = "publicado", nullable = false)
     private Boolean publicado = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false, length = 20)
+    @Builder.Default
+    private EstadoProducto estado = EstadoProducto.BORRADOR;
+
     @Column(name = "destacado")
     private Boolean destacado = false;
 
@@ -112,9 +117,10 @@ public class Producto extends AuditableEntity {
     
     /**
      * Verifica si el producto está disponible para la venta
+     * Requiere estar publicado (estado PUBLICADO) y tener stock disponible
      */
     public boolean estaDisponible() {
-        return publicado && cantidad > 0;
+        return estado == EstadoProducto.PUBLICADO && cantidad > 0;
     }
 
     /**

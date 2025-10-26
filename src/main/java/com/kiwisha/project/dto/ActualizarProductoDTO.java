@@ -1,5 +1,6 @@
 package com.kiwisha.project.dto;
 
+import com.kiwisha.project.model.EstadoProducto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -39,6 +40,7 @@ public class ActualizarProductoDTO {
     private String imagen;
     
     private Boolean publicado;
+    private EstadoProducto estado;  // Permite cambiar el estado del producto
     private Boolean destacado;
     private Boolean nuevo;
     private Boolean enOferta;

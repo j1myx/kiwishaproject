@@ -34,21 +34,71 @@ El usuario proporcionó las pantallas HTML **REALES** que deben usarse como refe
 
 ### 1️⃣ **INICIO / LANDING PAGE**
 
-**Ubicación:** `Sources/pantallas_version_nueva/inicio_/landing/code.html`
+**Ubicación:** `Sources/inicio_/_landing/code.html` ✅ (286 líneas)
 
-**Características identificadas:**
-- NO ACCESIBLE (archivo no encontrado en estructura esperada)
-- Requiere revisión manual de estructura de carpetas
+**✅ ANALIZADO COMPLETAMENTE**
+
+**Estructura identificada:**
+- **Header**: Logo "Achisway", navegación (Inicio/Catálogo/Novedades/Contacto), búsqueda, botones "Ingresar" + Carrito
+- **Hero Section**: Banner principal con imagen de fondo, título "Descubre la riqueza de los Andes", subtítulo, 2 botones CTA
+- **Sección "Destacados"**: Grid 4 productos con imagen, nombre, descripción, precio
+- **Sección "Novedades"**: Carrusel horizontal de cards (noticias/artículos) con imagen aspect-video
+- **Sección "Beneficios"**: 3 cards con iconos (Envíos, Devoluciones, Soporte)
+- **Footer**: Links legales, redes sociales, copyright
+
+**🆕 FUNCIONALIDADES NECESARIAS (NO IMPLEMENTADAS):**
+- ❌ **Sistema CMS para Hero Section**: Título, subtítulo, imagen de fondo editables
+- ❌ **API de Productos Destacados**: Endpoint que devuelva productos marcados como "destacados"
+- ❌ **Sistema de Noticias/Artículos**: Entidad `Pagina` existe pero necesita endpoints REST
+- ❌ **Configuración dinámica de beneficios**: Editar iconos, textos, desde admin
+
+**✅ YA IMPLEMENTADO (Compatible):**
+- ✅ Entidad `Producto` con precio, nombre, descripción
+- ✅ ProductoApiController con endpoint `/productos/destacados` (ya existe - Fase 5)
+- ✅ Entidad `Pagina` para contenido (artículos, noticias) - Fase 1
+- ✅ PaginaRepository con findByTipoPaginaAndActivo() - Fase 1
+
+**⚠️ AJUSTES NECESARIOS:**
+- Agregar campo `destacado` (boolean) a tabla `productos` si no existe
+- Crear tabla `configuracion_sitio` para textos del hero section
+- Crear API REST para gestión de páginas/noticias (PaginaApiController - no existe aún)
 
 ---
 
 ### 2️⃣ **CATÁLOGO / LISTADO DE PRODUCTOS (PLP)**
 
-**Ubicación:** `Sources/pantallas_version_nueva/catálogo_/listado_de_productos_(plp)/code.html`
+**Ubicación:** `Sources/catálogo_/_listado_de_productos_(plp)/code.html` ✅ (277 líneas)
 
-**Características identificadas:**
-- NO ACCESIBLE (archivo no encontrado)
-- Requiere revisión manual de estructura de carpetas
+**✅ ANALIZADO COMPLETAMENTE**
+
+**Estructura identificada:**
+- **Breadcrumb**: Inicio / Catálogo
+- **Barra de búsqueda**: Grande, prominente, placeholder "Buscar productos"
+- **Filtros**: 3 dropdowns (Categoría, Precio, Disponibilidad)
+- **Toggle de ordenamiento**: Radio buttons (Ordenar por / Más recientes / Más populares / Precio: bajo a alto / Precio: alto a bajo)
+- **Grid de productos**: 4 columnas, responsive, imagen + nombre + precio
+- **Botón "Wishlist"** (corazón) en header
+- **Avatar de usuario** en header (sesión activa)
+
+**🆕 FUNCIONALIDADES IDENTIFICADAS:**
+- ✅ **Búsqueda de productos**: Ya implementado en ProductoApiController `/productos/buscar`
+- ✅ **Filtro por categoría**: Ya implementado `/productos/categoria/{categoriaId}`
+- ✅ **Filtro por rango de precio**: Ya implementado `/productos/precio` (Fase 5)
+- ⚠️ **Filtro por disponibilidad**: Requiere validación (stock > 0)
+- ⚠️ **Ordenamiento múltiple**: Necesita parámetros adicionales (sort, order)
+- ❌ **Sistema de Wishlist/Favoritos**: NO IMPLEMENTADO (nueva funcionalidad)
+
+**✅ BACKEND COMPATIBLE:**
+- ✅ ProductoApiController tiene 8 endpoints públicos de consulta (Fase 5)
+- ✅ Soporte de paginación con Pageable (Spring Data)
+- ✅ Búsqueda por título con `/productos/buscar?titulo=xxx`
+- ✅ Filtro por categoría implementado
+
+**⚠️ REQUIERE AJUSTES:**
+- Agregar parámetro `disponible` (boolean) a endpoint de listado
+- Agregar soporte de ordenamiento dinámico (sort=precio&order=asc)
+- Crear entidad `Wishlist` y `WishlistItem` (nueva funcionalidad)
+- Crear WishlistApiController con CRUD de favoritos
 
 ---
 
@@ -275,29 +325,304 @@ public class ActividadAdmin {
 
 ---
 
-### 🔟 **ADMIN - GESTIONAR CONTENIDOS** 🆕
+### 🔟 **DASHBOARD ADMINISTRADOR** 🆕
 
-**Ubicación:** `Sources/pantallas_version_nueva/admin_–_gestionar_contenidos/code.html`
+**Ubicación:** `Sources/dashboard_administrador/code.html` ✅ (142 líneas)
 
-**✅ ANALIZADO COMPLETO - NUEVA FUNCIONALIDAD**
+**✅ ANALIZADO COMPLETAMENTE - PANTALLA NUEVA**
 
-**🆕 SISTEMA CMS COMPLETO (NO EXISTÍA)**
+**Estructura identificada:**
+- **Panel Lateral** (sidebar):
+  - Título: "Panel de Administrador"
+  - Subtítulo: "Cooperativa Andina"
+  - Menú con 4 opciones:
+    * ✅ Gestionar Contenidos (activo, bg naranja)
+    * Gestionar Productos
+    * Reportería  
+    * Publicar cambios
+  - Botón CTA naranja: "Publicar cambios"
 
-**Características:**
-- **Tabs**:
-  - ✅ Editar Página de Inicio (activo)
-  - Noticias
-  - Artículos
-- **Secciones editables de la home**:
-  1. **Hero Section**:
-     - Campo: Título (input text)
-     - Campo: Subtítulo (textarea)
-     - Imagen principal (aspect 3:2)
-  2. **Carrusel de Destacados**:
-     - 3 productos mostrados (Quinua Real, Kiwicha Orgánica, Hierbas Andinas)
-     - Cada uno con imagen + nombre + descripción
-  3. **Banners Promocionales**:
-     - Imagen de banner (aspect 3:2)
+- **Área Principal**:
+  - Título: "Panel de Administrador"
+  - **KPIs Rápidos** (3 cards):
+    * **Productos Publicados**: 120
+    * **Borradores**: 15
+    * **Stock Bajo**: 8
+  - **Actividad Reciente**:
+    * Lista de actividades con icono, descripción, timestamp
+    * Ejemplo: "Se actualizó Kiwicha Orgánica" - hace 2 horas
+
+**🆕 FUNCIONALIDADES NECESARIAS (NO IMPLEMENTADAS):**
+- ❌ **Endpoint de KPIs**:
+  ```java
+  GET /api/admin/dashboard/kpis
+  Response: {
+    productosPublicados: 120,
+    borradores: 15,
+    stockBajo: 8
+  }
+  ```
+- ❌ **Sistema de Estados de Producto**: Enum `EstadoProducto` (BORRADOR, PUBLICADO, ARCHIVADO)
+- ❌ **Log de Actividad Admin**: Entidad `ActividadAdmin` para tracking de cambios
+- ❌ **Sistema de Workflow**: "Guardar Borrador" vs "Publicar"
+
+**⚠️ ENTIDADES A CREAR:**
+```java
+// Producto.java - Agregar campo
+@Enumerated(EnumType.STRING)
+private EstadoProducto estado;  // BORRADOR, PUBLICADO, ARCHIVADO
+
+// Nueva entidad: ActividadAdmin.java
+public class ActividadAdmin {
+    private Long id;
+    private String accion;  // "PRODUCTO_ACTUALIZADO", "ARTICULO_PUBLICADO"
+    private String descripcion;
+    private String entidad;  // "Producto", "Pagina"
+    private Long entidadId;
+    private LocalDateTime fechaHora;
+    private Usuario usuario;
+}
+```
+
+**✅ PARCIALMENTE COMPATIBLE:**
+- ✅ ProductoRepository tiene método `countByActivo(true)` (puede adaptarse)
+- ✅ ProductoRepository tiene `findProductosStockBajo()` (ya existe - Fase 1)
+- ⚠️ Necesita agregar query `countByEstado(EstadoProducto.BORRADOR)`
+
+---
+
+### 1️⃣1️⃣ **ADMIN - GESTIONAR CONTENIDOS (CMS)** 🆕
+
+**Ubicación:** `Sources/admin_–_gestionar_contenidos/code.html` ✅ (198 líneas)
+
+**✅ ANALIZADO COMPLETAMENTE - SISTEMA CMS NUEVO**
+
+**Estructura identificada:**
+- **Header**: Logo "Andean Harvest", navegación, botón "Panel de Administración", avatar
+- **Tabs horizontales**:
+  * ✅ **Editar Página de Inicio** (activo)
+  * Noticias
+  * Artículos
+
+**Secciones editables de Home:**
+
+1. **Hero Section**:
+   - Campo: Título (input text)
+   - Campo: Subtítulo (textarea multilinea)
+   - Vista previa de imagen principal (aspect ratio 3:2)
+
+2. **Carrusel de Destacados**:
+   - Scroll horizontal con 3 productos:
+     * Quinua Real - "La quinua más nutritiva"
+     * Kiwicha Orgánica - "Kiwicha de cultivo sostenible"
+     * Hierbas Andinas - "Sabores ancestrales"
+   - Cada item: imagen cuadrada + nombre + descripción
+
+3. **Banners Promocionales**:
+   - Imagen de banner (aspect 3:2)
+   - Texto editable
+
+**Botones de acción:**
+- "Guardar Borrador" (secundario)
+- "Solicitar Aprobación" (primario naranja)
+
+**🆕 FUNCIONALIDADES NECESARIAS (NO IMPLEMENTADAS):**
+- ❌ **PaginaApiController**: CRUD completo para gestión de contenido
+  ```java
+  @RestController
+  @RequestMapping("/api/admin/paginas")
+  public class PaginaApiController {
+      POST /   - Crear página/artículo
+      PUT /{id} - Actualizar contenido
+      GET /    - Listar con filtro por tipo
+      GET /{id} - Obtener por ID
+      DELETE /{id} - Eliminar
+      POST /{id}/publicar - Cambiar estado a PUBLICADO
+  }
+  ```
+
+- ❌ **ConfiguracionSitioApiController**: Para Hero Section
+  ```java
+  @RestController
+  @RequestMapping("/api/admin/configuracion")
+  public class ConfiguracionSitioApiController {
+      PUT /hero - Actualizar hero section (título, subtítulo, imagen)
+      GET /hero - Obtener configuración actual
+  }
+  ```
+
+- ❌ **Sistema de Workflow con Estados**:
+  ```java
+  public enum EstadoPagina {
+      BORRADOR,
+      PENDIENTE_APROBACION,
+      PUBLICADO,
+      ARCHIVADO
+  }
+  ```
+
+**✅ BACKEND EXISTENTE (Compatible):**
+- ✅ Entidad `Pagina` ya existe (Fase 1) con campos: titulo, contenido, slug, tipoPagina
+- ✅ Entidad `ConfiguracionSitio` ya existe (Fase 1) para configuración dinámica
+- ✅ Entidad `PaginaImagen` ya existe para imágenes del hero
+- ✅ PaginaRepository con queries básicas
+
+**⚠️ REQUIERE EXTENSIÓN:**
+- Agregar campo `estado` (EstadoPagina) a tabla `paginas`
+- Agregar campo `solicitadoPor` (Usuario) para workflow de aprobación
+- Crear API REST completa (actualmente solo existe entidad, sin controlador)
+
+---
+
+### 1️⃣2️⃣ **ADMIN - REPORTERÍA** 🆕
+
+**Ubicación:** `Sources/admin_–_reportería/code.html` ✅ (363 líneas)
+
+**✅ ANALIZADO COMPLETAMENTE - MÓDULO NUEVO**
+
+**Estructura identificada:**
+- **Sidebar izquierdo** (w-80):
+  - Breadcrumb: Panel / Reportes
+  - Título: "Reportes"
+  - **Selector**: "Fecha/Hora del Sistema" (dropdown)
+  - **Botón principal**: "Exportar a Excel (XLSX)" con icono download
+  - **Sección Filtros**:
+    * Accordion expandible "Filtros"
+  - **Tipo de Reporte** (Radio buttons):
+    * ✅ Top productos del mes (seleccionado)
+    * Compras por provincia
+  - **Filtros Dinámicos**: (campos adicionales según tipo reporte)
+
+- **Área Principal** (contenido del reporte):
+  - Tabla de datos del reporte seleccionado
+  - Gráficos/visualizaciones
+
+**🆕 FUNCIONALIDADES NECESARIAS (NO IMPLEMENTADAS):**
+- ❌ **ReporteApiController**:
+  ```java
+  @RestController
+  @RequestMapping("/api/admin/reportes")
+  public class ReporteApiController {
+      GET /top-productos - Top N productos del mes
+      GET /compras-por-provincia - Ventas agrupadas por ubicación
+      GET /ventas-mensuales - Reporte de ventas por mes
+      POST /exportar-excel - Generar archivo Excel del reporte
+  }
+  ```
+
+- ❌ **Servicio de Exportación Excel**:
+  ```java
+  @Service
+  public class ExcelExportService {
+      byte[] generarReporteExcel(String tipoReporte, Map<String, Object> filtros);
+  }
+  ```
+  - Requiere dependencia: Apache POI (org.apache.poi)
+
+- ❌ **Queries de Reportería**:
+  ```java
+  // PedidoRepository - Agregar métodos
+  List<ReporteTopProducto> findTopProductosDelMes(int mes, int anio, int limite);
+  List<ReporteVentasProvincia> findVentasPorProvincia(LocalDate inicio, LocalDate fin);
+  BigDecimal calcularVentasTotales(LocalDate inicio, LocalDate fin);
+  ```
+
+**📊 TIPOS DE REPORTES IDENTIFICADOS:**
+1. **Top productos del mes**: Ranking de productos más vendidos
+2. **Compras por provincia**: Distribución geográfica de ventas
+
+**⚠️ DEPENDENCIAS NUEVAS REQUERIDAS:**
+```xml
+<!-- pom.xml -->
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-ooxml</artifactId>
+    <version>5.2.3</version>
+</dependency>
+```
+
+**✅ BACKEND PARCIALMENTE COMPATIBLE:**
+- ✅ Entidad `Pedido` tiene campo `provincia` (en DireccionEnvio)
+- ✅ Entidad `PedidoElemento` tiene cantidad y subtotal
+- ✅ PedidoRepository tiene queries básicas por fecha
+- ⚠️ Necesita agregar queries de agregación complejas
+
+---
+
+### 1️⃣3️⃣ **ADMIN - GESTIONAR PRODUCTOS (Listado)** 🆕
+
+**Ubicación:** `Sources/admin_–_gestionar_productos_(listado)/code.html` ✅ (402 líneas)
+
+**✅ ANALIZADO COMPLETAMENTE - VISTA ADMIN DE PRODUCTOS**
+
+**Estructura identificada:**
+- **Header**: Título "Listado de Productos" + botón "Nuevo producto"
+- **Búsqueda**: Input grande "Buscar productos..."
+- **Filtros**: 3 dropdowns (Categoría, Estado, Precio)
+- **Tabla de productos** con columnas:
+  1. **Nombre**: "Kiwicha Orgánica"
+  2. **SKU**: "KIW-ORG-001" ⚠️ (nuevo campo)
+  3. **Categoría**: "Granos"
+  4. **Precio**: "$5.99"
+  5. **Stock**: "150"
+  6. **Estado**: Badge "Publicado" (botón estilizado) ⚠️ (nuevo campo)
+  7. **Última actualización**: "2024-01-15"
+  8. **Acciones**: "Editar | Duplicar | Archivar"
+
+**Ejemplos de datos en tabla:**
+- Kiwicha Orgánica - KIW-ORG-001 - Granos - $5.99 - Stock: 150 - Publicado
+- Quinua Real - QUI-REA-002 - Granos - $7.49 - Stock: 200 - Publicado
+
+**🆕 CAMPOS NUEVOS REQUERIDOS:**
+- ❌ **SKU** (String, único): NO EXISTE en entidad `Producto`
+- ❌ **Estado** (EstadoProducto enum): NO EXISTE
+- ❌ **updatedAt** (LocalDateTime): EXISTE como `fechaActualizacion` en `AuditableEntity` ✅
+
+**⚠️ MODIFICACIONES A PRODUCTO.JAVA:**
+```java
+@Entity
+public class Producto extends AuditableEntity {
+    // ... campos existentes ...
+    
+    // AGREGAR:
+    @Column(unique = true, length = 50)
+    private String sku;  // Código SKU único
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EstadoProducto estado = EstadoProducto.BORRADOR;
+}
+
+public enum EstadoProducto {
+    BORRADOR,    // No visible en tienda
+    PUBLICADO,   // Visible y comprable
+    ARCHIVADO    // No visible, histórico
+}
+```
+
+**🆕 FUNCIONALIDADES NECESARIAS:**
+- ❌ **Filtro por Estado**: Endpoint con parámetro `?estado=PUBLICADO`
+- ❌ **Duplicar Producto**: Endpoint `POST /api/admin/productos/{id}/duplicar`
+- ❌ **Archivar Producto**: Endpoint `PUT /api/admin/productos/{id}/archivar`
+- ❌ **Generación automática de SKU**: Lógica en backend al crear producto
+
+**✅ BACKEND EXISTENTE (Compatible):**
+- ✅ ProductoApiController tiene CRUD completo (Fase 5)
+- ✅ Búsqueda por título implementada
+- ✅ Filtro por categoría implementado
+- ✅ Filtro por precio implementado
+- ✅ Paginación con Pageable implementada
+
+**⚠️ REQUIERE EXTENSIÓN:**
+- Migración de base de datos: Agregar columnas `sku` y `estado` a tabla `productos`
+- Actualizar DTOs: `ProductoDTO`, `CrearProductoDTO`, `ActualizarProductoDTO`
+- Agregar validación: SKU único
+- Implementar endpoint de duplicación
+- Implementar endpoint de archivado
+
+---
+
+## 🔍 VALIDACIÓN DE COMPATIBILIDAD CON BACKEND ACTUAL
 - **Botones**:
   - "Guardar Borrador" (secundario)
   - "Solicitar Aprobación" (primario naranja)
@@ -487,7 +812,186 @@ public class ReporteApiController {
 
 ---
 
-## 🚨 RESUMEN DE IMPACTO EN BACKEND
+## � VALIDACIÓN DE COMPATIBILIDAD CON BACKEND ACTUAL
+
+### ✅ **FUNCIONALIDADES COMPATIBLES SIN CAMBIOS**
+
+| Pantalla | Funcionalidad | Estado Backend | Observaciones |
+|----------|---------------|----------------|---------------|
+| **Catálogo PLP** | Listado de productos | ✅ Implementado | ProductoApiController - 8 endpoints públicos |
+| **Catálogo PLP** | Búsqueda por título | ✅ Implementado | `/api/productos/buscar?titulo=xxx` |
+| **Catálogo PLP** | Filtro por categoría | ✅ Implementado | `/api/productos/categoria/{id}` |
+| **Catálogo PLP** | Filtro por precio | ✅ Implementado | `/api/productos/precio?min=X&max=Y` |
+| **Catálogo PLP** | Paginación | ✅ Implementado | Soporte Pageable de Spring Data |
+| **PDP** | Detalle de producto | ✅ Implementado | `/api/productos/{id}` y `/api/productos/slug/{slug}` |
+| **PDP** | Sistema de reviews | ✅ Implementado | ReviewApiController - 11 endpoints (Fase 5) |
+| **PDP** | Imágenes de producto | ✅ Entidad creada | ProductoImagen entity (Fase 1) |
+| **Carrito** | CRUD de carrito | ✅ Implementado | CarritoApiController - 6 endpoints (después v1.5.1) |
+| **Carrito** | Validar stock | ✅ Implementado | `/api/carrito/{sessionId}/validar-stock` |
+| **Checkout** | Crear pedido | ✅ Implementado | `/api/pedidos` (POST) |
+| **Checkout** | Métodos de envío | ✅ Entidad creada | MetodoEnvio entity (Fase 1) |
+| **Admin Productos** | CRUD productos | ✅ Implementado | 5 endpoints admin en ProductoApiController |
+| **Admin Productos** | Stock bajo | ✅ Implementado | ProductoRepository.findProductosStockBajo() |
+
+### ⚠️ **FUNCIONALIDADES QUE REQUIEREN EXTENSIÓN**
+
+| Pantalla | Funcionalidad | Gap Identificado | Complejidad | Prioridad |
+|----------|---------------|------------------|-------------|-----------|
+| **Landing** | Productos destacados | Falta campo `destacado` boolean | 🟢 Baja | Alta |
+| **Landing** | CMS Hero Section | Falta ConfiguracionSitioApiController | 🟡 Media | Alta |
+| **Landing** | Gestión de noticias | Falta PaginaApiController | 🟡 Media | Media |
+| **Catálogo PLP** | Ordenamiento dinámico | Falta parámetro sort/order | 🟢 Baja | Alta |
+| **Catálogo PLP** | Filtro disponibilidad | Falta parámetro `disponible` | 🟢 Baja | Media |
+| **PDP** | Productos relacionados | Falta lógica de recomendación | 🟡 Media | Baja |
+| **Admin Productos** | Campo SKU | Falta columna en BD | 🟢 Baja | **Alta** |
+| **Admin Productos** | Estados (Borrador/Publicado) | Falta enum EstadoProducto | 🟡 Media | **Alta** |
+| **Admin Productos** | Duplicar producto | Falta endpoint | 🟢 Baja | Media |
+| **Admin Productos** | Archivar producto | Falta endpoint | 🟢 Baja | Media |
+
+### ❌ **FUNCIONALIDADES NUEVAS NO IMPLEMENTADAS**
+
+| Pantalla | Funcionalidad | Componentes Requeridos | Complejidad | Prioridad |
+|----------|---------------|------------------------|-------------|-----------|
+| **Catálogo PLP** | **Wishlist/Favoritos** | WishlistApiController + entidades | 🟡 Media | Baja |
+| **Dashboard Admin** | **KPIs Dashboard** | Endpoint de métricas agregadas | 🟡 Media | Alta |
+| **Dashboard Admin** | **Log de Actividad** | ActividadAdmin entity + tracking | 🟡 Media | Media |
+| **CMS Contenidos** | **CRUD Páginas** | PaginaApiController completo | 🟡 Media | Alta |
+| **CMS Contenidos** | **Workflow Aprobación** | Estado + lógica de aprobación | 🔴 Alta | Media |
+| **Reportería** | **Top Productos** | Queries agregadas + ReporteService | 🔴 Alta | Media |
+| **Reportería** | **Exportar Excel** | Apache POI + ExcelExportService | 🔴 Alta | Media |
+| **Reportería** | **Compras por Provincia** | Query geográfica agregada | 🟡 Media | Baja |
+
+**Leyenda Complejidad:**  
+🟢 Baja (1-4 horas) | 🟡 Media (4-16 horas) | 🔴 Alta (16-40 horas)
+
+---
+
+## 🎯 CONCLUSIONES Y RECOMENDACIONES
+
+### ✅ **PUNTO DE PARTIDA SÓLIDO**
+
+El backend actual (Fases 1-5 completadas) proporciona una **base sólida** que cubre ~**70% de las funcionalidades** requeridas por las pantallas reales:
+
+- ✅ **Arquitectura robusta**: MVC, capas bien definidas, patrones aplicados
+- ✅ **CRUD completo**: Productos, Categorías, Clientes, Pedidos, Reviews
+- ✅ **50 endpoints REST**: API documentada con OpenAPI/Swagger
+- ✅ **Seguridad**: Spring Security con roles ADMIN/CLIENTE
+- ✅ **Carrito funcional**: Gestión de sesiones, validación de stock
+- ✅ **Sistema de pedidos**: Checkout, estados, tracking
+
+### ⚠️ **CONFLICTOS IDENTIFICADOS Y RESUELTOS**
+
+**1. Cupones de Descuento** ✅ **RESUELTO EN v1.5.1**
+- ❌ **Problema**: Funcionalidad completa implementada pero NO existe en UI real
+- ✅ **Solución**: Eliminada en refactorización v1.5.1 (2 endpoints, 4 métodos, 3 DTOs)
+- ✅ **Estado**: Entidades deprecadas, relaciones comentadas, compilación exitosa
+
+### 🚧 **GAPS CRÍTICOS A RESOLVER (Fase 6)**
+
+#### **Prioridad ALTA - Implementar ANTES de frontend:**
+
+1. **Campo SKU en Productos** (🟢 4 horas)
+   - Migración BD: Agregar columna `sku VARCHAR(50) UNIQUE`
+   - Actualizar DTOs y validaciones
+   - Endpoint para validar SKU único
+
+2. **Estados de Producto** (🟡 8 horas)
+   - Crear enum `EstadoProducto` (BORRADOR, PUBLICADO, ARCHIVADO)
+   - Migración BD: Agregar columna `estado`
+   - Actualizar queries y filtros
+   - Workflow: Guardar Borrador / Publicar
+
+3. **KPIs Dashboard Admin** (🟡 6 horas)
+   - Endpoint `/api/admin/dashboard/kpis`
+   - Queries: `countByEstado()`, `countStockBajo()`
+   - DTO con métricas agregadas
+
+4. **CMS Básico para Hero Section** (🟡 8 horas)
+   - ConfiguracionSitioApiController
+   - CRUD de hero (título, subtítulo, imagen)
+   - Endpoint público `/api/configuracion/hero`
+
+#### **Prioridad MEDIA - Fase 6 extendida:**
+
+5. **PaginaApiController** (🟡 12 horas)
+   - CRUD completo para noticias/artículos
+   - Workflow con estados
+   - Filtros y paginación
+
+6. **Log de Actividad Admin** (🟡 10 horas)
+   - Entity `ActividadAdmin`
+   - Interceptor para tracking automático
+   - Endpoint de consulta
+
+7. **Reportería Básica** (🔴 24 horas)
+   - ReporteService con queries agregadas
+   - Top productos del mes
+   - Exportación Excel (Apache POI)
+
+#### **Prioridad BAJA - Post-lanzamiento:**
+
+8. **Wishlist/Favoritos** (🟡 12 horas)
+9. **Productos Relacionados** (🟡 8 horas)
+10. **Compras por Provincia** (🟡 6 horas)
+
+---
+
+## 📊 ESTIMACIÓN DE ESFUERZO
+
+### **Fase 5.1: Refactorización Cupones** ✅ **COMPLETADA**
+- ⏱️ Tiempo real: **4 horas**
+- ✅ Estado: BUILD SUCCESS - 0 errores
+- 📦 Entregables: 10 archivos modificados, 2 commits en GitHub
+
+### **Fase 6: Web Controllers + Ajustes Críticos**
+- ⏱️ Estimado: **40-56 horas** (1-1.5 semanas de trabajo)
+- 📝 Incluye:
+  * Web Controllers (Thymeleaf) - 16 horas
+  * Integración templates HTML - 8 horas
+  * SKU + Estados de Producto - 12 horas
+  * KPIs Dashboard - 6 horas
+  * CMS Hero Section - 8 horas
+  * Testing e integración - 8 horas
+
+### **Fase 7: Funcionalidades Avanzadas**
+- ⏱️ Estimado: **60-80 horas** (2-2.5 semanas)
+- 📝 Incluye:
+  * PaginaApiController completo - 12 horas
+  * Reportería con Excel - 24 horas
+  * Log de Actividad - 10 horas
+  * Wishlist - 12 horas
+  * Productos Relacionados - 8 horas
+  * Testing e integración - 14 horas
+
+### **TOTAL ESTIMADO COMPLETO**: 104-140 horas (~3-4 semanas de desarrollo)
+
+---
+
+## ✅ VALIDACIÓN FINAL: ¿HAY CHOQUES CON LO IMPLEMENTADO?
+
+### **RESPUESTA: NO, NO HAY CHOQUES CRÍTICOS** ✅
+
+**Resumen:**
+1. ✅ **Cupones eliminados exitosamente** - No hay conflicto
+2. ✅ **APIs REST compatibles** - Endpoints existentes funcionan
+3. ✅ **Entidades bien diseñadas** - Arquitectura escalable
+4. ⚠️ **Extensiones necesarias** - Agregar campos, no rehacer
+5. 🆕 **Funcionalidades nuevas** - Complementan, no reemplazan
+
+**El desarrollo de Fases 1-5 NO fue en vano.** El backend actual es **sólido y reutilizable**, solo requiere:
+- **Ajustes menores** (SKU, Estados) - 🟢 Riesgo bajo
+- **Extensiones controladas** (Dashboard, CMS) - 🟡 Riesgo medio
+- **Nuevas funcionalidades** (Reportería) - 🟡 Riesgo medio
+
+**Conclusión:** Podemos proceder confiadamente a **Fase 6: Web Controllers y Frontend** con el backend actual como base. Los ajustes identificados se pueden implementar en paralelo sin afectar el desarrollo frontend.
+
+---
+
+**Documento actualizado:** 25 de Octubre 2025  
+**Versión:** 2.0 - Análisis Completo de 14 Pantallas  
+**Estado:** ✅ Listo para Fase 6
+
+---
 
 ### ❌ FUNCIONALIDAD A ELIMINAR (CUPONES)
 

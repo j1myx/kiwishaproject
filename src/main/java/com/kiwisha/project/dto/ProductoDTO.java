@@ -1,5 +1,6 @@
 package com.kiwisha.project.dto;
 
+import com.kiwisha.project.model.EstadoProducto;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class ProductoDTO {
     private BigDecimal peso;
     private String unidadMedida;
     private Boolean publicado;
+    private EstadoProducto estado;  // BORRADOR, PUBLICADO, ARCHIVADO
     private Boolean destacado;
     private Boolean nuevo;
     private Boolean enOferta;

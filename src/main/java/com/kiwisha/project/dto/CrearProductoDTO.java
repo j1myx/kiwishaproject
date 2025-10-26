@@ -1,5 +1,6 @@
 package com.kiwisha.project.dto;
 
+import com.kiwisha.project.model.EstadoProducto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -43,6 +44,7 @@ public class CrearProductoDTO {
     private String imagen;
     
     private Boolean publicado = false;
+    private EstadoProducto estado = EstadoProducto.BORRADOR;  // Por defecto: BORRADOR
     private Boolean destacado = false;
     private Boolean nuevo = false;
     private Boolean enOferta = false;
