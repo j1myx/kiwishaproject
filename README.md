@@ -334,17 +334,21 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 ## 📊 Estadísticas del Proyecto
 
-- **Archivos Java**: 80 archivos
-- **Líneas de código**: ~9,300 líneas
+- **Archivos Java**: 87 archivos (+7 desde v1.5.1)
+- **Líneas de código**: ~10,100 líneas (+800 desde v1.5.1)
 - **Entidades**: 16 entidades JPA (1 deprecada: Cupon)
 - **Repositorios**: 13 repositorios Spring Data JPA (1 deprecado: CuponRepository)
 - **Servicios**: 6 servicios completos + 1 CustomUserDetailsService
 - **DTOs**: 16 DTOs con validaciones
 - **REST API Controllers**: 6 controladores con **50 endpoints** (v1.5.1 - antes: 52)
-- **Configuraciones**: 3 (JpaConfig, OpenAPIConfig, SecurityConfig)
+- **Web Controllers**: 3 controladores (ProductoWebController, AuthWebController, AdminWebController)
+- **Templates Thymeleaf**: 3 templates (home.html, login.html, dashboard.html)
+- **Configuraciones**: 4 (JpaConfig, OpenAPIConfig, SecurityConfig, DataInitializer)
+- **Scripts SQL**: 4 (kiwiska_last.sql, kiwiska_actualizacion.sql, fix_roles_usuarios_table.sql, fix_hash_contrasena.sql)
 - **Tiempo de compilación**: ~5.0 segundos
 - **Errores**: 0 errores de compilación
 - **Test coverage**: Pendiente
+- **Versión actual**: 1.6.0
 
 ## 📅 Fases del Proyecto
 
@@ -443,13 +447,111 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - Estados de producto (Borrador/Publicado/Archivado)
 - Campo SKU en productos
 
-### Fase 6: Web Controllers y Frontend (Próxima)
-- [ ] ProductoWebController
-- [ ] CarritoWebController
-- [ ] CheckoutWebController
-- [ ] Templates Thymeleaf
-- [ ] Conversión de HTMLs existentes
-- [ ] Integración con TailwindCSS
+### ✅ Fase 6: Web Controllers y Frontend (Completada) - v1.6.0
+
+**Contexto**: Integración completa de templates de diseño proporcionados por el cliente y sistema de autenticación funcional con panel administrativo.
+
+**Cambios Implementados**:
+
+1. ✅ **Templates de Diseño Integrados** (de Sources/):
+   - `public/home.html` - Landing page con hero, productos destacados, novedades y beneficios
+   - `public/login.html` - Formulario de login para panel administrativo
+   - `admin/dashboard.html` - Panel administrativo con sidebar, KPIs y accesos rápidos
+   - Diseño: Tailwind CSS, Work Sans/Noto Sans, paleta #fcfaf8/#1c140d/#f98006/#f4ede6
+
+2. ✅ **AuthWebController** (Nuevo)
+   - Endpoint `GET /login` con manejo de errores y logout messages
+   - Integración con Spring Security form login
+   - Redirección a `/admin/dashboard` tras autenticación exitosa
+
+3. ✅ **ProductoWebController** (Actualizado)
+   - Endpoint `GET /` y `/inicio` - Home/Landing page
+   - Endpoint `GET /catalogo` - Listado de productos con filtros
+   - Endpoint `GET /producto/{slug}` - Detalle de producto (PDP)
+   - Manejo de errores mejorado con try-catch
+
+4. ✅ **AdminWebController** (Existente - Verificado)
+   - Dashboard con KPIs: productos publicados, total productos, stock bajo
+   - Protección con `@PreAuthorize("hasRole('ADMIN')")`
+   - Integración con ProductoService y PedidoService
+
+5. ✅ **Spring Security - Configuración Actualizada**:
+   - Rutas públicas: `/`, `/inicio`, `/productos/**`, `/catalogo`, `/login`
+   - Rutas admin: `/admin/**` (requiere ROLE_ADMIN)
+   - Login form: email/password, defaultSuccessUrl: `/admin/dashboard`
+   - Remember-me habilitado (7 días)
+   - ❌ Eliminado `.accessDeniedPage("/error/403")` (causaba conflictos)
+
+6. ✅ **Sistema de Roles - EAGER Fetch Strategy**:
+   - `Usuario.rolUsuarios`: Cambiado de LAZY a EAGER
+   - `RolUsuario.rol`: Cambiado de LAZY a EAGER
+   - `RolUsuario`: Agregado `@GeneratedValue(strategy = GenerationType.IDENTITY)`
+   - Motivo: Prevenir LazyInitializationException en security context
+
+7. ✅ **DataInitializer - Verificación de Roles**:
+   - Creación automática de roles ADMIN y CLIENTE
+   - Creación de usuario admin por defecto
+   - **Nuevo**: Verificación de roles para usuarios existentes
+   - Asignación automática de rol ADMIN si falta
+
+8. ✅ **CustomUserDetailsService - Debug Logging**:
+   - Agregado `@Slf4j` para logging
+   - Debug logs: usuario, tamaño de roles, autoridades generadas
+   - Mapeo correcto: `ROLE_ + rolNombre.toUpperCase()`
+
+9. ✅ **Correcciones de Repositorios**:
+   - `ProductoRepository`: 
+     - `findByCategoriaCategoriIdAndPublicadoTrue` → `findByCategoriaCategoriaIdAndPublicadoTrue`
+     - `countByCategoriaCategoriIdAndPublicadoTrue` → `countByCategoriaCategoriaIdAndPublicadoTrue`
+   - `CategoriaServiceImpl`: Actualizados 3 métodos con nombres correctos
+   - `ProductoServiceImpl`: Actualizado 1 método
+
+10. ✅ **Base de Datos - Reparaciones**:
+    - Script `fix_roles_usuarios_table.sql`:
+      - ALTER TABLE roles_usuarios: Agregado AUTO_INCREMENT a rol_usuario_id
+      - INSERT de rol ADMIN para usuario admin@kiwisha.com
+      - Verificación de estructura y resultado
+    - Script `fix_hash_contrasena.sql`:
+      - ALTER TABLE usuarios: hash_contrasena VARCHAR(32) → VARCHAR(255) (BCrypt)
+      - Campos opcionales: segundo_nombre y movil ahora NULL
+    - `application.properties`: Password de BD actualizada
+
+11. ✅ **SQL Scripts Actualizados**:
+    - `kiwiska_actualizacion.sql`: Corregida sintaxis MySQL 8.0
+      - Eliminado `IF NOT EXISTS` de ALTER TABLE ADD COLUMN (no soportado)
+      - Separados comandos ALTER TABLE individuales
+
+**Credenciales de Acceso**:
+- **Email**: admin@kiwisha.com
+- **Password**: admin123
+- **Rol**: ADMIN
+- **Dashboard**: http://localhost:8080/admin/dashboard
+
+**Verificación**:
+- ✅ Compilación exitosa: BUILD SUCCESS
+- ✅ Usuario admin con rol ADMIN asignado
+- ✅ Login funcional sin error 403 Forbidden
+- ✅ Dashboard muestra KPIs correctamente
+- ✅ Templates integrados con diseño cliente
+
+**Resolución de Bugs Críticos**:
+- 🐛 **403 Forbidden tras login**: Causado por usuario sin roles
+  - Root cause: LAZY fetch + usuario creado antes de DataInitializer
+  - Solución: EAGER fetch + verificación de roles existentes + script SQL
+- 🐛 **LazyInitializationException**: Session cerrada antes de cargar roles
+  - Solución: Cambio de fetch strategy LAZY → EAGER
+- 🐛 **AUTO_INCREMENT faltante**: Tabla roles_usuarios sin clave primaria auto-incremental
+  - Solución: ALTER TABLE con script SQL manual
+
+**Breaking Changes**:
+- ⚠️ Fetch strategy: LAZY → EAGER (puede impactar rendimiento en listas grandes)
+- ⚠️ SecurityConfig: Eliminado accessDeniedPage (usar default de Spring)
+- ⚠️ Nombres de métodos: Corregidos typos en repositorios (CategoriId → CategoriaId)
+
+**Archivos Nuevos/Modificados**:
+- ✅ Nuevos: AuthWebController.java, home.html, login.html, dashboard.html
+- ✅ Modificados: 11 archivos (SecurityConfig, Usuario, RolUsuario, DataInitializer, etc.)
+- ✅ Scripts SQL: 2 nuevos (fix_roles_usuarios_table.sql, fix_hash_contrasena.sql)
 
 ### Fase 7: Características Avanzadas
 - [ ] Pasarela de pago
@@ -495,12 +597,36 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 
 ---
 
-**Última actualización**: 25 de Octubre 2025  
-**Versión**: **1.5.1** (Refactorización de Cupones - Breaking Changes)  
-**Versión anterior**: 1.5.0 (Fases 1-5 completadas)  
-**Estado**: En desarrollo activo - Fase 6 próximamente  
+### Fase 7: Características Avanzadas (Próxima)
+- [ ] CarritoWebController (gestión de carrito público)
+- [ ] CheckoutWebController (proceso de compra)
+- [ ] Pasarela de pago (integración con proveedor)
+- [ ] Módulo de reportería avanzada
+- [ ] Gestión de imágenes con upload
+- [ ] Notificaciones por email
+- [ ] Templates adicionales (catálogo, producto detalle, checkout)
 
-**Changelog v1.5.1**:
+---
+
+**Última actualización**: 25 de Octubre 2025  
+**Versión**: **1.6.0** (Sistema de Autenticación y Templates Frontend)  
+**Versión anterior**: 1.5.1 (Refactorización de Cupones)  
+**Estado**: En desarrollo activo - **Fase 6 Completada** ✅  
+
+**Changelog v1.6.0**:
+- ✅ **Fase 6 Completada**: Web Controllers y Frontend
+- 🎨 Templates integrados: home.html, login.html, dashboard.html (Tailwind CSS)
+- 🔐 Sistema de autenticación funcional con Spring Security
+- 👤 Panel administrativo con KPIs y navegación
+- 🔧 EAGER fetch strategy para roles (solución 403 Forbidden)
+- 🐛 Bugs críticos resueltos: usuario sin roles, LazyInitializationException
+- 📝 Scripts SQL: reparación de tabla roles_usuarios y hash_contrasena
+- ✅ Correcciones: 3 typos en repositorios (CategoriId → CategoriaId)
+- 📊 DataInitializer mejorado con verificación de roles existentes
+- 🔍 Debug logging en CustomUserDetailsService
+- 📄 17 archivos modificados/creados, 689 inserciones, 193 eliminaciones
+
+**Changelog v1.5.1** (Anterior):
 - ❌ Eliminada funcionalidad de cupones de descuento (2 endpoints, 4 métodos de servicio)
 - 📄 Creado documento `ANALISIS_PANTALLAS_NUEVAS.md` con análisis exhaustivo UI
 - 🔧 Refactorizados: CarritoApiController, CarritoService, PedidoService
