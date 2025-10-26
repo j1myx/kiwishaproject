@@ -96,7 +96,7 @@ public class CategoriaServiceImpl implements CategoriaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Categoria", "id", id));
 
         // Verificar que no tenga productos asociados
-        long cantidadProductos = productoRepository.countByCategoriaCategoriIdAndPublicadoTrue(id);
+        long cantidadProductos = productoRepository.countByCategoriaCategoriaIdAndPublicadoTrue(id);
         if (cantidadProductos > 0) {
             throw new BusinessException("No se puede eliminar la categoría porque tiene " + 
                     cantidadProductos + " productos asociados");
@@ -115,7 +115,7 @@ public class CategoriaServiceImpl implements CategoriaService {
             throw new ResourceNotFoundException("Categoria", "id", categoriaId);
         }
         
-        return productoRepository.countByCategoriaCategoriIdAndPublicadoTrue(categoriaId);
+        return productoRepository.countByCategoriaCategoriaIdAndPublicadoTrue(categoriaId);
     }
 
     /**
@@ -125,7 +125,7 @@ public class CategoriaServiceImpl implements CategoriaService {
         CategoriaDTO dto = modelMapper.map(categoria, CategoriaDTO.class);
         
         // Contar productos en la categoría
-        long cantidadProductos = productoRepository.countByCategoriaCategoriIdAndPublicadoTrue(
+        long cantidadProductos = productoRepository.countByCategoriaCategoriaIdAndPublicadoTrue(
                 categoria.getCategoriaId());
         dto.setCantidadProductos(cantidadProductos);
         

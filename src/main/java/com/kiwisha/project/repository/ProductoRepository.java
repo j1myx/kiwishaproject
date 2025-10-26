@@ -37,7 +37,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     /**
      * Obtiene productos por categoría
      */
-    Page<Producto> findByCategoriaCategoriIdAndPublicadoTrue(Integer categoriaId, Pageable pageable);
+    Page<Producto> findByCategoriaCategoriaIdAndPublicadoTrue(Integer categoriaId, Pageable pageable);
 
     /**
      * Busca productos por título (búsqueda parcial)
@@ -77,7 +77,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     /**
      * Cuenta productos por categoría
      */
-    long countByCategoriaCategoriIdAndPublicadoTrue(Integer categoriaId);
+    long countByCategoriaCategoriaIdAndPublicadoTrue(Integer categoriaId);
 
     /**
      * Verifica si existe un producto con el slug dado (excluyendo un ID específico)

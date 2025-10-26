@@ -76,7 +76,7 @@ public class ProductoServiceImpl implements ProductoService {
         if (!categoriaRepository.existsById(categoriaId)) {
             throw new ResourceNotFoundException("Categoria", "id", categoriaId);
         }
-        return productoRepository.findByCategoriaCategoriIdAndPublicadoTrue(categoriaId, pageable)
+        return productoRepository.findByCategoriaCategoriaIdAndPublicadoTrue(categoriaId, pageable)
                 .map(this::convertirADTO);
     }
 

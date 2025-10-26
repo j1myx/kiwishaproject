@@ -38,11 +38,13 @@ public class DataInitializer {
                 
                 Rol adminRole = new Rol();
                 adminRole.setNombre("ADMIN");
+                adminRole.setCreadoPor(1); // Sistema
                 adminRole.setCreadoEn(LocalDateTime.now());
                 rolRepository.save(adminRole);
                 
                 Rol clienteRole = new Rol();
                 clienteRole.setNombre("CLIENTE");
+                clienteRole.setCreadoPor(1); // Sistema
                 clienteRole.setCreadoEn(LocalDateTime.now());
                 rolRepository.save(clienteRole);
                 
@@ -58,8 +60,10 @@ public class DataInitializer {
                 admin.setApellidos("Kiwisha");
                 admin.setNombreUsuario("admin");
                 admin.setEmail("admin@kiwisha.com");
+                admin.setMovil("999999999"); // Teléfono por defecto
                 admin.setHashContrasena(passwordEncoder.encode("admin123"));
                 admin.setActivo(true);
+                admin.setCreadoPor(1); // Sistema
                 admin.setCreadoEn(LocalDateTime.now());
                 Usuario savedAdmin = usuarioRepository.save(admin);
                 
@@ -70,10 +74,37 @@ public class DataInitializer {
                 RolUsuario rolUsuario = new RolUsuario();
                 rolUsuario.setUsuario(savedAdmin);
                 rolUsuario.setRol(adminRole);
+                rolUsuario.setCreadoPor(1); // Sistema
                 rolUsuario.setCreadoEn(LocalDateTime.now());
                 rolUsuarioRepository.save(rolUsuario);
                 
                 log.info("Usuario admin creado exitosamente (email: admin@kiwisha.com, password: admin123)");
+            } else {
+                // Verificar que el usuario admin tenga el rol asignado
+                log.info("Verificando roles del usuario admin...");
+                Usuario admin = usuarioRepository.findByEmail("admin@kiwisha.com")
+                        .orElseThrow(() -> new RuntimeException("Usuario admin no encontrado"));
+                
+                // Verificar si tiene rol ADMIN
+                boolean tieneRolAdmin = admin.getRolUsuarios().stream()
+                        .anyMatch(ru -> "ADMIN".equals(ru.getRol().getNombre()));
+                
+                if (!tieneRolAdmin) {
+                    log.warn("Usuario admin no tiene rol ADMIN asignado. Asignando...");
+                    Rol adminRole = rolRepository.findByNombre("ADMIN")
+                            .orElseThrow(() -> new RuntimeException("Rol ADMIN no encontrado"));
+                    
+                    RolUsuario rolUsuario = new RolUsuario();
+                    rolUsuario.setUsuario(admin);
+                    rolUsuario.setRol(adminRole);
+                    rolUsuario.setCreadoPor(1); // Sistema
+                    rolUsuario.setCreadoEn(LocalDateTime.now());
+                    rolUsuarioRepository.save(rolUsuario);
+                    
+                    log.info("Rol ADMIN asignado correctamente al usuario admin");
+                } else {
+                    log.info("Usuario admin ya tiene rol ADMIN asignado");
+                }
             }
         };
     }

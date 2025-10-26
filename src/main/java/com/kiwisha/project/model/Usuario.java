@@ -32,7 +32,7 @@ public class Usuario {
     @Column(name = "email", length = 50)
     private String email;
 
-    @Column(name = "hash_contrasena", length = 32)
+    @Column(name = "hash_contrasena", length = 255)
     private String hashContrasena;
 
     @Column(name = "activo")
@@ -50,6 +50,6 @@ public class Usuario {
     @Column(name = "actualizado_en")
     private LocalDateTime actualizadoEn;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<RolUsuario> rolUsuarios;
 }

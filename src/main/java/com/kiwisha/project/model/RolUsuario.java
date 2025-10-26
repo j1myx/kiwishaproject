@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "roles_usuarios")
 public class RolUsuario {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "rol_usuario_id")
     private Integer rolUsuarioId;
 
@@ -16,7 +17,7 @@ public class RolUsuario {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rol_id")
     private Rol rol;
 

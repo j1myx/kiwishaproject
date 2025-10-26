@@ -158,37 +158,55 @@ ON DUPLICATE KEY UPDATE `actualizado_en` = NOW();
 -- ALTERACIONES A TABLAS EXISTENTES
 -- ============================================
 
--- Agregar nuevos campos a la tabla productos
+-- Nota: MySQL 8.0 no soporta IF NOT EXISTS en ADD COLUMN
+-- Si la columna ya existe, simplemente ignorar el error o verificar antes
+
+-- Agregar nuevos campos a la tabla productos (ejecutar solo si no existen)
 ALTER TABLE `productos` 
-ADD COLUMN IF NOT EXISTS `descripcion` TEXT AFTER `resumen`,
-ADD COLUMN IF NOT EXISTS `precio_anterior` decimal(16,4) DEFAULT NULL AFTER `precio`,
-ADD COLUMN IF NOT EXISTS `sku` varchar(50) UNIQUE DEFAULT NULL AFTER `cantidad`,
-ADD COLUMN IF NOT EXISTS `peso` decimal(10,2) DEFAULT NULL AFTER `sku`,
-ADD COLUMN IF NOT EXISTS `unidad_medida` varchar(20) DEFAULT NULL AFTER `peso`,
-ADD COLUMN IF NOT EXISTS `destacado` bit(1) DEFAULT b'0' AFTER `publicado`,
-ADD COLUMN IF NOT EXISTS `nuevo` bit(1) DEFAULT b'0' AFTER `destacado`,
-ADD COLUMN IF NOT EXISTS `en_oferta` bit(1) DEFAULT b'0' AFTER `nuevo`,
-ADD COLUMN IF NOT EXISTS `meta_titulo` varchar(200) DEFAULT NULL AFTER `en_oferta`,
-ADD COLUMN IF NOT EXISTS `meta_descripcion` varchar(500) DEFAULT NULL AFTER `meta_titulo`,
-ADD COLUMN IF NOT EXISTS `slug` varchar(200) UNIQUE DEFAULT NULL AFTER `meta_descripcion`;
+ADD COLUMN `descripcion` TEXT AFTER `resumen`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `precio_anterior` decimal(16,4) DEFAULT NULL AFTER `precio`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `sku` varchar(50) UNIQUE DEFAULT NULL AFTER `cantidad`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `peso` decimal(10,2) DEFAULT NULL AFTER `sku`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `unidad_medida` varchar(20) DEFAULT NULL AFTER `peso`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `destacado` bit(1) DEFAULT b'0' AFTER `publicado`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `nuevo` bit(1) DEFAULT b'0' AFTER `destacado`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `en_oferta` bit(1) DEFAULT b'0' AFTER `nuevo`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `meta_titulo` varchar(200) DEFAULT NULL AFTER `en_oferta`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `meta_descripcion` varchar(500) DEFAULT NULL AFTER `meta_titulo`;
+
+ALTER TABLE `productos` 
+ADD COLUMN `slug` varchar(200) UNIQUE DEFAULT NULL AFTER `meta_descripcion`;
 
 -- Agregar índices para mejorar el rendimiento
 ALTER TABLE `productos` 
-ADD INDEX IF NOT EXISTS `idx_producto_destacado` (`destacado`),
-ADD INDEX IF NOT EXISTS `idx_producto_nuevo` (`nuevo`),
-ADD INDEX IF NOT EXISTS `idx_producto_oferta` (`en_oferta`);
+ADD INDEX `idx_producto_destacado` (`destacado`);
 
--- Agregar campos de auditoría si no existen (para compatibilidad)
-ALTER TABLE `categorias`
-MODIFY COLUMN `categoria_id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `productos` 
+ADD INDEX `idx_producto_nuevo` (`nuevo`);
 
-ALTER TABLE `etiquetas`
-MODIFY COLUMN `etiqueta_id` int NOT NULL AUTO_INCREMENT;
+ALTER TABLE `productos` 
+ADD INDEX `idx_producto_oferta` (`en_oferta`);
 
-ALTER TABLE `paginas`
-MODIFY COLUMN `pagina_id` int NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `productos`
-MODIFY COLUMN `producto_id` int NOT NULL AUTO_INCREMENT;
+-- Nota: Los campos de auditoría (categoria_id, etiqueta_id, pagina_id, producto_id) 
+-- ya están configurados correctamente como AUTO_INCREMENT desde la creación inicial.
+-- No es necesario modificarlos.
 
 COMMIT;

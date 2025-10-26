@@ -3,6 +3,7 @@ package com.kiwisha.project.service.impl;
 import com.kiwisha.project.model.Usuario;
 import com.kiwisha.project.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  * Implementación de UserDetailsService para Spring Security
  * Carga información de usuarios desde la base de datos para autenticación
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
@@ -61,9 +63,21 @@ public class CustomUserDetailsService implements UserDetailsService {
      * @return Colección de GrantedAuthority con prefijo ROLE_
      */
     private Collection<? extends GrantedAuthority> getAuthorities(Usuario usuario) {
-        return usuario.getRolUsuarios().stream()
-                .map(rolUsuario -> new SimpleGrantedAuthority(
-                        "ROLE_" + rolUsuario.getRol().getNombre().toUpperCase()))
+        log.info("=== DEBUG: Obteniendo autoridades para usuario: {}", usuario.getEmail());
+        log.info("=== DEBUG: RolUsuarios size: {}", usuario.getRolUsuarios().size());
+        
+        var authorities = usuario.getRolUsuarios().stream()
+                .map(rolUsuario -> {
+                    String rolNombre = rolUsuario.getRol().getNombre();
+                    String authority = "ROLE_" + rolNombre.toUpperCase();
+                    log.info("=== DEBUG: Rol encontrado: {} -> Authority: {}", rolNombre, authority);
+                    return new SimpleGrantedAuthority(authority);
+                })
                 .collect(Collectors.toList());
+        
+        log.info("=== DEBUG: Total authorities: {}", authorities.size());
+        authorities.forEach(auth -> log.info("=== DEBUG: Authority: {}", auth.getAuthority()));
+        
+        return authorities;
     }
 }

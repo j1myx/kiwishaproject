@@ -23,36 +23,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                // Rutas públicas - accesibles sin autenticación
-                .requestMatchers(
-                    "/api/public/**",
-                    "/productos/**",
-                    "/categorias/**",
-                    "/carrito/**",
-                    "/checkout/**",
-                    "/css/**",
-                    "/js/**",
-                    "/images/**",
-                    "/favicon.ico",
-                    "/error",
-                    "/login",
-                    "/registro"
-                ).permitAll()
-                
-                // Rutas de administrador - requieren rol ADMIN
-                .requestMatchers(
-                    "/admin/**",
-                    "/api/admin/**"
-                ).hasRole("ADMIN")
-                
-                // Rutas de cliente - requieren autenticación
-                .requestMatchers(
-                    "/mi-cuenta/**",
-                    "/mis-pedidos/**",
-                    "/api/cliente/**"
-                ).hasAnyRole("CLIENTE", "ADMIN")
-                
-                // Cualquier otra ruta requiere autenticación
+                // Rutas públicas (sin autenticación)
+                .requestMatchers("/", "/home", "/inicio", "/productos/**", "/producto/**", 
+                               "/catalogo", "/buscar", "/login", "/error/**",
+                               "/css/**", "/js/**", "/images/**", "/api/**").permitAll()
+                // Rutas que requieren autenticación
+                .requestMatchers("/carrito/**", "/checkout/**").authenticated()
+                // Rutas administrativas
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -77,11 +55,7 @@ public class SecurityConfig {
                 .rememberMeParameter("remember-me")
             )
             .csrf(csrf -> csrf
-                // Habilitar CSRF para formularios, deshabilitar para APIs REST
                 .ignoringRequestMatchers("/api/**")
-            )
-            .exceptionHandling(exception -> exception
-                .accessDeniedPage("/error/403")
             );
 
         return http.build();

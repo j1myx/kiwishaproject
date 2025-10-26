@@ -13,6 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Controlador web para vistas públicas de productos.
  * Maneja: Home, Catálogo (PLP), Detalle de Producto (PDP).
@@ -34,15 +37,23 @@ public class ProductoWebController {
     public String home(Model model) {
         log.debug("Accediendo a página de inicio");
         
-        // Productos destacados
-        var productosDestacados = productoService.obtenerProductosDestacados();
-        
-        // Productos nuevos
-        var productosNuevos = productoService.obtenerProductosNuevos();
-        
-        model.addAttribute("productosDestacados", productosDestacados);
-        model.addAttribute("productosNuevos", productosNuevos);
-        model.addAttribute("paginaActual", "inicio");
+        try {
+            // Productos destacados
+            var productosDestacados = productoService.obtenerProductosDestacados();
+            
+            // Productos nuevos
+            var productosNuevos = productoService.obtenerProductosNuevos();
+            
+            model.addAttribute("productosDestacados", productosDestacados);
+            model.addAttribute("productosNuevos", productosNuevos);
+            model.addAttribute("paginaActual", "inicio");
+        } catch (Exception e) {
+            log.error("Error al cargar productos en home", e);
+            // Continuar con listas vacías
+            model.addAttribute("productosDestacados", List.of());
+            model.addAttribute("productosNuevos", List.of());
+            model.addAttribute("paginaActual", "inicio");
+        }
         
         return "public/home";
     }
