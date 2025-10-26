@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Carrito - Kiwisha</title>
+</head>
+<body>
+    
+    <main layout:fragment="content">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">Carrito de Compras</h1>
+            
+            <div th:if="${#lists.isEmpty(itemsCarrito)}" class="text-center py-16">
+                <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-600 mb-8">Tu carrito está vacío</p>
+                <a th:href="@{/catalogo}" class="bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition">
+                    Ver Catálogo
+                </a>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(itemsCarrito)}" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Items del carrito -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div th:each="item : ${itemsCarrito}" class="border-b border-gray-200 p-6 flex gap-4">
+                            <img th:src="${item.producto.imagenUrl != null ? item.producto.imagenUrl : 'https://via.placeholder.com/150'}" 
+                                 th:alt="${item.producto.titulo}"
+                                 class="w-24 h-24 object-cover rounded">
+                            
+                            <div class="flex-1">
+                                <h3 class="text-lg font-semibold text-gray-900" th:text="${item.producto.titulo}">
+                                    Producto
+                                </h3>
+                                <p class="text-gray-600 text-sm mb-2" th:text="${item.producto.descripcion}">
+                                    Descripción
+                                </p>
+                                <p class="text-purple-600 font-semibold">
+                                    S/ <span th:text="${#numbers.formatDecimal(item.precio, 1, 2)}">0.00</span>
+                                </p>
+                            </div>
+                            
+                            <div class="flex flex-col items-end justify-between">
+                                <form th:action="@{/carrito/eliminar/{id}(id=${item.producto.productoId})}" method="post">
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                
+                                <div class="flex items-center gap-2">
+                                    <form th:action="@{/carrito/actualizar/{id}(id=${item.producto.productoId})}" method="post" class="flex items-center gap-2">
+                                        <input type="number" 
+                                               name="cantidad" 
+                                               th:value="${item.cantidad}"
+                                               min="1"
+                                               class="w-16 px-2 py-1 border border-gray-300 rounded text-center">
+                                        <button type="submit" class="text-sm text-purple-600 hover:text-purple-800">
+                                            Actualizar
+                                        </button>
+                                    </form>
+                                </div>
+                                
+                                <p class="text-lg font-bold text-gray-900">
+                                    S/ <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumen del pedido -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow p-6 sticky top-20">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Resumen del Pedido</h2>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between text-gray-600">
+                                <span>Subtotal</span>
+                                <span>S/ <span th:text="${#numbers.formatDecimal(subtotal, 1, 2)}">0.00</span></span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Envío</span>
+                                <span>Calculado en checkout</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-3">
+                                <div class="flex justify-between text-xl font-bold text-gray-900">
+                                    <span>Total</span>
+                                    <span>S/ <span th:text="${#numbers.formatDecimal(total, 1, 2)}">0.00</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a th:href="@{/checkout}" 
+                           class="block w-full bg-purple-600 text-white text-center px-6 py-3 rounded-lg hover:bg-purple-700 transition font-semibold">
+                            Proceder al Checkout
+                        </a>
+                        
+                        <a th:href="@{/catalogo}" 
+                           class="block w-full text-center text-purple-600 hover:text-purple-800 mt-4">
+                            Continuar comprando
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </main>
+    
+</body>
+</html>

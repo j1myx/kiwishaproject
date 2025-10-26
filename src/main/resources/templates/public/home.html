@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Inicio - Kiwisha</title>
+</head>
+<body>
+    
+    <main layout:fragment="content">
+        
+        <!-- Hero Section -->
+        <section class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                        Artesanías Peruanas Auténticas
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-purple-100">
+                        Descubre la tradición y calidad de nuestros productos
+                    </p>
+                    <a th:href="@{/catalogo}" 
+                       class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Ver Catálogo
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Productos Destacados -->
+        <section class="py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Productos Destacados</h2>
+                    <p class="text-gray-600 mt-2">Los más populares de nuestra colección</p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Card de producto (repetir con th:each) -->
+                    <div th:each="producto : ${productosDestacados}" 
+                         class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                        <div class="aspect-w-1 aspect-h-1 bg-gray-200">
+                            <img th:src="${producto.imagenUrl != null ? producto.imagenUrl : 'https://via.placeholder.com/400'}" 
+                                 th:alt="${producto.titulo}"
+                                 class="w-full h-64 object-cover">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2" th:text="${producto.titulo}">
+                                Nombre del Producto
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-2" th:text="${producto.descripcion}">
+                                Descripción corta del producto...
+                            </p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-purple-600">
+                                    S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}">99.90</span>
+                                </span>
+                                <a th:href="@{/producto/{slug}(slug=${producto.slug})}" 
+                                   class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm">
+                                    Ver más
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mensaje si no hay productos -->
+                <div th:if="${#lists.isEmpty(productosDestacados)}" 
+                     class="text-center py-12">
+                    <p class="text-gray-500">No hay productos destacados disponibles</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Productos Nuevos -->
+        <section class="bg-gray-100 py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-900">Nuevos Productos</h2>
+                    <p class="text-gray-600 mt-2">Recién llegados a nuestra tienda</p>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div th:each="producto : ${productosNuevos}" 
+                         class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                        <div class="aspect-w-1 aspect-h-1 bg-gray-200">
+                            <img th:src="${producto.imagenUrl != null ? producto.imagenUrl : 'https://via.placeholder.com/400'}" 
+                                 th:alt="${producto.titulo}"
+                                 class="w-full h-64 object-cover">
+                        </div>
+                        <div class="p-4">
+                            <span class="inline-block bg-green-500 text-white text-xs px-2 py-1 rounded mb-2">
+                                NUEVO
+                            </span>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2" th:text="${producto.titulo}">
+                                Nombre del Producto
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-2" th:text="${producto.descripcion}">
+                                Descripción corta del producto...
+                            </p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-purple-600">
+                                    S/ <span th:text="${#numbers.formatDecimal(producto.precio, 1, 2)}">99.90</span>
+                                </span>
+                                <a th:href="@{/producto/{slug}(slug=${producto.slug})}" 
+                                   class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition text-sm">
+                                    Ver más
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA Section -->
+        <section class="bg-purple-600 text-white py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-3xl font-bold mb-4">¿Necesitas ayuda?</h2>
+                <p class="text-xl mb-8">Contáctanos y te ayudaremos a encontrar lo que buscas</p>
+                <a href="#" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    Contactar
+                </a>
+            </div>
+        </section>
+        
+    </main>
+    
+</body>
+</html>
