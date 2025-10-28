@@ -396,7 +396,6 @@ public class ProductoServiceImpl implements ProductoService {
         }
         
         // Buscar el último número usado con este prefijo
-        String patronSku = prefijo + "-%";
         Long ultimoNumero = productoRepository.findMaxSkuNumber(prefijo);
         
         // Generar el siguiente número
