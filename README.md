@@ -334,21 +334,21 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 ## 📊 Estadísticas del Proyecto
 
-- **Archivos Java**: 87 archivos (+7 desde v1.5.1)
-- **Líneas de código**: ~10,100 líneas (+800 desde v1.5.1)
+- **Archivos Java**: 90+ archivos
+- **Líneas de código**: ~11,500 líneas
 - **Entidades**: 16 entidades JPA (1 deprecada: Cupon)
 - **Repositorios**: 13 repositorios Spring Data JPA (1 deprecado: CuponRepository)
 - **Servicios**: 6 servicios completos + 1 CustomUserDetailsService
 - **DTOs**: 16 DTOs con validaciones
-- **REST API Controllers**: 6 controladores con **50 endpoints** (v1.5.1 - antes: 52)
+- **REST API Controllers**: 6 controladores con **50 endpoints**
 - **Web Controllers**: 3 controladores (ProductoWebController, AuthWebController, AdminWebController)
-- **Templates Thymeleaf**: 3 templates (home.html, login.html, dashboard.html)
+- **Templates Thymeleaf**: 10+ templates (admin y public)
 - **Configuraciones**: 4 (JpaConfig, OpenAPIConfig, SecurityConfig, DataInitializer)
-- **Scripts SQL**: 4 (kiwiska_last.sql, kiwiska_actualizacion.sql, fix_roles_usuarios_table.sql, fix_hash_contrasena.sql)
+- **Scripts SQL**: 6+ archivos
 - **Tiempo de compilación**: ~5.0 segundos
 - **Errores**: 0 errores de compilación
 - **Test coverage**: Pendiente
-- **Versión actual**: 1.6.0
+- **Versión actual**: 1.7.0
 
 ## 📅 Fases del Proyecto
 
@@ -597,7 +597,19 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 
 ---
 
-### Fase 7: Características Avanzadas (Próxima)
+### ✅ Fase 7: Sistema de Gestión de Productos (Completada) - v1.7.0
+
+**Funcionalidades Implementadas**:
+- ✅ Lista de productos con filtros dinámicos (categoría, estado, precio)
+- ✅ Búsqueda en tiempo real y botón "Limpiar filtros"
+- ✅ Formulario con validaciones frontend y backend  
+- ✅ Gestión de estado (BORRADOR/PUBLICADO/ARCHIVADO)
+- ✅ Duplicación de productos con endpoint AJAX
+- ✅ Eliminación física con confirmación
+- ✅ Generación automática de SKU único (XXX-NNNN)
+- ✅ Validaciones: stock no negativo, precio > 0, título obligatorio
+
+### Fase 8: Características Avanzadas (Próxima)
 - [ ] CarritoWebController (gestión de carrito público)
 - [ ] CheckoutWebController (proceso de compra)
 - [ ] Pasarela de pago (integración con proveedor)
@@ -608,12 +620,25 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 
 ---
 
-**Última actualización**: 25 de Octubre 2025  
-**Versión**: **1.6.0** (Sistema de Autenticación y Templates Frontend)  
-**Versión anterior**: 1.5.1 (Refactorización de Cupones)  
-**Estado**: En desarrollo activo - **Fase 6 Completada** ✅  
+**Última actualización**: 28 de Octubre 2025  
+**Versión**: **1.7.0** (Sistema de Gestión de Productos)  
+**Versión anterior**: 1.6.0 (Sistema de Autenticación y Templates Frontend)  
+**Estado**: En desarrollo activo - **Fase 7 Completada** ✅  
 
-**Changelog v1.6.0**:
+**Changelog v1.7.0**:
+- ✅ **Fase 7 Completada**: Sistema completo de gestión de productos administrativos
+- 🎨 Lista con filtros dinámicos (categoría, estado, precio) y búsqueda en tiempo real
+- 📝 Formulario con validaciones y 2 botones: "Guardar Borrador" y "Publicar"
+- 🔄 Duplicación AJAX con redirección a edición
+- 🗑️ Eliminación física con confirmación JavaScript
+- 🏷️ Generación automática de SKU (formato XXX-NNNN)
+- ✅ Estados: BORRADOR, PUBLICADO, ARCHIVADO
+- 🐛 Bugs resueltos: estado no persistía, conflicto parámetro form, filtros superpuestos
+- 📊 Validaciones: stock negativo, precio inválido, título vacío con mensajes visibles
+- 🎨 Mejoras UI: anchos mínimos filtros, hover effects, transiciones
+- 📄 25+ archivos modificados (backend, frontend, SQL)
+
+**Changelog v1.6.0** (Anterior):
 - ✅ **Fase 6 Completada**: Web Controllers y Frontend
 - 🎨 Templates integrados: home.html, login.html, dashboard.html (Tailwind CSS)
 - 🔐 Sistema de autenticación funcional con Spring Security

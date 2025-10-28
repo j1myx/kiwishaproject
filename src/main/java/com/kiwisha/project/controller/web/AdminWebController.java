@@ -113,10 +113,11 @@ public class AdminWebController {
     public String crearProducto(
             @Valid @ModelAttribute("producto") CrearProductoDTO producto,
             BindingResult result,
+            @RequestParam(name = "accion", required = false) String accion,
             Model model,
             RedirectAttributes redirectAttributes) {
         
-        log.debug("Creando nuevo producto: {}", producto.getTitulo());
+        log.debug("Creando nuevo producto: {} con acción: {}", producto.getTitulo(), accion);
         
         if (result.hasErrors()) {
             var categorias = categoriaService.obtenerTodasCategoriasLista();
@@ -126,15 +127,24 @@ public class AdminWebController {
         }
         
         try {
+            // Establecer el estado según el botón presionado
+            if (accion != null) {
+                producto.setEstado(EstadoProducto.valueOf(accion));
+            } else {
+                producto.setEstado(EstadoProducto.BORRADOR); // Por defecto
+            }
+            
             var productoCreado = productoService.crearProducto(producto);
             redirectAttributes.addFlashAttribute("success", 
                 "Producto creado exitosamente");
-            return "redirect:/admin/productos/" + productoCreado.getProductoId() + "/editar";
+            return "redirect:/admin/productos";
         } catch (Exception e) {
             log.error("Error al crear producto", e);
-            redirectAttributes.addFlashAttribute("error", 
-                "Error al crear el producto");
-            return "redirect:/admin/productos/nuevo";
+            var categorias = categoriaService.obtenerTodasCategoriasLista();
+            model.addAttribute("categorias", categorias);
+            model.addAttribute("estadosProducto", EstadoProducto.values());
+            model.addAttribute("error", "Error al crear el producto: " + e.getMessage());
+            return "admin/productos/formulario";
         }
     }
 
@@ -176,10 +186,11 @@ public class AdminWebController {
             @PathVariable Integer id,
             @Valid @ModelAttribute("producto") ActualizarProductoDTO producto,
             BindingResult result,
+            @RequestParam(name = "accion", required = false) String accion,
             Model model,
             RedirectAttributes redirectAttributes) {
         
-        log.debug("Actualizando producto: {}", id);
+        log.debug("Actualizando producto: {} con acción: {}", id, accion);
         
         if (result.hasErrors()) {
             var categorias = categoriaService.obtenerTodasCategoriasLista();
@@ -190,6 +201,11 @@ public class AdminWebController {
         }
         
         try {
+            // Establecer el estado según el botón presionado
+            if (accion != null) {
+                producto.setEstado(EstadoProducto.valueOf(accion));
+            }
+            
             productoService.actualizarProducto(id, producto);
             redirectAttributes.addFlashAttribute("success", 
                 "Producto actualizado exitosamente");
@@ -224,6 +240,31 @@ public class AdminWebController {
         }
         
         return "redirect:/admin/productos";
+    }
+
+    /**
+     * Duplicar producto
+     * POST /admin/productos/{id}/duplicar
+     */
+    @PostMapping("/productos/{id}/duplicar")
+    @ResponseBody
+    public Map<String, Object> duplicarProducto(@PathVariable Integer id) {
+        log.debug("Duplicando producto: {}", id);
+        
+        try {
+            var nuevoProducto = productoService.duplicarProducto(id);
+            return Map.of(
+                "status", "success",
+                "nuevoId", nuevoProducto.getProductoId(),
+                "mensaje", "Producto duplicado exitosamente"
+            );
+        } catch (Exception e) {
+            log.error("Error al duplicar producto", e);
+            return Map.of(
+                "status", "error",
+                "mensaje", "Error al duplicar el producto: " + e.getMessage()
+            );
+        }
     }
 
     // ============================================

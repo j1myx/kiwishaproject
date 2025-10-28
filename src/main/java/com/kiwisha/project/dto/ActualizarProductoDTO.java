@@ -35,9 +35,17 @@ public class ActualizarProductoDTO {
     private Integer categoriaId;
     
     private String sku;
+    
+    @Size(max = 200, message = "El slug no puede exceder 200 caracteres")
+    @Pattern(regexp = "^[a-z0-9-]*$", message = "El slug solo puede contener letras minúsculas, números y guiones")
+    private String slug;
+    
     private BigDecimal peso;
     private String unidadMedida;
     private String imagen;
+    
+    // Precio de oferta
+    private BigDecimal precioOferta;
     
     private Boolean publicado;
     private EstadoProducto estado;  // Permite cambiar el estado del producto

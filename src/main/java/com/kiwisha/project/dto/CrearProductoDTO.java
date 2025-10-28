@@ -31,17 +31,23 @@ public class CrearProductoDTO {
     
     private BigDecimal precioAnterior;
     
-    @NotNull(message = "La cantidad es obligatoria")
     @Min(value = 0, message = "La cantidad no puede ser negativa")
-    private Integer cantidad;
+    private Integer cantidad = 0;  // Valor por defecto: 0
     
-    @NotNull(message = "La categoría es obligatoria")
-    private Integer categoriaId;
+    private Integer categoriaId;  // Opcional
     
     private String sku;
+    
+    @Size(max = 200, message = "El slug no puede exceder 200 caracteres")
+    @Pattern(regexp = "^[a-z0-9-]*$", message = "El slug solo puede contener letras minúsculas, números y guiones")
+    private String slug;
+    
     private BigDecimal peso;
     private String unidadMedida;
     private String imagen;
+    
+    // Precio de oferta
+    private BigDecimal precioOferta;
     
     private Boolean publicado = false;
     private EstadoProducto estado = EstadoProducto.BORRADOR;  // Por defecto: BORRADOR

@@ -78,6 +78,11 @@ public interface ProductoService {
     void eliminarProducto(Integer id);
 
     /**
+     * Duplica un producto existente.
+     */
+    ProductoDTO duplicarProducto(Integer id);
+
+    /**
      * Actualiza el stock de un producto.
      */
     ProductoDTO actualizarStock(Integer id, Integer cantidad);

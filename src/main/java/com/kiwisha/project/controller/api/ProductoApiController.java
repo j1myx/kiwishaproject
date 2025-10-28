@@ -229,6 +229,22 @@ public class ProductoApiController {
         );
     }
 
+    @PostMapping("/admin/productos/{id}/eliminar")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "[ADMIN] Eliminar producto (POST)", description = "Elimina un producto usando POST (requiere rol ADMIN)")
+    public ResponseEntity<ApiResponseDTO<Void>> eliminarProductoPost(
+            @Parameter(description = "ID del producto") @PathVariable Integer id) {
+        
+        productoService.eliminarProducto(id);
+        
+        return ResponseEntity.ok(
+            ApiResponseDTO.<Void>builder()
+                .success(true)
+                .message("Producto eliminado exitosamente")
+                .build()
+        );
+    }
+
     @PatchMapping("/admin/productos/{id}/stock")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "[ADMIN] Actualizar stock", description = "Actualiza el stock de un producto (requiere rol ADMIN)")

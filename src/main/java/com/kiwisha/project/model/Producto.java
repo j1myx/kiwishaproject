@@ -30,8 +30,7 @@ public class Producto extends AuditableEntity {
     private Integer productoId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id", nullable = false)
-    @NotNull(message = "La categoría es obligatoria")
+    @JoinColumn(name = "categoria_id", nullable = true)
     private Categoria categoria;
 
     @Column(name = "titulo", nullable = false, length = 200)

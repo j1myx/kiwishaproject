@@ -83,4 +83,13 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
      * Verifica si existe un producto con el slug dado (excluyendo un ID específico)
      */
     boolean existsBySlugAndProductoIdNot(String slug, Integer productoId);
+
+    /**
+     * Encuentra el número máximo de SKU para un prefijo dado
+     * Por ejemplo, para el prefijo "KIW", encontrará el máximo entre KIW-0001, KIW-0002, etc.
+     */
+    @Query("SELECT MAX(CAST(SUBSTRING(p.sku, LENGTH(:prefijo) + 2) AS long)) " +
+           "FROM Producto p " +
+           "WHERE p.sku LIKE CONCAT(:prefijo, '-%')")
+    Long findMaxSkuNumber(@Param("prefijo") String prefijo);
 }

@@ -4,6 +4,7 @@ import com.kiwisha.project.dto.*;
 import com.kiwisha.project.exception.BusinessException;
 import com.kiwisha.project.exception.ResourceNotFoundException;
 import com.kiwisha.project.model.Categoria;
+import com.kiwisha.project.model.EstadoProducto;
 import com.kiwisha.project.model.Producto;
 import com.kiwisha.project.repository.CategoriaRepository;
 import com.kiwisha.project.repository.ProductoRepository;
@@ -130,9 +131,12 @@ public class ProductoServiceImpl implements ProductoService {
     public ProductoDTO crearProducto(CrearProductoDTO crearProductoDTO) {
         log.info("Creando nuevo producto: {}", crearProductoDTO.getTitulo());
 
-        // Verificar que la categoría existe
-        Categoria categoria = categoriaRepository.findById(crearProductoDTO.getCategoriaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Categoria", "id", crearProductoDTO.getCategoriaId()));
+        // Verificar que la categoría existe (si se proporciona)
+        Categoria categoria = null;
+        if (crearProductoDTO.getCategoriaId() != null) {
+            categoria = categoriaRepository.findById(crearProductoDTO.getCategoriaId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Categoria", "id", crearProductoDTO.getCategoriaId()));
+        }
 
         // Crear el producto
         Producto producto = Producto.builder()
@@ -147,6 +151,7 @@ public class ProductoServiceImpl implements ProductoService {
                 .peso(crearProductoDTO.getPeso())
                 .unidadMedida(crearProductoDTO.getUnidadMedida())
                 .imagen(crearProductoDTO.getImagen())
+                .estado(crearProductoDTO.getEstado() != null ? crearProductoDTO.getEstado() : EstadoProducto.BORRADOR)
                 .metaTitulo(crearProductoDTO.getMetaTitulo())
                 .metaDescripcion(crearProductoDTO.getMetaDescripcion())
                 .build();
@@ -161,6 +166,12 @@ public class ProductoServiceImpl implements ProductoService {
         String baseSlug = SlugGenerator.generateSlug(crearProductoDTO.getTitulo());
         String slug = generarSlugUnico(baseSlug, 0);
         producto.setSlug(slug);
+
+        // Generar SKU automáticamente si no se proporciona
+        if (crearProductoDTO.getSku() == null || crearProductoDTO.getSku().trim().isEmpty()) {
+            String skuGenerado = generarSkuUnico(crearProductoDTO.getTitulo());
+            producto.setSku(skuGenerado);
+        }
 
         // Guardar
         Producto productoGuardado = productoRepository.save(producto);
@@ -221,6 +232,10 @@ public class ProductoServiceImpl implements ProductoService {
         if (actualizarProductoDTO.getPublicado() != null) {
             producto.setPublicado(actualizarProductoDTO.getPublicado());
         }
+        if (actualizarProductoDTO.getEstado() != null) {
+            log.debug("Aplicando estado: {} al producto ID: {}", actualizarProductoDTO.getEstado(), id);
+            producto.setEstado(actualizarProductoDTO.getEstado());
+        }
         if (actualizarProductoDTO.getDestacado() != null) {
             producto.setDestacado(actualizarProductoDTO.getDestacado());
         }
@@ -244,17 +259,67 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
+    @Transactional
     public void eliminarProducto(Integer id) {
         log.info("Eliminando producto ID: {}", id);
 
-        Producto producto = productoRepository.findById(id)
+        if (!productoRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Producto", "id", id);
+        }
+
+        // Eliminación directa usando deleteById
+        productoRepository.deleteById(id);
+
+        log.info("Producto eliminado exitosamente ID: {}", id);
+    }
+
+    @Override
+    @Transactional
+    public ProductoDTO duplicarProducto(Integer id) {
+        log.info("Duplicando producto ID: {}", id);
+
+        Producto productoOriginal = productoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto", "id", id));
 
-        // Soft delete: cambiar publicado a false
-        producto.setPublicado(false);
-        productoRepository.save(producto);
-
-        log.info("Producto eliminado (despublicado) exitosamente ID: {}", id);
+        // Crear nuevo producto con datos del original
+        Producto productoDuplicado = new Producto();
+        productoDuplicado.setTitulo(productoOriginal.getTitulo() + " (Copia)");
+        productoDuplicado.setResumen(productoOriginal.getResumen());
+        productoDuplicado.setDescripcion(productoOriginal.getDescripcion());
+        productoDuplicado.setPrecio(productoOriginal.getPrecio());
+        productoDuplicado.setPrecioAnterior(productoOriginal.getPrecioAnterior());
+        productoDuplicado.setCantidad(0); // Stock en 0 para duplicados
+        productoDuplicado.setCategoria(productoOriginal.getCategoria());
+        productoDuplicado.setPeso(productoOriginal.getPeso());
+        productoDuplicado.setUnidadMedida(productoOriginal.getUnidadMedida());
+        
+        // Estado siempre en BORRADOR
+        productoDuplicado.setEstado(EstadoProducto.BORRADOR);
+        productoDuplicado.setPublicado(false);
+        productoDuplicado.setDestacado(false);
+        productoDuplicado.setNuevo(false);
+        productoDuplicado.setEnOferta(false);
+        
+        // Generar SKU único
+        String baseSku = productoOriginal.getSku() != null ? 
+            productoOriginal.getSku() + "-COPIA" : 
+            "PROD-COPIA-" + System.currentTimeMillis();
+        productoDuplicado.setSku(baseSku);
+        
+        // Generar slug único
+        String baseSlug = productoOriginal.getSlug() != null ? 
+            productoOriginal.getSlug() + "-copia" : 
+            SlugGenerator.generateSlug(productoDuplicado.getTitulo());
+        productoDuplicado.setSlug(generarSlugUnico(baseSlug, 0));
+        
+        // SEO
+        productoDuplicado.setMetaTitulo(productoOriginal.getMetaTitulo());
+        productoDuplicado.setMetaDescripcion(productoOriginal.getMetaDescripcion());
+        
+        Producto guardado = productoRepository.save(productoDuplicado);
+        
+        log.info("Producto duplicado exitosamente. Original ID: {}, Nuevo ID: {}", id, guardado.getProductoId());
+        return convertirADTO(guardado);
     }
 
     @Override
@@ -313,6 +378,32 @@ public class ProductoServiceImpl implements ProductoService {
             return generarSlugUnico(baseSlug, counter + 1, productoId);
         }
         return slug;
+    }
+
+    /**
+     * Genera un SKU único basado en el título del producto.
+     * Formato: XXX-NNNN (ej: KIW-0001, QUI-0002)
+     */
+    private String generarSkuUnico(String titulo) {
+        // Extraer las primeras 3 letras del título (mayúsculas, sin espacios)
+        String prefijo = titulo.toUpperCase()
+                .replaceAll("[^A-Z]", "")
+                .substring(0, Math.min(3, titulo.replaceAll("[^A-Za-z]", "").length()));
+        
+        // Si el prefijo es muy corto, rellenarlo con "X"
+        while (prefijo.length() < 3) {
+            prefijo += "X";
+        }
+        
+        // Buscar el último número usado con este prefijo
+        String patronSku = prefijo + "-%";
+        Long ultimoNumero = productoRepository.findMaxSkuNumber(prefijo);
+        
+        // Generar el siguiente número
+        long siguienteNumero = (ultimoNumero != null ? ultimoNumero : 0) + 1;
+        
+        // Formatear el SKU: XXX-NNNN
+        return String.format("%s-%04d", prefijo, siguienteNumero);
     }
 
     /**

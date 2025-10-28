@@ -1,8 +1,10 @@
 package com.kiwisha.project.config;
 
+import com.kiwisha.project.model.Categoria;
 import com.kiwisha.project.model.Rol;
 import com.kiwisha.project.model.RolUsuario;
 import com.kiwisha.project.model.Usuario;
+import com.kiwisha.project.repository.CategoriaRepository;
 import com.kiwisha.project.repository.RolRepository;
 import com.kiwisha.project.repository.RolUsuarioRepository;
 import com.kiwisha.project.repository.UsuarioRepository;
@@ -16,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 
 /**
- * Inicializador de datos para crear roles y usuario admin por defecto
+ * Inicializador de datos para crear roles, categorías y usuario admin por defecto
  * Se ejecuta al iniciar la aplicación si no existen datos
  */
 @Slf4j
@@ -27,6 +29,7 @@ public class DataInitializer {
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final RolUsuarioRepository rolUsuarioRepository;
+    private final CategoriaRepository categoriaRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
@@ -105,6 +108,39 @@ public class DataInitializer {
                 } else {
                     log.info("Usuario admin ya tiene rol ADMIN asignado");
                 }
+            }
+            
+            // Crear categorías por defecto si no existen
+            if (categoriaRepository.count() == 0) {
+                log.info("Creando categorías por defecto...");
+                
+                try {
+                    String[] categoriasNombres = {"Textiles", "Cerámica", "Joyería", "Decoración", "Accesorios"};
+                    String[] categoriasDescripciones = {
+                        "Productos textiles artesanales peruanos",
+                        "Artesanías en cerámica de alta calidad",
+                        "Joyería artesanal peruana",
+                        "Artículos decorativos hechos a mano",
+                        "Accesorios y complementos artesanales"
+                    };
+                    
+                    for (int i = 0; i < categoriasNombres.length; i++) {
+                        Categoria categoria = new Categoria();
+                        categoria.setTitulo(categoriasNombres[i]);
+                        categoria.setResumen(categoriasDescripciones[i]);
+                        categoria.setCreadoPor(1); // Sistema
+                        categoria.setCreadoEn(LocalDateTime.now());
+                        categoriaRepository.save(categoria);
+                        log.info("Categoría creada: {}", categoriasNombres[i]);
+                    }
+                    
+                    log.info("Categorías creadas exitosamente");
+                } catch (Exception e) {
+                    log.warn("No se pudieron crear categorías automáticamente. Es necesario ejecutar el script SQL manualmente.");
+                    log.warn("Error: {}", e.getMessage());
+                }
+            } else {
+                log.info("Las categorías ya existen en la base de datos");
             }
         };
     }
