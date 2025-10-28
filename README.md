@@ -102,10 +102,19 @@ mysql -u root -p < src/main/resources/static/kiwiska_actualizacion.sql
 ```
 
 3. **Configurar application.properties**
+
+**Opción A: Base de datos local**
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/kiwisha_v2
 spring.datasource.username=root
 spring.datasource.password=tu_password
+```
+
+**Opción B: Base de datos en hosting (Configuración actual)**
+```properties
+spring.datasource.url=jdbc:mysql://sql10.freesqldatabase.com:3306/sql10804802?useSSL=true
+spring.datasource.username=sql10804802
+spring.datasource.password=SuDZQNHhFB
 ```
 
 4. **Compilar el proyecto**
@@ -346,9 +355,12 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - **Configuraciones**: 4 (JpaConfig, OpenAPIConfig, SecurityConfig, DataInitializer)
 - **Scripts SQL**: 6+ archivos
 - **Tiempo de compilación**: ~5.0 segundos
+- **Tiempo de inicio**: ~23.2 segundos (con BD en hosting)
+- **Pool de conexiones**: HikariCP (5 máx, 2 idle)
+- **Base de datos**: MySQL 5.5.62 en FreeSQLDatabase (hosting online)
 - **Errores**: 0 errores de compilación
 - **Test coverage**: Pendiente
-- **Versión actual**: 1.7.0
+- **Versión actual**: 1.7.1
 
 ## 📅 Fases del Proyecto
 
@@ -621,11 +633,29 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 ---
 
 **Última actualización**: 28 de Octubre 2025  
-**Versión**: **1.7.0** (Sistema de Gestión de Productos)  
-**Versión anterior**: 1.6.0 (Sistema de Autenticación y Templates Frontend)  
-**Estado**: En desarrollo activo - **Fase 7 Completada** ✅  
+**Versión**: **1.7.1** (Migración a Base de Datos en Hosting)  
+**Versión anterior**: 1.7.0 (Sistema de Gestión de Productos)  
+**Estado**: En desarrollo activo - **Fase 7.1 Completada** ✅  
 
-**Changelog v1.7.0**:
+**Changelog v1.7.1**:
+- 🌐 **Migración a hosting online**: Base de datos MySQL alojada en FreeSQLDatabase
+- 🔧 Configuración actualizada de `application.properties`
+  - Host: sql10.freesqldatabase.com:3306
+  - Database: sql10804802
+  - Usuario: sql10804802
+  - SSL habilitado: `useSSL=true`
+- ⚙️ Pool de conexiones optimizado para hosting:
+  - maximum-pool-size: 10 → 5 (límite de hosting gratuito)
+  - minimum-idle: 5 → 2 (reducir conexiones inactivas)
+  - connection-timeout: 30s → 20s
+  - idle-timeout: 300s, max-lifetime: 600s (nuevas configuraciones)
+- ✅ Hibernate sincronizó correctamente todas las tablas en hosting
+- ✅ Aplicación inició exitosamente en 23.2 segundos
+- ⚠️ Advertencia: MySQL 5.5.62 (versión antigua del hosting, funcional)
+- 📊 Estado: Conexión estable, pool activo, queries funcionando
+- 📝 README actualizado con opciones de configuración local vs hosting
+
+**Changelog v1.7.0** (Anterior):
 - ✅ **Fase 7 Completada**: Sistema completo de gestión de productos administrativos
 - 🎨 Lista con filtros dinámicos (categoría, estado, precio) y búsqueda en tiempo real
 - 📝 Formulario con validaciones y 2 botones: "Guardar Borrador" y "Publicar"
