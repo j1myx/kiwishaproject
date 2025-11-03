@@ -17,7 +17,7 @@ public class SessionIdGenerator {
     }
 
     /**
-     * Genera un código único para cupones o transacciones.
+     * Genera un código único para transacciones o pedidos.
      * 
      * @param prefix El prefijo del código
      * @return El código generado

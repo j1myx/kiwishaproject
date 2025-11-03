@@ -64,30 +64,6 @@ CREATE TABLE IF NOT EXISTS `direcciones_envio` (
   CONSTRAINT `FK_direccion_cliente` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`cliente_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabla de Cupones
-CREATE TABLE IF NOT EXISTS `cupones` (
-  `cupon_id` int NOT NULL AUTO_INCREMENT,
-  `codigo` varchar(50) NOT NULL UNIQUE,
-  `descripcion` TEXT,
-  `tipo_descuento` enum('PORCENTAJE','MONTO_FIJO') NOT NULL,
-  `valor_descuento` decimal(10,2) NOT NULL,
-  `compra_minima` decimal(10,2) DEFAULT NULL,
-  `descuento_maximo` decimal(10,2) DEFAULT NULL,
-  `fecha_inicio` datetime NOT NULL,
-  `fecha_fin` datetime NOT NULL,
-  `cantidad_maxima_usos` int DEFAULT NULL,
-  `cantidad_usos_actual` int DEFAULT 0,
-  `uso_por_cliente` int DEFAULT 1,
-  `activo` bit(1) NOT NULL DEFAULT b'1',
-  `creado_por` int NOT NULL,
-  `creado_en` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `actualizado_por` int DEFAULT NULL,
-  `actualizado_en` datetime DEFAULT NULL,
-  PRIMARY KEY (`cupon_id`),
-  KEY `idx_cupon_codigo` (`codigo`),
-  KEY `idx_cupon_fechas` (`fecha_inicio`, `fecha_fin`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- Tabla de Reviews/Reseñas
 CREATE TABLE IF NOT EXISTS `reviews` (
   `review_id` int NOT NULL AUTO_INCREMENT,

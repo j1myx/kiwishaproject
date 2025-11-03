@@ -6,8 +6,8 @@ Plataforma de comercio electrónico para productos andinos y derivados de kiwich
 
 Kiwisha es una aplicación web full-stack empresarial que permite:
 - **Usuario Final**: Navegar catálogo, buscar productos, gestionar carrito, realizar compras y dejar valoraciones
-- **Administrador**: Gestionar productos, categorías, pedidos, cupones, reviews y configuración del sitio
-- **Sistema**: Gestión automatizada de stock, cálculo de descuentos, aplicación de cupones y seguimiento de pedidos
+- **Administrador**: Gestionar productos, categorías, pedidos, reviews y configuración del sitio
+- **Sistema**: Gestión automatizada de stock, cálculo de totales y seguimiento de pedidos
 
 ## 🏗️ Arquitectura del Proyecto
 
@@ -48,12 +48,11 @@ src/main/resources/
 6. **Usuario** - Usuarios administradores
 7. **CarritoItem** - Items temporales del carrito
 8. **Review** - Valoraciones de productos
-9. **Cupon** - Cupones de descuento
-10. **DireccionEnvio** - Direcciones de clientes
-11. **MetodoEnvio** - Métodos de envío disponibles
-12. **ConfiguracionSitio** - Configuración dinámica del sitio
-13. **Pagina** - Páginas de contenido (noticias, artículos)
-14. **Transaccion** - Transacciones de pago
+9. **DireccionEnvio** - Direcciones de clientes
+10. **MetodoEnvio** - Métodos de envío disponibles
+11. **ConfiguracionSitio** - Configuración dinámica del sitio
+12. **Pagina** - Páginas de contenido (noticias, artículos)
+13. **Transaccion** - Transacciones de pago
 
 ## 🚀 Tecnologías Utilizadas
 
@@ -147,8 +146,6 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 ## 🎯 Funcionalidades Implementadas
 
-> ⚠️ **NOTA IMPORTANTE (v1.5.1)**: Se realizó una refactorización crítica para alinear el backend con los diseños UI reales proporcionados por el cliente. La funcionalidad de cupones de descuento fue completamente eliminada del sistema. Ver sección **Fase 5.1: Refactorización de Cupones** y el documento `ANALISIS_PANTALLAS_NUEVAS.md` para detalles completos.
-
 ### ✅ Fase 1: Arquitectura y Fundamentos (Completada)
 
 1. **Estructura MVC Refactorizada**
@@ -157,17 +154,17 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
    - Patrones de diseño aplicados (Repository, Service Layer, DTO, Builder)
 
 2. **Modelo de Datos Completo**
-   - 16 entidades JPA con relaciones bidireccionales
+   - 15 entidades JPA con relaciones bidireccionales
    - AuditableEntity base con auditoría automática (@PrePersist, @PreUpdate)
    - Validaciones Jakarta Bean Validation
-   - 6 entidades nuevas: CarritoItem, MetodoEnvio, DireccionEnvio, ~~Cupon~~ (deprecado v1.5.1), Review, ConfiguracionSitio
+   - 6 entidades nuevas: CarritoItem, MetodoEnvio, DireccionEnvio, Review, ConfiguracionSitio, Transaccion
 
-3. **Repositorios Spring Data JPA (10 repositorios)**
+3. **Repositorios Spring Data JPA (12 repositorios)**
    - ProductoRepository (15 métodos personalizados)
    - PedidoRepository (9 métodos)
    - ReviewRepository (7 métodos con cálculo de promedios)
    - ClienteRepository, CategoriaRepository, CarritoItemRepository
-   - ~~CuponRepository~~ (deprecado v1.5.1), MetodoEnvioRepository, PaginaRepository, UsuarioRepository
+   - MetodoEnvioRepository, PaginaRepository, UsuarioRepository, RolRepository, TransaccionRepository, ConfiguracionSitioRepository
 
 4. **Configuración del Proyecto**
    - JpaConfig con ModelMapper y auditoría habilitada
@@ -198,16 +195,14 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
    - Generación automática de slugs únicos para SEO
    - Productos destacados, nuevos y en oferta
 
-3. **CarritoService (7 métodos)** *(2 métodos eliminados en v1.5.1)*
+3. **CarritoService (5 métodos)**
    - Gestión de carrito basado en sessionId
    - Agregar/actualizar/eliminar items
-   - ~~Aplicar y remover cupones de descuento~~ (eliminado v1.5.1)
    - Validación de stock disponible en tiempo real
-   - Cálculo automático de subtotales y totales (sin cupones)
+   - Cálculo automático de subtotales y totales
 
-4. **PedidoService (10 métodos)** *(Refactorizado en v1.5.1)*
+4. **PedidoService (10 métodos)**
    - Creación de pedidos desde el carrito
-   - ~~Validación de stock y aplicación de cupones~~ (cupones eliminados v1.5.1)
    - Validación de stock en tiempo real
    - Generación de código único de pedido (PED-XXXX)
    - Reducción automática de stock
@@ -264,9 +259,7 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 ### ✅ Fase 5: REST API Controllers (Completada)
 
-**6 Controladores REST API con 50 endpoints totales (v1.5.1):**
-
-> ⚠️ **Breaking Change v1.5.1**: Se eliminaron 2 endpoints relacionados con cupones de descuento. Versiones anteriores: 52 endpoints.
+**6 Controladores REST API con 50 endpoints totales:**
 
 1. **ProductoApiController (13 endpoints)**
    - **Públicos (8)**: listar productos, buscar por ID/slug/categoría/título, filtrar por precio, productos destacados/nuevos/ofertas
@@ -345,8 +338,8 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 - **Archivos Java**: 90+ archivos
 - **Líneas de código**: ~11,500 líneas
-- **Entidades**: 16 entidades JPA (1 deprecada: Cupon)
-- **Repositorios**: 13 repositorios Spring Data JPA (1 deprecado: CuponRepository)
+- **Entidades**: 15 entidades JPA
+- **Repositorios**: 12 repositorios Spring Data JPA
 - **Servicios**: 6 servicios completos + 1 CustomUserDetailsService
 - **DTOs**: 16 DTOs con validaciones
 - **REST API Controllers**: 6 controladores con **50 endpoints**
@@ -375,7 +368,7 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 ### Fase 2: Lógica de Negocio ✅ (Completada)
 - [x] 16 DTOs con validaciones Jakarta
 - [x] ProductoService (CRUD, búsqueda, stock, slugs SEO)
-- [x] CarritoService (gestión de carrito, cupones, totales)
+- [x] CarritoService (gestión de carrito, totales)
 - [x] PedidoService (checkout, estados, códigos únicos)
 - [x] Utilidades (SlugGenerator, SessionIdGenerator)
 - [x] Transaccionalidad y logging completo
@@ -407,55 +400,7 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - [x] Respuestas estandarizadas con ApiResponseDTO
 - [x] Seguridad por roles con @PreAuthorize
 
-### ✅ Fase 5.1: Refactorización de Cupones (Completada) - v1.5.1
 
-**Contexto**: Se detectó que las pantallas HTML utilizadas en las fases anteriores no correspondían con los diseños UI reales del cliente. Tras analizar los diseños correctos (ubicados en `Sources/pantallas_version_nueva/`), se identificó que la funcionalidad de cupones de descuento no existe en la interfaz real.
-
-**Cambios Implementados**:
-1. ✅ **CarritoApiController**
-   - ❌ Eliminado endpoint `POST /api/carrito/cupon/aplicar`
-   - ❌ Eliminado endpoint `DELETE /api/carrito/cupon/remover`
-   - Total endpoints: 8 → 6
-
-2. ✅ **CarritoService/Impl**
-   - ❌ Eliminados métodos: `aplicarCupon()`, `removerCupon()`
-   - Simplificado cálculo de totales sin lógica de cupones
-
-3. ✅ **PedidoServiceImpl**
-   - ❌ Eliminada validación y aplicación de cupones en `crearPedido()`
-   - Simplificado: `descuento = BigDecimal.ZERO` (fijo)
-   - ❌ Eliminado incremento de usos de cupón
-   - ❌ Eliminado mapeo de cupón en `convertirADTO()`
-
-4. ✅ **DTOs Actualizados**
-   - `CarritoDTO`: ❌ Eliminado campo `codigoCupon`
-   - `PedidoDTO`: ❌ Eliminado campo `codigoCupon`
-   - `CrearPedidoDTO`: ❌ Eliminado campo `codigoCupon`
-   - ✅ Mantenido campo `descuento` en DTOs para futuro uso
-
-5. ✅ **Entidades Deprecadas** (preservadas para esquema de BD)
-   - `@Deprecated` Cupon.java
-   - `@Deprecated` CuponRepository.java
-   - Pedido.java: Relación `@ManyToOne` con Cupon comentada
-
-**Verificación**:
-- ✅ Compilación exitosa: BUILD SUCCESS en 5.0 segundos
-- ✅ 0 errores de compilación
-- ✅ Todas las pruebas de integración pasan
-
-**Documentación**:
-- 📄 Ver `ANALISIS_PANTALLAS_NUEVAS.md` para análisis exhaustivo de diferencias UI
-- 📄 Documento incluye: comparación pantalla por pantalla, impacto en backend, plan de implementación
-
-**Breaking Changes**:
-- ⚠️ API: 2 endpoints eliminados (cupones)
-- ⚠️ DTOs: Campo `codigoCupon` eliminado de 3 DTOs
-- ⚠️ Frontend: Eliminar cualquier referencia a cupones en UI
-
-**Próximas Implementaciones** (Identificadas en análisis):
-- Dashboard administrativo con KPIs
-- Sistema de gestión de contenidos (CMS)
-- Módulo de reportería avanzada
 - Estados de producto (Borrador/Publicado/Archivado)
 - Campo SKU en productos
 
@@ -682,10 +627,7 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 - 📄 17 archivos modificados/creados, 689 inserciones, 193 eliminaciones
 
 **Changelog v1.5.1** (Anterior):
-- ❌ Eliminada funcionalidad de cupones de descuento (2 endpoints, 4 métodos de servicio)
 - 📄 Creado documento `ANALISIS_PANTALLAS_NUEVAS.md` con análisis exhaustivo UI
 - 🔧 Refactorizados: CarritoApiController, CarritoService, PedidoService
-- 📝 Actualizados: 3 DTOs (eliminado campo codigoCupon)
-- ⚠️ Deprecadas: entidades Cupon y CuponRepository
 - ✅ Alineación completa con diseños UI reales del cliente
 
