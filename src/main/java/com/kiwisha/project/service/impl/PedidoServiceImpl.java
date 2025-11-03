@@ -65,7 +65,7 @@ public class PedidoServiceImpl implements PedidoService {
                 .map(CarritoItem::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 5. Calcular descuento (actualmente sin cupones - reservado para futuro)
+        // 5. Calcular descuento (sin descuentos automáticos)
         BigDecimal descuento = BigDecimal.ZERO;
 
         // 6. Calcular total

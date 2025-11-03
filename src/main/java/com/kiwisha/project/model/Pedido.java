@@ -93,11 +93,6 @@ public class Pedido extends AuditableEntity {
     @NotNull(message = "El total es obligatorio")
     private BigDecimal total;
 
-    // Cupón aplicado (DEPRECATED - funcionalidad removida en v1.5.1)
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "cupon_id")
-    // private Cupon cupon;
-
     // Estado del pedido
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
