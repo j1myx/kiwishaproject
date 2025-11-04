@@ -26,7 +26,7 @@ public class SecurityConfig {
                 // Rutas públicas (sin autenticación)
                 .requestMatchers("/", "/home", "/inicio", "/productos/**", "/producto/**", 
                                "/catalogo", "/buscar", "/login", "/error/**",
-                               "/css/**", "/js/**", "/images/**", "/api/**").permitAll()
+                               "/css/**", "/js/**", "/images/**", "/api/**", "/files/**").permitAll()
                 // Rutas que requieren autenticación
                 .requestMatchers("/carrito/**", "/checkout/**").authenticated()
                 // Rutas administrativas

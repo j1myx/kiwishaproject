@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Repositorio para la entidad Pagina.
@@ -18,7 +17,7 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
     /**
      * Busca una página por su URL
      */
-    Optional<Pagina> findByUrl(String url);
+    Pagina findByUrl(String url);
 
     /**
      * Obtiene páginas publicadas por tipo
