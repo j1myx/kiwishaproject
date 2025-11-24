@@ -1,0 +1,55 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin=""/>
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+          href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Work+Sans%3Awght%40400%3B500%3B700%3B900"/>
+    <title>Gestión de Productos - Achisway</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+</head>
+<body>
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#fcfaf8] group/design-root overflow-x-hidden"
+     style='font-family: "Work Sans", "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+
+        <!-- Header -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f4ede6] px-10 py-3">
+            <div class="flex items-center gap-4 text-[#1c140d]">
+                <div class="size-4">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+                    </svg>
+                </div>
+                <h2 class="text-[#1c140d] text-lg font-bold leading-tight tracking-[-0.015em]">Achisway</h2>
+            </div>
+            <div class="flex flex-1 justify-end gap-8">
+                <div class="flex items-center gap-9">
+                    <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#">Inicio</a>
+                    <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#">Productos</a>
+                    <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#">Nosotros</a>
+                    <a class="text-[#1c140d] text-sm font-medium leading-normal" href="#">Contacto</a>
+                </div>
+                <a href="#"
+                   class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f98006] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em]">
+                    <span class="truncate">Dashboard</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Contenedor principal con padding -->
+        <div layout:fragment="content">
+
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.13.2/dist/axios.min.js"></script>
+        <script layout:fragment="script">
+
+        </script>
+
+    </div>
+</div>
+</body>
+</html>

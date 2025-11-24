@@ -1,0 +1,232 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <title>UTP Integrador - Páginas</title>
+</head>
+<body>
+<div layout:fragment="content" id="app">
+    <!-- Header con título y botón Nuevo producto -->
+    <div class="flex flex-wrap justify-between gap-3 p-4">
+        <p class="text-[#1c140d] tracking-light text-[32px] font-bold leading-tight min-w-72">Listado de Páginas</p>
+        <a href="/admin/contenidos/nuevo"
+           class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-medium leading-normal hover:bg-[#e9dbce] transition-colors">
+            <span class="truncate">Nueva página</span>
+        </a>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="px-4 py-3">
+        <label class="flex flex-col min-w-40 h-12 w-full">
+            <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                <div class="text-[#9e7347] flex border-none bg-[#f4ede6] items-center justify-center pl-4 rounded-l-lg border-r-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                    </svg>
+                </div>
+                <input
+                        id="searchInput"
+                        type="text"
+                        placeholder="Buscar páginas..."
+                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1c140d] focus:outline-0 focus:ring-0 border-none bg-[#f4ede6] focus:border-none h-full placeholder:text-[#9e7347] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                />
+            </div>
+        </label>
+    </div>
+
+    <!-- Filtros -->
+    <div class="flex gap-3 p-3 flex-wrap pr-4">
+        <!-- Filtro de Categoría -->
+        <select id="categoriaFilter" onchange="aplicarFiltros()"
+                class="h-8 min-w-[200px] rounded-lg bg-[#f4ede6] px-3 pr-8 text-[#1c140d] text-sm font-medium hover:bg-[#e9dbce] transition-colors border-0 outline-none cursor-pointer">
+            <option value="">Todas las categorías</option>
+            <!--<option th:each="categoria : ${categorias}"
+                    th:value="${categoria.categoriaId}"
+                    th:text="${categoria.titulo}">Granos Andinos</option>-->
+        </select>
+
+        <!-- Filtro de Estado -->
+        <select id="estadoFilter" onchange="aplicarFiltros()"
+                class="h-8 min-w-[180px] rounded-lg bg-[#f4ede6] px-3 pr-8 text-[#1c140d] text-sm font-medium hover:bg-[#e9dbce] transition-colors border-0 outline-none cursor-pointer">
+            <option value="">Todos los estados</option>
+            <option value="BORRADOR">Borrador</option>
+            <option value="PUBLICADO">Publicado</option>
+            <option value="ARCHIVADO">Archivado</option>
+        </select>
+
+        <!-- Filtro de Precio -->
+        <select id="precioFilter" onchange="aplicarFiltros()"
+                class="h-8 min-w-[180px] rounded-lg bg-[#f4ede6] px-3 pr-8 text-[#1c140d] text-sm font-medium hover:bg-[#e9dbce] transition-colors border-0 outline-none cursor-pointer">
+            <option value="">Todos los precios</option>
+            <option value="0-10">S/ 0 - S/ 10</option>
+            <option value="10-20">S/ 10 - S/ 20</option>
+            <option value="20-50">S/ 20 - S/ 50</option>
+            <option value="50-999999">S/ 50+</option>
+        </select>
+
+        <!-- Botón para limpiar filtros -->
+        <button onclick="limpiarFiltros()"
+                class="h-8 shrink-0 rounded-lg bg-[#f98006] px-4 text-white text-sm font-medium hover:bg-[#e07205] transition-colors">
+            Limpiar filtros
+        </button>
+    </div>
+
+    <!-- Tabla de productos -->
+    <div class="px-4 py-3 @container">
+        <div class="flex overflow-hidden rounded-lg border border-[#e9dbce] bg-[#fcfaf8]">
+            <table class="flex-1">
+                <thead>
+                <tr class="bg-[#fcfaf8]">
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Nombre</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">SKU</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Categoría</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Precio</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Stock</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-60 text-sm font-medium leading-normal">Estado</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Última actualización</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-60 text-[#9e7347] text-sm font-medium leading-normal">Acciones</th>
+                </tr>
+                </thead>
+                <!--<tbody>
+                <tr th:if="${productos == null || productos.empty}" class="border-t border-t-[#e9dbce]">
+                    <td colspan="8" class="h-[72px] px-4 py-2 text-center text-[#9e7347] text-sm font-normal leading-normal">
+                        No se encontraron productos
+                    </td>
+                </tr>
+
+                <tr th:each="producto : ${productos}"
+                    class="border-t border-t-[#e9dbce] hover:bg-[#f4ede6] transition-colors producto-row"
+                    th:data-categoria-id="${producto.categoriaId}"
+                    th:data-estado="${producto.estado.name()}"
+                    th:data-precio="${producto.precio}">
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#1c140d] text-sm font-normal leading-normal"
+                        th:text="${producto.titulo}">Kiwicha Orgánica</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
+                        th:text="${producto.sku}">KIW-ORG-001</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
+                        th:text="${producto.categoriaNombre != null ? producto.categoriaNombre : 'Sin categoría'}">Granos</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
+                        th:text="${'S/ ' + #numbers.formatDecimal(producto.precio, 1, 2)}">S/ 5.99</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-sm font-normal leading-normal"
+                        th:classappend="${producto.cantidad < 10 ? 'text-red-600 font-bold' : 'text-[#9e7347]'}"
+                        th:text="${producto.cantidad}">150</td>
+                    <td class="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
+                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-medium leading-normal w-full"
+                                th:text="${producto.estado.name() == 'PUBLICADO' ? 'Publicado' : (producto.estado.name() == 'BORRADOR' ? 'Borrador' : 'Archivado')}">
+                            <span class="truncate">Publicado</span>
+                        </button>
+                    </td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
+                        th:text="${#temporals.format(producto.actualizadoEn != null ? producto.actualizadoEn : producto.creadoEn, 'yyyy-MM-dd')}">2024-01-15</td>
+                    <td class="h-[72px] px-4 py-2 w-60">
+                        <div class="flex items-center gap-3">
+                            <a th:href="@{/admin/productos/{id}/editar(id=${producto.productoId})}"
+                               class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
+                                Editar
+                            </a>
+                            <span class="text-[#e9dbce]">|</span>
+                            <a href="javascript:void(0)"
+                               th:data-producto-id="${producto.productoId}"
+                               onclick="duplicarProducto(this.getAttribute('data-producto-id'))"
+                               class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
+                                Duplicar
+                            </a>
+                            <span class="text-[#e9dbce]">|</span>
+                            <a href="javascript:void(0)"
+                               th:data-producto-id="${producto.productoId}"
+                               th:data-producto-titulo="${producto.titulo}"
+                               onclick="confirmarEliminar(this.getAttribute('data-producto-id'), this.getAttribute('data-producto-titulo'))"
+                               class="text-[#9e7347] hover:text-red-600 text-sm font-medium transition-colors">
+                                Eliminar
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>-->
+            </table>
+        </div>
+    </div>
+
+    <!-- Paginación -->
+    <div class="flex items-center justify-center p-4">
+        <a href="#" class="flex size-10 items-center justify-center hover:bg-[#f4ede6] rounded-full transition-colors">
+            <div class="text-[#1c140d]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
+                </svg>
+            </div>
+        </a>
+        <a class="text-sm font-bold leading-normal tracking-[0.015em] flex size-10 items-center justify-center text-[#1c140d] rounded-full bg-[#f4ede6]" href="#">1</a>
+        <a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-[#1c140d] rounded-full hover:bg-[#f4ede6] transition-colors" href="#">2</a>
+        <a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-[#1c140d] rounded-full hover:bg-[#f4ede6] transition-colors" href="#">3</a>
+        <span class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-[#1c140d] rounded-full">...</span>
+        <a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-[#1c140d] rounded-full hover:bg-[#f4ede6] transition-colors" href="#">10</a>
+        <a href="#" class="flex size-10 items-center justify-center hover:bg-[#f4ede6] rounded-full transition-colors">
+            <div class="text-[#1c140d]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+                </svg>
+            </div>
+        </a>
+    </div>
+</div>
+<script layout:fragment="script">
+    new Vue({
+        el: "#app",
+        data: {
+            entidades: [],
+            entidad: [],
+            nombres: "Dajana"
+        },
+        methods: {
+            listar: function () {
+                this.$http.get('/api/alumno?nombres='+this.nombres).then(response => {
+                    this.entidades = response.data;
+                });
+            },
+            buscar: function () {
+                this.listar();
+            },
+            nuevo: function () {
+                this.entidad = {
+                    id: 0,
+                    nombres: "",
+                    apellidos: ""
+                };
+                $("#mdlEntidad").modal("show");
+            },
+            editar: function (id) {
+                this.$http.get('/api/alumno/' + id).then(response => {
+                    this.entidad = response.data;
+                    $("#mdlEntidad").modal("show");
+                });
+            },
+            guardar: function () {
+                this.$http.post('/api/alumno', this.entidad).then(response => {
+                    this.listar();
+                    $("#mdlEntidad").modal("hide");
+                });
+            },
+            actualizar: function () {
+                this.$http.put('/api/alumno/' + this.entidad.id, this.entidad).then(response => {
+                    this.listar();
+                    $("#mdlEntidad").modal("hide");
+                });
+            },
+            eliminar: function (id) {
+                this.entidad.id = id;
+                $("#mdlEliminar").modal("show");
+            },
+            confimareliminacion: function () {
+                this.$http.delete('/api/alumno/' + this.entidad.id).then(response => {
+                    this.listar();
+                    $("#mdlEliminar").modal("hide");
+                });
+            }
+        },
+        mounted: function () {
+            this.listar();
+        }
+    });
+</script>
+</body>
+</html>
