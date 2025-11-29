@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,4 +25,5 @@ public class PaginaDTO {
     private LocalDateTime creadoEn;
     private Integer actualizadoPor;
     private LocalDateTime actualizadoEn;
+    private List<EtiquetaDTO> etiquetas;
 }

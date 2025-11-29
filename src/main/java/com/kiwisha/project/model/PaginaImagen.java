@@ -1,9 +1,12 @@
 package com.kiwisha.project.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "pagina_imagenes")
 public class PaginaImagen extends AuditableEntity {

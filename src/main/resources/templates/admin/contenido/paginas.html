@@ -76,64 +76,45 @@
             <table class="flex-1">
                 <thead>
                 <tr class="bg-[#fcfaf8]">
-                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Nombre</th>
-                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">SKU</th>
-                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Categoría</th>
-                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Precio</th>
-                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Stock</th>
-                    <th class="px-4 py-3 text-left text-[#1c140d] w-60 text-sm font-medium leading-normal">Estado</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Título</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Resumen</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Tipo</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Pulicado</th>
+                    <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Etiquetas</th>
                     <th class="px-4 py-3 text-left text-[#1c140d] w-[400px] text-sm font-medium leading-normal">Última actualización</th>
                     <th class="px-4 py-3 text-left text-[#1c140d] w-60 text-[#9e7347] text-sm font-medium leading-normal">Acciones</th>
                 </tr>
                 </thead>
-                <!--<tbody>
-                <tr th:if="${productos == null || productos.empty}" class="border-t border-t-[#e9dbce]">
+                <tbody>
+                <tr v-if="paginas === []" class="border-t border-t-[#e9dbce]">
                     <td colspan="8" class="h-[72px] px-4 py-2 text-center text-[#9e7347] text-sm font-normal leading-normal">
-                        No se encontraron productos
+                        No se encontraron páginas
                     </td>
                 </tr>
 
-                <tr th:each="producto : ${productos}"
-                    class="border-t border-t-[#e9dbce] hover:bg-[#f4ede6] transition-colors producto-row"
-                    th:data-categoria-id="${producto.categoriaId}"
-                    th:data-estado="${producto.estado.name()}"
-                    th:data-precio="${producto.precio}">
-                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#1c140d] text-sm font-normal leading-normal"
-                        th:text="${producto.titulo}">Kiwicha Orgánica</td>
-                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
-                        th:text="${producto.sku}">KIW-ORG-001</td>
-                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
-                        th:text="${producto.categoriaNombre != null ? producto.categoriaNombre : 'Sin categoría'}">Granos</td>
-                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
-                        th:text="${'S/ ' + #numbers.formatDecimal(producto.precio, 1, 2)}">S/ 5.99</td>
-                    <td class="h-[72px] px-4 py-2 w-[400px] text-sm font-normal leading-normal"
-                        th:classappend="${producto.cantidad < 10 ? 'text-red-600 font-bold' : 'text-[#9e7347]'}"
-                        th:text="${producto.cantidad}">150</td>
-                    <td class="h-[72px] px-4 py-2 w-60 text-sm font-normal leading-normal">
-                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-medium leading-normal w-full"
-                                th:text="${producto.estado.name() == 'PUBLICADO' ? 'Publicado' : (producto.estado.name() == 'BORRADOR' ? 'Borrador' : 'Archivado')}">
-                            <span class="truncate">Publicado</span>
-                        </button>
+                <tr v-for="(pagina, index) in paginas"
+                    class="border-t border-t-[#e9dbce] hover:bg-[#f4ede6] transition-colors producto-row">
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#1c140d] text-sm font-normal leading-normal">{{pagina.titulo}}</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal">{{pagina.resumen}}</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal">{{pagina.tipo}}</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal">{{pagina.publicado ? 'Si': 'No'}}</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-sm font-normal leading-normal">
+                        <span v-for="etiqueta in pagina.etiquetas" class="badge text-bg-secondary">{{etiqueta.nombre}}</span>
                     </td>
-                    <td class="h-[72px] px-4 py-2 w-[400px] text-[#9e7347] text-sm font-normal leading-normal"
-                        th:text="${#temporals.format(producto.actualizadoEn != null ? producto.actualizadoEn : producto.creadoEn, 'yyyy-MM-dd')}">2024-01-15</td>
+                    <td class="h-[72px] px-4 py-2 w-[400px] text-sm font-normal leading-normal">{{pagina.actualizadoEn || pagina.creadoEn}}</td>
                     <td class="h-[72px] px-4 py-2 w-60">
                         <div class="flex items-center gap-3">
-                            <a th:href="@{/admin/productos/{id}/editar(id=${producto.productoId})}"
-                               class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
+                            <a class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
                                 Editar
                             </a>
                             <span class="text-[#e9dbce]">|</span>
                             <a href="javascript:void(0)"
-                               th:data-producto-id="${producto.productoId}"
                                onclick="duplicarProducto(this.getAttribute('data-producto-id'))"
                                class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
                                 Duplicar
                             </a>
                             <span class="text-[#e9dbce]">|</span>
                             <a href="javascript:void(0)"
-                               th:data-producto-id="${producto.productoId}"
-                               th:data-producto-titulo="${producto.titulo}"
                                onclick="confirmarEliminar(this.getAttribute('data-producto-id'), this.getAttribute('data-producto-titulo'))"
                                class="text-[#9e7347] hover:text-red-600 text-sm font-medium transition-colors">
                                 Eliminar
@@ -141,7 +122,7 @@
                         </div>
                     </td>
                 </tr>
-                </tbody>-->
+                </tbody>
             </table>
         </div>
     </div>
@@ -173,51 +154,85 @@
     new Vue({
         el: "#app",
         data: {
-            entidades: [],
+            paginas: null,
+            pagination: {},
             entidad: [],
             nombres: "Dajana"
         },
+        computed: {
+            // Propiedades computadas para facilitar el acceso a los datos
+            currentPage() {
+              return this.pagination.number
+            },
+            totalPages() {
+              return this.pagination.totalPages
+            },
+            totalElements() {
+              return this.pagination.totalElements
+            },
+            isFirstPage() {
+              return this.pagination.first
+            },
+            isLastPage() {
+              return this.pagination.last
+            },
+            // Calcula las páginas visibles con puntos suspensivos
+            visiblePages() {
+              const current = this.currentPage()
+              const total = this.totalPages()
+              const maxVisiblePages = 5 // Máximo de páginas visibles
+
+              if (total <= maxVisiblePages) {
+                // Mostrar todas las páginas
+                return Array.from({ length: total }, (_, i) => i)
+              }
+
+              // Mostrar páginas con puntos suspensivos
+              const pages = []
+
+              if (current < 3) {
+                // Cerca del inicio
+                for (let i = 0; i < 4; i++) {
+                  pages.push(i)
+                }
+                pages.push('...')
+                pages.push(total - 1)
+              } else if (current > total - 4) {
+                // Cerca del final
+                pages.push(0)
+                pages.push('...')
+                for (let i = total - 4; i < total; i++) {
+                  pages.push(i)
+                }
+              } else {
+                // En el medio
+                pages.push(0)
+                pages.push('...')
+                for (let i = current - 1; i <= current + 1; i++) {
+                  pages.push(i)
+                }
+                pages.push('...')
+                pages.push(total - 1)
+              }
+
+              return pages
+            }
+        },
         methods: {
             listar: function () {
-                this.$http.get('/api/alumno?nombres='+this.nombres).then(response => {
-                    this.entidades = response.data;
+                axios.get('/api/contenido/paginas?nombres='+this.nombres).then(response => {
+                    this.paginas = response.data.content
                 });
             },
             buscar: function () {
                 this.listar();
-            },
-            nuevo: function () {
-                this.entidad = {
-                    id: 0,
-                    nombres: "",
-                    apellidos: ""
-                };
-                $("#mdlEntidad").modal("show");
-            },
-            editar: function (id) {
-                this.$http.get('/api/alumno/' + id).then(response => {
-                    this.entidad = response.data;
-                    $("#mdlEntidad").modal("show");
-                });
-            },
-            guardar: function () {
-                this.$http.post('/api/alumno', this.entidad).then(response => {
-                    this.listar();
-                    $("#mdlEntidad").modal("hide");
-                });
-            },
-            actualizar: function () {
-                this.$http.put('/api/alumno/' + this.entidad.id, this.entidad).then(response => {
-                    this.listar();
-                    $("#mdlEntidad").modal("hide");
-                });
             },
             eliminar: function (id) {
                 this.entidad.id = id;
                 $("#mdlEliminar").modal("show");
             },
             confimareliminacion: function () {
-                this.$http.delete('/api/alumno/' + this.entidad.id).then(response => {
+                axios.delete('/api/alumno/' + this.entidad.id).then(response => {
                     this.listar();
                     $("#mdlEliminar").modal("hide");
                 });

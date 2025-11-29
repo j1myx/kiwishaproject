@@ -1,10 +1,14 @@
 package com.kiwisha.project.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+
 import java.util.List;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "paginas")
 public class Pagina extends AuditableEntity {
@@ -35,6 +39,13 @@ public class Pagina extends AuditableEntity {
 
     @OneToMany(mappedBy = "pagina", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PaginaImagen> paginaImagenes;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "paginas_etiquetas",
+            joinColumns = @JoinColumn(name = "pagina_id", insertable = false, updatable = false),
+            inverseJoinColumns = @JoinColumn(name = "etiqueta_id", insertable = false, updatable = false))
+    private List<Etiqueta> etiquetas;
 
     @OneToMany(mappedBy = "pagina", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PaginaEtiqueta> paginaEtiquetas;

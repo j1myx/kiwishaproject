@@ -6,9 +6,9 @@ import com.kiwisha.project.repository.PaginaRepository;
 import com.kiwisha.project.service.PaginaService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,12 +17,10 @@ public class PaginaServiceImpl implements PaginaService {
     private final ModelMapper modelMapper;
 
     @Override
-    public List<PaginaDTO> findAll() {
-        var paginas =  paginaRepository.findAll();
+    public Page<PaginaDTO> findAll(Pageable pageable) {
+        Page<Pagina> page =  paginaRepository.findAll(pageable);
 
-        return paginas.stream()
-                .map(pagina -> modelMapper.map(pagina, PaginaDTO.class))
-                .toList();
+        return page.map(pagina -> modelMapper.map(pagina, PaginaDTO.class));
     }
 
     @Override

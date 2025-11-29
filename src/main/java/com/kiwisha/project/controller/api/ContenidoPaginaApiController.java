@@ -5,9 +5,9 @@ import com.kiwisha.project.model.Pagina;
 import com.kiwisha.project.repository.PaginaRepository;
 import com.kiwisha.project.service.PaginaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/contenido/paginas")
@@ -22,8 +22,8 @@ public class ContenidoPaginaApiController {
     }
 
     @GetMapping
-    public List<PaginaDTO> findAll() {
-        return paginaService.findAll();
+    public Page<PaginaDTO> findAll(Pageable pageable) {
+        return paginaService.findAll(pageable);
     }
 
     @GetMapping("/{url}")

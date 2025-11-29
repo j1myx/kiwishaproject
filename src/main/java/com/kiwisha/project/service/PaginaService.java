@@ -1,10 +1,10 @@
 package com.kiwisha.project.service;
 
 import com.kiwisha.project.dto.PaginaDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PaginaService {
-    List<PaginaDTO> findAll();
+    Page<PaginaDTO> findAll(Pageable pageable);
     PaginaDTO findByUrl(String url);
 }
