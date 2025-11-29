@@ -24,9 +24,27 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
     )
     Page<Pagina> findAll(Pageable pageable);
 
+    @Query(
+            value = """
+                        FROM Pagina p
+                        LEFT JOIN FETCH p.paginaImagenes
+                        WHERE p.publicado = true AND p.tipo = 'NOTICIAS'
+                        ORDER BY p.creadoEn DESC
+                        LIMIT 3
+                    """
+    )
+    List<Pagina> getTops();
+
     /**
      * Busca una página por su URL
      */
+    @Query(
+            value = """
+                        FROM Pagina p
+                        LEFT JOIN FETCH p.paginaImagenes
+                        WHERE p.url = :url
+                    """
+    )
     Pagina findByUrl(String url);
 
     /**

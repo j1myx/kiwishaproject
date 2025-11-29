@@ -2,6 +2,7 @@ package com.kiwisha.project.controller.web;
 
 import com.kiwisha.project.dto.ProductoDTO;
 import com.kiwisha.project.service.CategoriaService;
+import com.kiwisha.project.service.PaginaService;
 import com.kiwisha.project.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class ProductoWebController {
 
     private final ProductoService productoService;
     private final CategoriaService categoriaService;
+    private final PaginaService paginaService;
 
     /**
      * Página de inicio (Home/Landing)
@@ -47,15 +49,23 @@ public class ProductoWebController {
             model.addAttribute("productosDestacados", productosDestacados);
             model.addAttribute("productosNuevos", productosNuevos);
             model.addAttribute("paginaActual", "inicio");
+            model.addAttribute("paginasTop", paginaService.getTops());
         } catch (Exception e) {
             log.error("Error al cargar productos en home", e);
             // Continuar con listas vacías
             model.addAttribute("productosDestacados", List.of());
             model.addAttribute("productosNuevos", List.of());
             model.addAttribute("paginaActual", "inicio");
+            model.addAttribute("paginasTop", List.of());
         }
         
         return "public/home";
+    }
+
+    @GetMapping("pagina/{url}")
+    public String getPage(@PathVariable String url, Model model) {
+        model.addAttribute("pagina", paginaService.findByUrl(url));
+        return "public/page";
     }
 
     /**

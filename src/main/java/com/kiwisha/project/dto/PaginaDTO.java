@@ -1,10 +1,7 @@
 package com.kiwisha.project.dto;
 
 import com.kiwisha.project.model.Pagina;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PaginaDTO {
     private Integer paginaId;
     private String titulo;
@@ -26,4 +24,5 @@ public class PaginaDTO {
     private Integer actualizadoPor;
     private LocalDateTime actualizadoEn;
     private List<EtiquetaDTO> etiquetas;
+    private List<PaginaImagenDTO> paginaImagenes;
 }

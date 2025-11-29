@@ -133,29 +133,13 @@
                     <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Novedades</h2>
                     <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         <div class="flex items-stretch p-4 gap-3">
-                            <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
+                            <div th:each="pagina : ${paginasTop}"  class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
                                 <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex flex-col"
-                                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCr6YODd4CRxza9mrQqAoXzHTpMH8di55c0CJ2lzyqGVfIS2aWp36zPwCLQsKQsT498I8eAyln6gRS4ELgFKTa91D1TdYhZALexTybAvf5zr8zPqof9sgQQDKn0Yrni7qOsiUgrZfXlRF5EleuTyi2xO1aztgZKtQ3EvE7-2HJTyfJr646f4m1dRMxsUONRwd5tM_LlEBR3HuxyZ9r7XGIz1Mo1zyInjSQllpwrJdxcoMDSXOe0-92cGZvV_0TJDWKXy9I2Ajw2Owrc");'></div>
-                                <div>
-                                    <p class="text-[#1c140d] text-base font-medium leading-normal">El cultivo sostenible de la quinua</p>
-                                    <p class="text-[#9e7347] text-sm font-normal leading-normal">Conoce las prácticas que protegen nuestro ecosistema</p>
-                                </div>
-                            </div>
-                            <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
-                                <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex flex-col"
-                                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAIEWsGgmE95MsW2tzrXqag3OK-1TY9pNc6-SkJo-e4Vokn_D_pzvd9T4pwSjOh9-UHAXXlcPxTUPBc1TKXKnqrJHNVkW8wvWt3kkCBsfZmexE6rwtk1f5WIuN88BlG9VgYaTeYI1RCb8P-fuQG8qgMAqVqJrw2wDg8FqXvv3Ge5jbxfVD7o26rg_rNBeC5_2eNbQFzJxzczmVnP5WocaVP2_6YVFqZyF4AcPNkxoSsBuX-vz7VsIq-1_LVtbpZHkNWrDnE8aWw5gHG");'></div>
-                                <div>
-                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Artesanía andina: un legado cultural</p>
-                                    <p class="text-[#9e7347] text-sm font-normal leading-normal">Textiles, cerámica y más, hechos con amor</p>
-                                </div>
-                            </div>
-                            <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-60">
-                                <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex flex-col"
-                                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDwYxcGRGpJsXcridY6jeuXX2rLWXY1P8RuO5noyS4PLzqcfJ4f-TBzqVBWAnVm9Ptz6i9lnM_3WJfwnOufsbKUQWEaazbKMGYTVpztaOvz2M8L9XoMONmpWn8BGnR7PXOBqatSXGoSi-uvGiv3sguxoqoxiNhWH2sbTN4Pk9DkHzx5n8IirRvxdIyMpg187zU9iDg08IscsKy_bCHOrJtQ-WMRKx0IA9l0ElI-WDGGX-ga6EZXme0iLXM0LndJBSMjJUJb1z2kZlkm");'></div>
-                                <div>
-                                    <p class="text-[#1c140d] text-base font-medium leading-normal">Descubre la biodiversidad del Perú</p>
-                                    <p class="text-[#9e7347] text-sm font-normal leading-normal">Viaja a través de paisajes únicos y ancestrales</p>
-                                </div>
+                                     th:style="'background-image: url(/files/' + @{${pagina.paginaImagenes[0].ruta}} + ');'"></div>
+                                <a th:href="'pagina/' + @{${pagina.url}}">
+                                    <p class="text-[#1c140d] text-base font-medium leading-normal" th:text="${pagina.titulo}"></p>
+                                    <p class="text-[#9e7347] text-sm font-normal leading-normal" th:text="${pagina.resumen}"></p>
+                                </a>
                             </div>
                         </div>
                     </div>
