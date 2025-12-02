@@ -10,4 +10,5 @@ public interface PaginaService {
     Page<PaginaDTO> findAll(Pageable pageable);
     PaginaDTO findByUrl(String url);
     List<PaginaDTO> getTops();
+    void delete(Integer paginaId);
 }

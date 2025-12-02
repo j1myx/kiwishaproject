@@ -1,5 +1,6 @@
 package com.kiwisha.project.service.impl;
 
+import com.kiwisha.project.dto.EtiquetaDTO;
 import com.kiwisha.project.dto.PaginaDTO;
 import com.kiwisha.project.dto.PaginaImagenDTO;
 import com.kiwisha.project.model.Pagina;
@@ -17,13 +18,26 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaginaServiceImpl implements PaginaService {
     private final PaginaRepository paginaRepository;
-    private final ModelMapper modelMapper;
 
     @Override
     public Page<PaginaDTO> findAll(Pageable pageable) {
         Page<Pagina> page =  paginaRepository.findAll(pageable);
 
-        return page.map(pagina -> modelMapper.map(pagina, PaginaDTO.class));
+        return page.map(pagina -> PaginaDTO.builder()
+                .paginaId(pagina.getPaginaId())
+                .titulo(pagina.getTitulo())
+                .url(pagina.getUrl())
+                .resumen(pagina.getResumen())
+                .contenido(pagina.getContenido())
+                .tipo(pagina.getTipo())
+                .publicado(pagina.getPublicado())
+                .creadoPor(pagina.getCreadoPor())
+                .creadoEn(pagina.getCreadoEn())
+                .etiquetas(pagina.getEtiquetas().stream().map(etiqueta -> EtiquetaDTO.builder()
+                        .etiquetaId(etiqueta.getEtiquetaId())
+                        .nombre(etiqueta.getNombre())
+                        .build()).toList())
+                .build());
     }
 
     @Override
@@ -60,5 +74,10 @@ public class PaginaServiceImpl implements PaginaService {
                                 .toList())
                         .build())
                 .toList();
+    }
+
+    @Override
+    public void delete(Integer paginaId) {
+        paginaRepository.deleteById(paginaId);
     }
 }

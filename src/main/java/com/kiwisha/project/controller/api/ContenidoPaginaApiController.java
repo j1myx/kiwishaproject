@@ -26,6 +26,11 @@ public class ContenidoPaginaApiController {
         return paginaService.findAll(pageable);
     }
 
+    @DeleteMapping("/{paginaId}")
+    public void delete(@PathVariable Integer paginaId) {
+        paginaService.delete(paginaId);
+    }
+
     @GetMapping("/{url}")
     public PaginaDTO findByUrl(@PathVariable String url) {
         return paginaService.findByUrl(url);

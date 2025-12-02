@@ -114,11 +114,10 @@
                                 Duplicar
                             </a>
                             <span class="text-[#e9dbce]">|</span>
-                            <a href="javascript:void(0)"
-                               onclick="confirmarEliminar(this.getAttribute('data-producto-id'), this.getAttribute('data-producto-titulo'))"
+                            <button @click="eliminar(pagina)"
                                class="text-[#9e7347] hover:text-red-600 text-sm font-medium transition-colors">
                                 Eliminar
-                            </a>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -149,6 +148,23 @@
             </div>
         </a>
     </div>
+    <div id="deleteConfirm" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro que desea eliminar este elemento?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" @click="confimareliminacion()">Confirmar eliminación</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script layout:fragment="script">
     new Vue({
@@ -156,8 +172,9 @@
         data: {
             paginas: null,
             pagination: {},
-            entidad: [],
-            nombres: "Dajana"
+            pagina: {},
+            nombres: "Dajana",
+            modal: null
         },
         computed: {
             // Propiedades computadas para facilitar el acceso a los datos
@@ -225,21 +242,24 @@
                 });
             },
             buscar: function () {
-                this.listar();
+                this.listar()
             },
-            eliminar: function (id) {
-                this.entidad.id = id;
-                $("#mdlEliminar").modal("show");
+            eliminar: function (pagina) {
+                this.pagina.paginaId = pagina.paginaId
+                this.pagina.titulo = pagina.titulo
+
+                this.modal = new bootstrap.Modal(document.getElementById('deleteConfirm'))
+                this.modal.show()
             },
             confimareliminacion: function () {
-                axios.delete('/api/alumno/' + this.entidad.id).then(response => {
-                    this.listar();
-                    $("#mdlEliminar").modal("hide");
+                axios.delete('/api/contenido/paginas/' + this.pagina.paginaId).then(response => {
+                    this.listar()
+                    this.modal.hide()
                 });
             }
         },
         mounted: function () {
-            this.listar();
+            this.listar()
         }
     });
 </script>
