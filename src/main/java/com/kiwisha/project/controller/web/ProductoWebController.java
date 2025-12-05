@@ -55,7 +55,7 @@ public class ProductoWebController {
             model.addAttribute("paginaActual", "inicio");
         }
         
-        return "public/home";
+        return "public/index";
     }
 
     /**

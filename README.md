@@ -411,7 +411,7 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 **Cambios Implementados**:
 
 1. ✅ **Templates de Diseño Integrados** (de Sources/):
-   - `public/home.html` - Landing page con hero, productos destacados, novedades y beneficios
+   - `public/index.html` - Landing page con hero, productos destacados, novedades y beneficios
    - `public/login.html` - Formulario de login para panel administrativo
    - `admin/dashboard.html` - Panel administrativo con sidebar, KPIs y accesos rápidos
    - Diseño: Tailwind CSS, Work Sans/Noto Sans, paleta #fcfaf8/#1c140d/#f98006/#f4ede6
@@ -506,7 +506,7 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - ⚠️ Nombres de métodos: Corregidos typos en repositorios (CategoriId → CategoriaId)
 
 **Archivos Nuevos/Modificados**:
-- ✅ Nuevos: AuthWebController.java, home.html, login.html, dashboard.html
+- ✅ Nuevos: AuthWebController.java, index.html, login.html, dashboard.html
 - ✅ Modificados: 11 archivos (SecurityConfig, Usuario, RolUsuario, DataInitializer, etc.)
 - ✅ Scripts SQL: 2 nuevos (fix_roles_usuarios_table.sql, fix_hash_contrasena.sql)
 
@@ -615,7 +615,7 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 
 **Changelog v1.6.0** (Anterior):
 - ✅ **Fase 6 Completada**: Web Controllers y Frontend
-- 🎨 Templates integrados: home.html, login.html, dashboard.html (Tailwind CSS)
+- 🎨 Templates integrados: index.html, login.html, dashboard.html (Tailwind CSS)
 - 🔐 Sistema de autenticación funcional con Spring Security
 - 👤 Panel administrativo con KPIs y navegación
 - 🔧 EAGER fetch strategy para roles (solución 403 Forbidden)
