@@ -21,6 +21,12 @@ public class ContenidoPaginaApiController {
         return paginaRepository.save(pagina);
     }
 
+    @PutMapping("/{paginaId}")
+    public Pagina update(@PathVariable Integer paginaId, @RequestBody Pagina pagina) {
+        pagina.setPaginaId(paginaId);
+        return paginaRepository.save(pagina);
+    }
+
     @GetMapping
     public Page<PaginaDTO> findAll(Pageable pageable) {
         return paginaService.findAll(pageable);

@@ -60,6 +60,21 @@
                 </label>
             </div>
 
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                <span v-for="(etiqueta, index) in paginaEtiquetas" class="badge text-bg-secondary" @click="quitarEtiqueta(index)">{{etiqueta.nombre}}</span>
+            </div>
+
+            <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
+                <label class="flex flex-col min-w-40 flex-1">
+                    <p class="text-[#1c140d] text-base font-medium leading-normal pb-2">Selecciona etiquetas</p>
+                    <select class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#1c140d] focus:outline-0 focus:ring-0 border border-[#e9dbce] bg-[#f4ede6] focus:border-[#e9dbce] h-14 placeholder:text-[#9e7347] p-[15px] text-base font-normal leading-normal transition-colors"
+                            @change="agregarEtiqueta">
+                        <option></option>
+                        <option v-for="etiqueta in etiquetas" v-bind:value="etiqueta | stringify" :disabled="etiquetaSeleccionada(etiqueta)">{{etiqueta.nombre}}</option>
+                    </select>
+                </label>
+            </div>
+
             <!-- Input file oculto -->
             <input
                     type="file"
@@ -110,7 +125,14 @@
             },
             files: [],
             previewFiles: [],
-            uploadFiles: []
+            uploadFiles: [],
+            etiquetas: [],
+            paginaEtiquetas: []
+        },
+        filters: {
+            stringify(value) {
+              return JSON.stringify(value)
+            }
         },
         methods: {
             triggerFileInput() {
@@ -141,20 +163,42 @@
 
               axios.post('/api/files/upload', formData).then(response => {
                 this.uploadFiles = response.data
-              });
+              })
+            },
+            agregarEtiqueta: function (event) {
+                console.log('agregarEtiqueta', event.target.value)
+                this.paginaEtiquetas.push(JSON.parse(event.target.value))
+            },
+            quitarEtiqueta: function (index) {
+                console.log('quitarEtiqueta', index)
+                this.paginaEtiquetas.splice(index, 1)
+            },
+            obtenerEtiquetas: function () {
+                axios.get('/api/contenido/etiquetas').then(response => {
+                    this.etiquetas = response.data
+                })
+            },
+            etiquetaSeleccionada: function (etiqueta) {
+                return this.paginaEtiquetas.find(e => e.etiquetaId == etiqueta.etiquetaId) != null
             },
             guardar: function () {
                 axios.post('/api/contenido/paginas', this.pagina).then(response => {
                     const requestFiles = this.uploadFiles
                         .map(file => ({"nombre": file.nombre, "ruta": file.ruta, "pagina": { "paginaId": response.data.paginaId }}))
-                    axios.post('/api/contenido/pagina-imagenes', requestFiles).then(response => {
-                       window.location.replace("/admin/contenidos");
-                    });
-                });
+                    axios.post('/api/contenido/pagina-imagenes', requestFiles).then(() => {
+
+                        const requestEtiquetas = this.paginaEtiquetas
+                            .map(etiqueta => ({ "etiqueta": { "etiquetaId": etiqueta.etiquetaId }, "pagina": { "paginaId": response.data.paginaId } }))
+
+                        axios.post('/api/contenido/pagina-etiquetas', requestEtiquetas).then(() => {
+                            window.location.replace("/admin/contenidos")
+                        })
+                    })
+                })
             }
         },
         mounted: function () {
-            // this.listar();
+            this.obtenerEtiquetas()
         }
     });
 </script>
