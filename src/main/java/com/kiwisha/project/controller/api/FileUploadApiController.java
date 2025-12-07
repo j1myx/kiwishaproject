@@ -1,12 +1,11 @@
 package com.kiwisha.project.controller.api;
 
+import com.kiwisha.project.dto.FileDTO;
 import com.kiwisha.project.service.FileStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.FileSystemException;
@@ -19,13 +18,13 @@ public class FileUploadApiController {
     @Autowired
     private FileStorageService fileStorageService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<List<String>> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) throws FileSystemException {
-        List<String> uploadedFileNames = new ArrayList<>();
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<FileDTO>> uploadMultipleFiles(@RequestPart("files") MultipartFile[] files) throws FileSystemException {
+        List<FileDTO> uploadedFiles = new ArrayList<>();
         for (MultipartFile file : files) {
-            String fileName = fileStorageService.storeFile(file);
-            uploadedFileNames.add(fileName);
+            FileDTO filedto = fileStorageService.storeFile(file);
+            uploadedFiles.add(filedto);
         }
-        return ResponseEntity.ok(uploadedFileNames);
+        return ResponseEntity.ok(uploadedFiles);
     }
 }

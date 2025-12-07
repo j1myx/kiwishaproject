@@ -1,5 +1,6 @@
 package com.kiwisha.project.service.impl;
 
+import com.kiwisha.project.dto.FileDTO;
 import com.kiwisha.project.service.FileStorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class FileStorageServiceImpl implements FileStorageService {
     }
 
     @Override
-    public String storeFile(MultipartFile file) throws FileSystemException {
+    public FileDTO storeFile(MultipartFile file) throws FileSystemException {
         String fileName = UUID.randomUUID() + "." + file.getOriginalFilename();
         try {
             // Check if the file's name contains invalid characters
@@ -39,7 +40,7 @@ public class FileStorageServiceImpl implements FileStorageService {
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return fileName;
+            return FileDTO.builder().ruta(fileName).nombre(file.getOriginalFilename()).build();
         } catch (IOException ex) {
             throw new FileSystemException("Could not store file " + fileName + ". Please try again!");
         }

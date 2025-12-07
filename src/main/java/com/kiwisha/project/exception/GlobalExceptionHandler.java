@@ -1,5 +1,6 @@
 package com.kiwisha.project.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,6 +17,7 @@ import java.util.Map;
  * Manejador global de excepciones para la aplicación.
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     /**
@@ -83,6 +85,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception ex, WebRequest request) {
+        log.error(ex.getMessage(), ex);
         
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),

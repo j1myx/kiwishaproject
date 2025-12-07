@@ -1,10 +1,14 @@
 package com.kiwisha.project.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+
 import java.util.List;
 
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "etiquetas")
 public class Etiqueta extends AuditableEntity {
