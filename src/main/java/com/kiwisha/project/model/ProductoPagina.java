@@ -31,4 +31,5 @@ public class ProductoPagina {
 
     @Column(name = "actualizado_en")
     private LocalDateTime actualizadoEn;
+    
 }

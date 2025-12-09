@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{_layout}">
+<head>
+    <title>Carrito - Achisway</title>
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Banner con imagen de la empresa -->
+            <div class="rounded-lg overflow-hidden shadow-md bg-white">
+                <div class="relative h-96 md:h-[520px] w-full">
+                    <img th:src="@{/images/image1.jpg}" alt="Banner de la empresa"
+                         class="w-full h-full object-cover object-center"/>
+                    <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                        <div class="text-center text-white px-4">
+                            <h1 class="text-3xl md:text-4xl font-bold">Nombre de la Empresa</h1>
+                            <p class="mt-2 text-sm md:text-base">Productos artesanales y comercio local</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenido: información de contacto y ubicación -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-[#1c140d]">Contáctanos</h2>
+                        <p class="mt-2 text-[#9e7347]">Estamos disponibles para consultas, pedidos y colaboraciones.</p>
+
+                        <ul class="mt-4 space-y-3 text-sm text-[#1c140d]">
+                            <li><strong>Dirección:</strong> <span class="ml-2">Barrio de Jabon Rumi S/N ( frente al centro cultural de Allauca) distrito de Caraz- Provincia de Huaylas Departamento de Ancash- Perú</span></li>
+                            <li><strong>Teléfono:</strong> <span class="ml-2">+51 952082335</span></li>
+                            <li><strong>Email:</strong> <a href="mailto:cooperativakiwichawayi@gmail.com" class="text-[#f98006]">cooperativakiwichawayi@gmail.com</a></li>
+                        </ul>
+
+                        <div class="mt-6 inline-flex items-center gap-3 bg-[#f4ede6] text-[#1c140d] px-4 py-2 rounded-lg">
+                            <!-- Icono ubicación -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#9e7347]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/>
+                            </svg>
+                            <div>
+                                <div class="text-xs text-[#9e7347]">Ubicación</div>
+                                <div class="text-sm font-medium">Barrio de Jabon Rumi S/N, Ancash</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-semibold text-[#1c140d]">Mapa</h2>
+                        <div class="mt-4 w-full h-48 md:h-64 rounded-lg overflow-hidden border border-[#e9dbce]">
+                            <!-- Iframe de Google Maps (reemplazar src con la ubicación real) -->
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3901.0000000000005!2d-77.03000000000001!3d-12.046000000000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c00000000001%3A0x0000000000000000!2sAv.%20Principal%20123!5e0!3m2!1ses!2spe!4v0000000000000"
+                                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

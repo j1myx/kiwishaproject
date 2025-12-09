@@ -118,7 +118,7 @@ public class ClienteApiController {
         
         return ResponseEntity.status(HttpStatus.CREATED).body(
             ApiResponseDTO.<ClienteDTO>builder()
-                .success(true)
+                .success(true)/*vue.js(react.js) thymeleaf java springboot */
                 .message("Cliente creado exitosamente")
                 .data(cliente)
                 .build()
