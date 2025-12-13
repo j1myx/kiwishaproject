@@ -24,7 +24,7 @@ public class MisPedidosWebController {
     @GetMapping("/mis-pedidos")
     public String misPedidos(
             Principal principal,
-            @PageableDefault(size = 20, sort = "actualizadoEn", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(size = 20, sort = {"actualizadoEn", "pedidoId"}, direction = Sort.Direction.DESC) Pageable pageable,
             Model model
     ) {
         String email = principal != null ? principal.getName() : null;

@@ -24,6 +24,26 @@
         </div>
 
         <div th:if="${pedidos != null && !pedidos.isEmpty()}" class="bg-white rounded-lg border border-solid border-[#f4ede6] overflow-hidden">
+
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 border-b border-solid border-[#f4ede6]"
+                 th:if="${pedidos.totalPages > 1}">
+                <div class="text-sm text-[#9e7347]" th:text="'Página ' + ${pedidos.number + 1} + ' de ' + ${pedidos.totalPages}">Página 1 de 1</div>
+
+                <div class="flex items-center gap-2"
+                     th:with="start=${T(java.lang.Math).max(0, pedidos.number-2)}, end=${T(java.lang.Math).min(pedidos.totalPages-1, pedidos.number+2)}">
+                    <a th:if="${pedidos.hasPrevious()}" th:href="@{/mis-pedidos(page=${pedidos.number - 1}, size=${pedidos.size})}"
+                       class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-3 bg-[#f4ede6] text-[#1c140d] text-sm font-bold hover:bg-[#e9dbce]">Anterior</a>
+
+                    <a th:each="i : ${#numbers.sequence(start, end)}"
+                       th:href="@{/mis-pedidos(page=${i}, size=${pedidos.size})}"
+                       th:class="${i == pedidos.number ? 'text-sm font-bold leading-normal tracking-[0.015em] flex size-9 items-center justify-center text-[#1c140d] rounded-full bg-[#f4ede6]' : 'text-sm font-medium leading-normal flex size-9 items-center justify-center text-[#1c140d] rounded-full hover:bg-[#f4ede6]'}"
+                       th:text="${i + 1}">1</a>
+
+                    <a th:if="${pedidos.hasNext()}" th:href="@{/mis-pedidos(page=${pedidos.number + 1}, size=${pedidos.size})}"
+                       class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-3 bg-[#f4ede6] text-[#1c140d] text-sm font-bold hover:bg-[#e9dbce]">Siguiente</a>
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="min-w-full">
                     <thead class="bg-[#fcfaf8] border-b border-solid border-[#f4ede6]">

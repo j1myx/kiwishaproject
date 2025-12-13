@@ -7,6 +7,7 @@ import com.kiwisha.project.service.PedidoService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +44,7 @@ public class CheckoutWebController {
      * GET /checkout
      */
     @GetMapping
-    public String mostrarFormularioCheckout(HttpSession session, Model model) {
+    public String mostrarFormularioCheckout(HttpSession session, Model model, Principal principal) {
         log.debug("Mostrando formulario de checkout");
 
         var carrito = carritoService.obtenerCarrito(session.getId());
@@ -54,7 +56,11 @@ public class CheckoutWebController {
         
         // Crear DTO vacío para el formulario
         if (!model.containsAttribute("datosCheckout")) {
-            model.addAttribute("datosCheckout", new DatosCheckoutForm());
+            DatosCheckoutForm form = new DatosCheckoutForm();
+            if (principal != null && principal.getName() != null && !principal.getName().isBlank()) {
+                form.setEmail(principal.getName());
+            }
+            model.addAttribute("datosCheckout", form);
         }
         
         model.addAttribute("carrito", carrito);
@@ -74,6 +80,7 @@ public class CheckoutWebController {
             @Valid @ModelAttribute("datosCheckout") DatosCheckoutForm datosCheckout,
             BindingResult result,
             HttpSession session,
+            Principal principal,
             Model model,
             RedirectAttributes redirectAttributes) {
         
@@ -83,6 +90,12 @@ public class CheckoutWebController {
         
         if (carrito.getItems() == null || carrito.getItems().isEmpty()) {
             return "redirect:/carrito";
+        }
+
+        // Si NO está logueado, el email es obligatorio para poder mostrar el pedido luego.
+        if ((principal == null || principal.getName() == null || principal.getName().isBlank())
+                && (datosCheckout.getEmail() == null || datosCheckout.getEmail().isBlank())) {
+            result.rejectValue("email", "NotBlank", "El email es obligatorio");
         }
         
         // Si hay errores de validación, volver al formulario
@@ -95,6 +108,11 @@ public class CheckoutWebController {
         try {
             // Convertir formulario a CrearPedidoDTO
             var crearPedidoDTO = convertirACrearPedidoDTO(datosCheckout);
+
+            // Si el usuario está logueado, el pedido debe quedar asociado a su email.
+            if (principal != null && principal.getName() != null && !principal.getName().isBlank()) {
+                crearPedidoDTO.setEmail(principal.getName());
+            }
             
             // Crear pedido (el servicio obtendrá los elementos del carrito en sesión)
             var pedido = pedidoService.crearPedido(session.getId(), crearPedidoDTO);
@@ -355,17 +373,18 @@ public class CheckoutWebController {
         var crearPedidoDTO = new CrearPedidoDTO();
         
         // Datos del cliente
-        crearPedidoDTO.setNombre(form.getNombre());
-        crearPedidoDTO.setApellido(form.getApellido());
-        crearPedidoDTO.setEmail(form.getEmail());
-        crearPedidoDTO.setTelefono(form.getTelefono());
+        crearPedidoDTO.setNombre(trimToNull(form.getNombre()));
+        crearPedidoDTO.setApellido(trimToNull(form.getApellido()));
+        crearPedidoDTO.setEmail(trimToNull(form.getEmail()));
+        crearPedidoDTO.setTelefono(trimToNull(form.getTelefono()));
         
         // Datos de envío
-        crearPedidoDTO.setDireccion(form.getDireccion());
-        crearPedidoDTO.setCiudad(form.getCiudad());
-        crearPedidoDTO.setProvincia(form.getProvincia());
-        crearPedidoDTO.setCodigoPostal(form.getCodigoPostal());
-        crearPedidoDTO.setPais(form.getPais() != null ? form.getPais() : "Perú");
+        crearPedidoDTO.setDireccion(trimToNull(form.getDireccion()));
+        crearPedidoDTO.setCiudad(trimToNull(form.getCiudad()));
+        crearPedidoDTO.setProvincia(trimToNull(form.getProvincia()));
+        crearPedidoDTO.setCodigoPostal(trimToNull(form.getCodigoPostal()));
+        String pais = trimToNull(form.getPais());
+        crearPedidoDTO.setPais(pais != null ? pais : "Perú");
         
         // Método de envío (por defecto 1, debería venir del formulario)
         crearPedidoDTO.setMetodoEnvioId(form.getMetodoEnvioId() != null ? form.getMetodoEnvioId() : 1);
@@ -381,6 +400,14 @@ public class CheckoutWebController {
         return crearPedidoDTO;
     }
 
+    private static String trimToNull(String value) {
+        if (value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
     // ============================================
     // CLASE INTERNA: DatosCheckoutForm
     // ============================================
@@ -389,12 +416,25 @@ public class CheckoutWebController {
      * Formulario para capturar datos del checkout
      */
     public static class DatosCheckoutForm {
+        @NotBlank(message = "El nombre es obligatorio")
         private String nombre;
+
+        @NotBlank(message = "El apellido es obligatorio")
         private String apellido;
+
+        @Email(message = "El email no es válido")
         private String email;
+
+        @NotBlank(message = "El teléfono es obligatorio")
         private String telefono;
+
+        @NotBlank(message = "La dirección es obligatoria")
         private String direccion;
+
+        @NotBlank(message = "La ciudad es obligatoria")
         private String ciudad;
+
+        @NotBlank(message = "La provincia es obligatoria")
         private String provincia;
         private String codigoPostal;
         private String pais;

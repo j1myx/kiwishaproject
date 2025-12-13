@@ -49,6 +49,16 @@ public class PedidoServiceImpl implements PedidoService {
     public PedidoDTO crearPedido(String sessionId, CrearPedidoDTO crearPedidoDTO) {
         log.info("Creando pedido para sesión: {}", sessionId);
 
+        // Si el usuario está autenticado, el pedido debe quedar asociado a su email.
+        String authenticatedEmail = resolveAuthenticatedEmail();
+        String effectiveEmail = authenticatedEmail != null ? authenticatedEmail : (crearPedidoDTO != null ? crearPedidoDTO.getEmail() : null);
+        if (effectiveEmail == null || effectiveEmail.isBlank()) {
+            throw new BusinessException("El email es obligatorio");
+        }
+        if (crearPedidoDTO != null) {
+            crearPedidoDTO.setEmail(effectiveEmail);
+        }
+
         // 1. Obtener items del carrito
         List<CarritoItem> items = carritoItemRepository.findBySesionId(sessionId);
         if (items.isEmpty()) {
@@ -83,8 +93,8 @@ public class PedidoServiceImpl implements PedidoService {
             cliente = clienteRepository.findById(crearPedidoDTO.getClienteId())
                     .orElseThrow(() -> new ResourceNotFoundException("Cliente", "id",
                             crearPedidoDTO.getClienteId()));
-        } else if (crearPedidoDTO.getEmail() != null && !crearPedidoDTO.getEmail().isBlank()) {
-            cliente = clienteRepository.findByEmail(crearPedidoDTO.getEmail()).orElse(null);
+        } else {
+            cliente = clienteRepository.findByEmail(effectiveEmail).orElse(null);
         }
 
         // Si no existe cliente, crear uno “invitado” basado en los datos del checkout
@@ -92,7 +102,7 @@ public class PedidoServiceImpl implements PedidoService {
             Integer auditUserId = resolveAuditUserId(crearPedidoDTO);
             Cliente nuevoCliente = new Cliente();
             nuevoCliente.setNombre(crearPedidoDTO.getNombre());
-            nuevoCliente.setEmail(crearPedidoDTO.getEmail());
+            nuevoCliente.setEmail(effectiveEmail);
             nuevoCliente.setTelefono(crearPedidoDTO.getTelefono());
             nuevoCliente.setDireccion(crearPedidoDTO.getDireccion());
             nuevoCliente.setCreadoEn(LocalDateTime.now());
@@ -110,7 +120,7 @@ public class PedidoServiceImpl implements PedidoService {
                 .cliente(cliente)
                 .nombre(crearPedidoDTO.getNombre())
                 .apellido(crearPedidoDTO.getApellido())
-                .email(crearPedidoDTO.getEmail())
+            .email(effectiveEmail)
                 .telefono(crearPedidoDTO.getTelefono())
                 .direccion(crearPedidoDTO.getDireccion())
                 .ciudad(crearPedidoDTO.getCiudad())
@@ -217,6 +227,17 @@ public class PedidoServiceImpl implements PedidoService {
         return usuarioRepository.findByEmail(email)
                 .map(Usuario::getUsuarioId)
                 .orElse(1);
+    }
+
+    private String resolveAuthenticatedEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            String email = authentication.getName();
+            return (email != null && !email.isBlank()) ? email : null;
+        }
+        return null;
     }
 
     @Override
