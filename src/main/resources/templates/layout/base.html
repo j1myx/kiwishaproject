@@ -77,6 +77,40 @@
             });
         }, 5000);
     </script>
+
+    <script src="/js/carrito-dropdown.js?v=2"></script>
+
+    <script>
+        (function () {
+            const wrapper = document.querySelector('[data-user-menu-wrapper]');
+            if (!wrapper) return;
+
+            const toggle = wrapper.querySelector('[data-user-menu-toggle]');
+            const menu = wrapper.querySelector('[data-user-menu]');
+            if (!toggle || !menu) return;
+
+            function closeMenu() {
+                menu.classList.add('hidden');
+            }
+
+            toggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!wrapper.contains(e.target)) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+        })();
+    </script>
     
     <!-- Scripts adicionales específicos de página -->
     <th:block layout:fragment="scripts"></th:block>
