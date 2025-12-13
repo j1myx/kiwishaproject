@@ -1,20 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión - Achisway</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
-          href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Work+Sans:wght@400;500;700;900" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body>
-    <div class="relative flex min-h-screen w-full flex-col bg-[#fcfaf8] group/design-root overflow-x-hidden"
-         style='font-family: "Work Sans", "Noto Sans", sans-serif;'>
-        <div class="layout-container flex grow flex-col">
-            <div class="flex flex-1 items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
-                <div class="w-full max-w-md">
+
+<main layout:fragment="content">
+    <div class="flex flex-1 items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
+        <div class="w-full max-w-md">
                     <h2 class="text-[#1c140d] tracking-light text-[28px] font-bold leading-tight text-center pb-6">
                         Iniciar sesión
                     </h2>
@@ -81,9 +76,9 @@
                         </a>
                     </div>
                     
-                </div>
-            </div>
         </div>
     </div>
+</main>
+
 </body>
 </html>

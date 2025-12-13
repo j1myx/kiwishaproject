@@ -27,7 +27,7 @@ public class Pagina extends AuditableEntity {
     private String resumen;
 
     @Lob
-    @Column(name = "contenido")
+    @Column(name = "contenido", columnDefinition = "LONGTEXT")
     private String contenido;
 
     @Enumerated(EnumType.STRING)

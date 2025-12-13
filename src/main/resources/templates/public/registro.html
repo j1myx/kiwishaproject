@@ -1,18 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Achisway</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
-          href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Work+Sans:wght@400;500;700;900" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body>
-<div class="relative flex h-auto min-h-screen w-full flex-col bg-[#fcfaf8] group/design-root overflow-x-hidden"
-     style='font-family: "Work Sans", "Noto Sans", sans-serif;'>
-    <div class="layout-container flex h-full grow flex-col">
+
+<main layout:fragment="content">
         <div class="px-40 flex flex-1 justify-center py-5">
             <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
                 <h2 class="text-[#1c140d] tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">
@@ -92,7 +87,7 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
+</main>
+
 </body>
 </html>
