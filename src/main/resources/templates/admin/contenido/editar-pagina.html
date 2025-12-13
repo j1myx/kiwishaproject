@@ -98,14 +98,14 @@
             <h3 class="text-[#1c140d] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">Imágenes</h3>
             <div class="flex flex-col gap-3 p-4" @click="triggerFileInput">
                 <div class="flex min-h-[200px] flex-col gap-3 rounded-xl border-2 border-dashed border-[#e9dbce] px-6 py-5" style="cursor: pointer;">
-                    <div class="text-center" v-if="previewFiles.length === 0">
+                    <div class="text-center" v-if="uploadFiles.length === 0">
                         <svg class="mx-auto h-12 w-12 text-[#9e7347]" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                             <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                         <p class="text-[#1c140d] text-base font-normal leading-normal pt-2">Arrastra imágenes aquí o haz clic para seleccionar</p>
                         <p class="text-[#9e7347] text-sm font-normal leading-normal">PNG, JPG hasta 10MB</p>
                     </div>
-                    <img v-for="(file, index) in previewFiles" :src="file" style="width: 100px;">
+                    <img v-for="(file, index) in previewFiles" :src="file" style="width: 100px;" @click.prevent="quitarImagen(index)">
                 </div>
             </div>
 
@@ -198,7 +198,7 @@
               }
 
               axios.post('/api/files/upload', formData).then(response => {
-                this.uploadFiles = response.data
+                this.uploadFiles = [...this.uploadFiles, ...response.data]
               })
             },
             agregarEtiqueta: function (event) {
@@ -217,13 +217,19 @@
             etiquetaSeleccionada: function (etiqueta) {
                 return this.paginaEtiquetas.find(e => e.etiquetaId == etiqueta.etiquetaId) != null
             },
+            quitarImagen: function (index) {
+                this.previewFiles.splice(index, 1)
+                const nombre = this.previewFiles[index].nombre
+                const index2 = this.uploadFiles.findIndex(f => f.nombre === nombre)
+                this.uploadFiles.splice(index2, 1)
+            },
             obtenerPagina: function () {
                 const [,,,paginaId] = window.location.pathname.split('/').filter(segment => segment.length > 0);
                 axios.get('/api/contenido/paginas/one/' + paginaId).then(response => {
                     this.pagina = response.data
                     this.paginaEtiquetas = this.pagina.etiquetas
                     this.previewFiles = this.pagina.paginaImagenes.map(pi => '/files/' + pi.ruta)
-                    this.uploadFiles = this.pagina.paginaImagenes.map(pi => pi.ruta)
+                    this.uploadFiles = this.pagina.paginaImagenes.map(pi => ({ "nombre": pi.nombre, "ruta": pi.ruta }))
 
                     tinymce.activeEditor.setContent(this.pagina.contenido);
                 })
@@ -233,7 +239,9 @@
 
                 axios.put('/api/contenido/paginas/' + this.pagina.paginaId, this.pagina).then(response => {
 
-                    axios.delete('/api/contenido/pagina-imagenes', this.pagina.paginaImagenes.map(pi => pi.paginaImagenId)).then(() => {
+                    const requestPaginaImagenIds = this.pagina.paginaImagenes.map(pi => pi.paginaImagenId).join()
+
+                    axios.delete('/api/contenido/pagina-imagenes?paginaImagenIds=' + requestPaginaImagenIds).then(() => {
                         const requestFiles = this.uploadFiles
                         .map(file => ({"nombre": file.nombre, "ruta": file.ruta, "pagina": { "paginaId": this.pagina.paginaId }}))
 

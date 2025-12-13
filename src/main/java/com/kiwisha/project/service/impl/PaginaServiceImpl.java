@@ -23,8 +23,8 @@ public class PaginaServiceImpl implements PaginaService {
     private final PaginaEtiquetaRepository paginaEtiquetaRepository;
 
     @Override
-    public Page<PaginaDTO> findAll(Pageable pageable) {
-        Page<Pagina> page =  paginaRepository.findAll(pageable);
+    public Page<PaginaDTO> findAll(String titulo, Pageable pageable) {
+        Page<Pagina> page =  paginaRepository.findAll(titulo, pageable);
 
         return page.map(pagina -> PaginaDTO.builder()
                 .paginaId(pagina.getPaginaId())

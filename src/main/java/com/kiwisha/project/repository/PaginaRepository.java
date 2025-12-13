@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,10 +20,11 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
             value = """
                         FROM Pagina p
                         LEFT JOIN FETCH p.etiquetas e
+                        WHERE (:titulo IS NULL OR :titulo = '') OR p.titulo = :titulo
                     """,
             countQuery = "SELECT count(*) FROM Pagina"
     )
-    Page<Pagina> findAll(Pageable pageable);
+    Page<Pagina> findAll(@Param("titulo") String titulo, Pageable pageable);
 
     @Query(
             value = """

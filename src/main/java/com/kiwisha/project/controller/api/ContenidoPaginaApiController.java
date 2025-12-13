@@ -22,14 +22,14 @@ public class ContenidoPaginaApiController {
     }
 
     @PutMapping("/{paginaId}")
-    public Pagina update(@PathVariable Integer paginaId, @RequestBody Pagina pagina) {
+    public void update(@PathVariable Integer paginaId, @RequestBody Pagina pagina) {
         pagina.setPaginaId(paginaId);
-        return paginaRepository.save(pagina);
+        paginaRepository.save(pagina);
     }
 
     @GetMapping
-    public Page<PaginaDTO> findAll(Pageable pageable) {
-        return paginaService.findAll(pageable);
+    public Page<PaginaDTO> findAll(Pageable pageable, @RequestParam(name = "titulo") String titulo) {
+        return paginaService.findAll(titulo, pageable);
     }
 
     @DeleteMapping("/{paginaId}")

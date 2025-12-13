@@ -19,7 +19,7 @@ public class ContenidoPaginaImagenApiController {
     }
 
     @DeleteMapping
-    public void deleteAllById(@RequestBody List<Integer> paginaImagenIds) {
+    public void deleteAllById(@RequestParam(name = "paginaImagenIds") List<Integer> paginaImagenIds) {
         paginaImagenRepository.deleteAllById(paginaImagenIds);
     }
 }
