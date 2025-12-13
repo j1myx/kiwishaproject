@@ -30,7 +30,7 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
             value = """
                         FROM Pagina p
                         LEFT JOIN FETCH p.paginaImagenes
-                        WHERE p.publicado = true AND p.tipo = 'NOTICIAS'
+                        WHERE p.publicado = true AND p.tipo = 'ARTICULOS'
                         ORDER BY p.creadoEn DESC
                         LIMIT 3
                     """
@@ -57,6 +57,26 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
                     """
     )
     Pagina findByPaginaId(Integer paginaId);
+
+    @Query(
+            value = """
+                        FROM Pagina p
+                        LEFT JOIN FETCH p.paginaImagenes
+                        INNER JOIN p.paginaEtiquetas pe
+                        INNER JOIN pe.etiqueta e
+                        WHERE e.nombre = :etiqueta
+                    """
+    )
+    List<Pagina> findByEtiqueta(String etiqueta);
+
+    @Query(
+            value = """
+                        FROM Pagina p
+                        LEFT JOIN FETCH p.paginaImagenes
+                        WHERE p.tipo = 'ARTICULOS'
+                    """
+    )
+    List<Pagina> findArticulos();
 
     /**
      * Obtiene páginas publicadas por tipo

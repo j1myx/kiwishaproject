@@ -54,6 +54,6 @@ public class Pagina extends AuditableEntity {
     private List<ProductoPagina> productoPaginas;
 
     public enum TipoPagina {
-        BASE, NOTICIAS, ARTICULOS
+        BASE, ARTICULOS
     }
 }

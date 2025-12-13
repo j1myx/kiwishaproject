@@ -12,4 +12,6 @@ public interface PaginaService {
     PaginaDTO findById(Integer paginaId);
     List<PaginaDTO> getTops();
     void delete(Integer paginaId);
+    List<PaginaDTO> findByEtiqueta(String etiqueta);
+    List<PaginaDTO> findArticulos();
 }
