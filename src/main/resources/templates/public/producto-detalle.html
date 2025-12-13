@@ -58,6 +58,22 @@
                             <span class="truncate">Logout</span>
                         </button>
                     </form>
+
+                    <div sec:authorize="isAuthenticated()" class="relative" data-user-menu-wrapper>
+                        <button type="button" data-user-menu-toggle
+                                class="flex w-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#f4ede6] text-[#1c140d] hover:bg-[#e9dbce]"
+                                aria-label="Perfil">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M128,128a48,48,0,1,0-48-48A48.05,48.05,0,0,0,128,128Zm0-80a32,32,0,1,1-32,32A32,32,0,0,1,128,48Zm0,88c-44.11,0-80,33.57-80,74.86a8,8,0,0,0,16,0C64,178.23,93.31,152,128,152s64,26.23,64,58.86a8,8,0,0,0,16,0C208,169.57,172.11,136,128,136Z"></path>
+                            </svg>
+                        </button>
+                        <div data-user-menu class="hidden absolute right-0 mt-2 w-48 rounded-lg border border-solid border-[#f4ede6] bg-white p-1">
+                            <a th:href="@{/mis-pedidos}"
+                               class="flex w-full items-center rounded-md px-3 py-2 text-sm font-medium text-[#1c140d] hover:bg-[#f4ede6]">
+                                Mis pedidos
+                            </a>
+                        </div>
+                    </div>
                     <div class="relative" data-cart-wrapper>
                         <button type="button" data-cart-toggle
                                 class="relative flex max-w-[480px] cursor-pointer items-center justify-center rounded-lg h-10 bg-[#f4ede6] text-[#1c140d] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5 hover:bg-[#e9dbce]"
@@ -270,5 +286,37 @@
 </script>
 
 <script src="/js/carrito-dropdown.js?v=2"></script>
+
+<script>
+    (function () {
+        const wrapper = document.querySelector('[data-user-menu-wrapper]');
+        if (!wrapper) return;
+
+        const toggle = wrapper.querySelector('[data-user-menu-toggle]');
+        const menu = wrapper.querySelector('[data-user-menu]');
+        if (!toggle || !menu) return;
+
+        function closeMenu() {
+            menu.classList.add('hidden');
+        }
+
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            menu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!wrapper.contains(e.target)) {
+                closeMenu();
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    })();
+</script>
 </body>
 </html>

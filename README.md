@@ -199,17 +199,18 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
    - Patrones de diseño aplicados (Repository, Service Layer, DTO, Builder)
 
 2. **Modelo de Datos Completo**
-   - 15 entidades JPA con relaciones bidireccionales
+   - 20 entidades JPA con relaciones bidireccionales
    - AuditableEntity base con auditoría automática (@PrePersist, @PreUpdate)
    - Validaciones Jakarta Bean Validation
    - 6 entidades nuevas: CarritoItem, MetodoEnvio, DireccionEnvio, Review, ConfiguracionSitio, Transaccion
 
-3. **Repositorios Spring Data JPA (12 repositorios)**
+3. **Repositorios Spring Data JPA (16 repositorios)**
    - ProductoRepository (15 métodos personalizados)
    - PedidoRepository (9 métodos)
    - ReviewRepository (7 métodos con cálculo de promedios)
    - ClienteRepository, CategoriaRepository, CarritoItemRepository
-   - MetodoEnvioRepository, PaginaRepository, UsuarioRepository, RolRepository, TransaccionRepository, ConfiguracionSitioRepository
+   - MetodoEnvioRepository, PaginaRepository, UsuarioRepository, RolRepository, RolUsuarioRepository
+   - ProductoImagenRepository, PaginaImagenRepository, PaginaEtiquetaRepository, EtiquetaRepository, ConfiguracionSitioRepository
 
 4. **Configuración del Proyecto**
    - JpaConfig con ModelMapper y auditoría habilitada
@@ -224,13 +225,15 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 ### ✅ Fase 2: Capa de Servicios (Completada)
 
-1. **DTOs con Validaciones (16 DTOs)**
+1. **DTOs con Validaciones (24 DTOs)**
    - ProductoDTO, CrearProductoDTO, ActualizarProductoDTO
    - CarritoDTO, CarritoItemDTO, AgregarCarritoDTO
    - PedidoDTO, PedidoElementoDTO, CrearPedidoDTO
    - CategoriaDTO, CrearCategoriaDTO
    - ClienteDTO, CrearClienteDTO
    - ReviewDTO, CrearReviewDTO
+   - PaginaDTO, PaginaImagenDTO, PaginaEtiquetaDTO, EtiquetaDTO
+   - FileDTO, RegistroUsuarioDTO, MercadoPagoPreferenceDTO
    - ApiResponseDTO para respuestas estandarizadas
 
 2. **ProductoService (16 métodos)**
@@ -383,13 +386,13 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 
 - **Archivos Java**: 90+ archivos
 - **Líneas de código**: ~11,500 líneas
-- **Entidades**: 15 entidades JPA
-- **Repositorios**: 12 repositorios Spring Data JPA
-- **Servicios**: 6 servicios completos + 1 CustomUserDetailsService
-- **DTOs**: 16 DTOs con validaciones
-- **REST API Controllers**: 6 controladores con **50 endpoints**
-- **Web Controllers**: 3 controladores (ProductoWebController, AuthWebController, AdminWebController)
-- **Templates Thymeleaf**: 10+ templates (admin y public)
+- **Entidades**: 20 entidades JPA
+- **Repositorios**: 16 repositorios Spring Data JPA
+- **Servicios**: 12 servicios + 1 CustomUserDetailsService
+- **DTOs**: 24 DTOs con validaciones
+- **REST API Controllers**: 11 controladores
+- **Web Controllers**: 7 controladores
+- **Templates Thymeleaf**: 21 templates (admin y public)
 - **Configuraciones**: 4 (JpaConfig, OpenAPIConfig, SecurityConfig, DataInitializer)
 - **Scripts SQL**: 6+ archivos
 - **Tiempo de compilación**: ~5.0 segundos
@@ -398,14 +401,14 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - **Base de datos**: MySQL 5.5.62 en FreeSQLDatabase (hosting online)
 - **Errores**: 0 errores de compilación
 - **Test coverage**: Pendiente
-- **Versión actual**: 1.7.1
+- **Versión actual**: 1.8.1
 
 ## 📅 Fases del Proyecto
 
 ### Fase 1: Fundamentos ✅ (Completada)
 - [x] Estructura MVC refactorizada (14 paquetes)
-- [x] 16 entidades JPA con validaciones
-- [x] 11 repositorios Spring Data JPA
+- [x] 20 entidades JPA con validaciones
+- [x] 16 repositorios Spring Data JPA
 - [x] Configuración completa (JPA, OpenAPI, Exception Handling)
 - [x] Scripts SQL actualizados
 - [x] Documentación README y FASE1_RESUMEN
@@ -440,6 +443,11 @@ Una vez iniciada la aplicación, la documentación Swagger estará disponible en
 - [x] CategoriaApiController (8 endpoints: 5 públicos + 3 admin)
 - [x] ClienteApiController (9 endpoints solo admin)
 - [x] ReviewApiController (11 endpoints: 4 públicos + 7 admin)
+- [x] ContenidoPaginaApiController
+- [x] ContenidoEtiquetaApiController
+- [x] ContenidoPaginaImagenApiController
+- [x] ContenidoPaginaEtiquetaApiController
+- [x] FileUploadApiController
 - [x] Documentación OpenAPI completa
 - [x] Validación de DTOs con Jakarta Validation
 - [x] Respuestas estandarizadas con ApiResponseDTO
@@ -611,21 +619,43 @@ Este proyecto es privado y pertenece a Kiwisha Team.
 - ✅ Generación automática de SKU único (XXX-NNNN)
 - ✅ Validaciones: stock no negativo, precio > 0, título obligatorio
 
-### Fase 8: Características Avanzadas (Próxima)
-- [ ] CarritoWebController (gestión de carrito público)
-- [ ] CheckoutWebController (proceso de compra)
-- [ ] Pasarela de pago (integración con proveedor)
+### ✅ Fase 8: Carrito + Checkout + Mercado Pago (Completada) - v1.8.0
+
+**Funcionalidades Implementadas**:
+- ✅ Carrito público persistente por `sessionId` (API pública `/api/public/carrito`)
+- ✅ Carrito desplegable en el header (sin navegación al agregar)
+- ✅ Checkout web completo con páginas de pago/confirmación/rechazo
+- ✅ Integración Mercado Pago (Checkout Pro) con creación de preferencia
+- ✅ Flujo robusto: abre Checkout Pro en nueva pestaña y usa polling al backend para confirmar pago
+- ✅ Base URL pública configurable para `back_urls` (`APP_PUBLIC_BASE_URL`)
+
+### ✅ Fase 9: Trazabilidad de Pedidos (Completada) - v1.8.1
+
+**Funcionalidades Implementadas**:
+- ✅ Menú de perfil en el header con acceso a **Mis pedidos**
+- ✅ Página `/mis-pedidos` con listado y paginación del usuario autenticado
+
+### Fase 10: Características Avanzadas (Próxima)
 - [ ] Módulo de reportería avanzada
-- [ ] Gestión de imágenes con upload
 - [ ] Notificaciones por email
-- [ ] Templates adicionales (catálogo, producto detalle, checkout)
+- [ ] Panel de administración completo
 
 ---
 
-**Última actualización**: 28 de Octubre 2025  
-**Versión**: **1.7.1** (Migración a Base de Datos en Hosting)  
-**Versión anterior**: 1.7.0 (Sistema de Gestión de Productos)  
-**Estado**: En desarrollo activo - **Fase 7.1 Completada** ✅  
+**Última actualización**: 13 de Diciembre 2025  
+**Versión**: **1.8.1** (Mis pedidos + trazabilidad)  
+**Versión anterior**: 1.8.0 (Carrito + Checkout + Mercado Pago)  
+**Estado**: En desarrollo activo - **Fase 9 Completada** ✅  
+
+**Changelog v1.8.1**:
+- 👤 **Mis pedidos**: trazabilidad para el usuario autenticado (`/mis-pedidos`)
+- 🧭 Menú de perfil en el header (acceso a Mis pedidos)
+
+**Changelog v1.8.0**:
+- 🛒 Carrito público persistente por `sessionId` y dropdown en header
+- 💳 Checkout web + integración con Mercado Pago (Checkout Pro)
+- 🔁 Polling de estado para confirmar pago sin depender del redirect
+- ⚙️ Configuración de base URL pública para `back_urls` (`APP_PUBLIC_BASE_URL`)
 
 **Changelog v1.7.1**:
 - 🌐 **Migración a hosting online**: Base de datos MySQL alojada en FreeSQLDatabase
