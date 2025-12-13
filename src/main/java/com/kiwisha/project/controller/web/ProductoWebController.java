@@ -3,6 +3,7 @@ package com.kiwisha.project.controller.web;
 import com.kiwisha.project.dto.ProductoDTO;
 import com.kiwisha.project.service.CategoriaService;
 import com.kiwisha.project.service.PaginaService;
+import com.kiwisha.project.service.ProductoImagenService;
 import com.kiwisha.project.service.ProductoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class ProductoWebController {
     private final ProductoService productoService;
     private final CategoriaService categoriaService;
     private final PaginaService paginaService;
+    private final ProductoImagenService productoImagenService;
 
     /**
      * Página de inicio (Home/Landing)
@@ -128,17 +130,19 @@ public class ProductoWebController {
         log.debug("Accediendo a detalle de producto: {}", slug);
         
         var producto = productoService.obtenerProductoPorSlug(slug);
+
+        var imagenesAdicionales = productoImagenService.listarRutasPorProductoId(producto.getProductoId());
         
-        // Productos relacionados de la misma categoría (máximo 4)
+        // Productos relacionados de la misma categoría (todos, excluyendo el actual)
         var productosRelacionados = productoService.obtenerProductosPorCategoria(
             producto.getCategoriaId(),
-            PageRequest.of(0, 4)
+            PageRequest.of(0, 1000)
         ).getContent().stream()
          .filter(p -> !p.getProductoId().equals(producto.getProductoId()))
-         .limit(4)
          .toList();
         
         model.addAttribute("producto", producto);
+        model.addAttribute("imagenesAdicionales", imagenesAdicionales);
         model.addAttribute("productosRelacionados", productosRelacionados);
         model.addAttribute("paginaActual", "producto");
         

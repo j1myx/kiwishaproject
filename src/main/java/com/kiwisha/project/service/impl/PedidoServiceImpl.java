@@ -247,6 +247,13 @@ public class PedidoServiceImpl implements PedidoService {
         return convertirADTO(pedidoActualizado);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public long contarPedidos() {
+        log.debug("Contando total de pedidos");
+        return pedidoRepository.count();
+    }
+
     /**
      * Genera un código único para el pedido.
      */

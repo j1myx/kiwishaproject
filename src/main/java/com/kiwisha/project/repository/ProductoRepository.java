@@ -1,5 +1,6 @@
 package com.kiwisha.project.repository;
 
+import com.kiwisha.project.model.EstadoProducto;
 import com.kiwisha.project.model.Producto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -78,6 +79,22 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
      * Cuenta productos por categoría
      */
     long countByCategoriaCategoriaIdAndPublicadoTrue(Integer categoriaId);
+
+    /**
+     * Cuenta productos publicados
+     */
+    long countByPublicadoTrue();
+
+    /**
+     * Cuenta productos por estado
+     */
+    long countByEstado(EstadoProducto estado);
+
+    /**
+     * Cuenta productos con stock bajo (cantidad menor o igual al límite)
+     */
+    @Query("SELECT COUNT(p) FROM Producto p WHERE p.cantidad <= :limite")
+    long countProductosStockBajo(@Param("limite") Integer limite);
 
     /**
      * Verifica si existe un producto con el slug dado (excluyendo un ID específico)

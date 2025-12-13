@@ -49,10 +49,16 @@
             <!-- Header con título y botón Nuevo producto -->
             <div class="flex flex-wrap justify-between gap-3 p-4">
                 <p class="text-[#1c140d] tracking-light text-[32px] font-bold leading-tight min-w-72">Listado de Productos</p>
-                <a th:href="@{/admin/productos/nuevo}"
-                   class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-medium leading-normal hover:bg-[#e9dbce] transition-colors">
-                    <span class="truncate">Nuevo producto</span>
-                </a>
+                <div class="flex gap-2">
+                    <a th:href="@{/admin/productos/nuevo}"
+                       class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-medium leading-normal hover:bg-[#e9dbce] transition-colors">
+                        <span class="truncate">Nuevo producto</span>
+                    </a>
+                    <button type="button" onclick="eliminarTodosProductos()"
+                            class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 px-4 bg-[#f4ede6] text-red-600 text-sm font-medium leading-normal hover:bg-[#e9dbce] transition-colors">
+                        <span class="truncate">Eliminar todos</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Barra de búsqueda -->
@@ -292,21 +298,51 @@
                 method: 'POST',
                 headers: { 
                     [csrfHeader]: csrfToken,
-                    'Content-Type': 'application/json'
                 }
-            }).then(response => {
+            })
+            .then(async (response) => {
                 console.log('Respuesta:', response.status);
-                if (response.ok) {
-                    alert('Producto eliminado exitosamente');
+                const data = await response.json().catch(() => ({}));
+
+                if (response.ok && data.status === 'success') {
+                    alert(data.mensaje || 'Producto eliminado exitosamente');
                     window.location.reload();
-                } else {
-                    return response.json().then(data => {
-                        alert('Error: ' + (data.message || 'No se pudo eliminar el producto'));
-                    });
+                    return;
                 }
-            }).catch(error => {
+
+                alert('Error: ' + (data.mensaje || data.message || 'No se pudo eliminar el producto'));
+            })
+            .catch(error => {
                 console.error('Error:', error);
                 alert('Error al eliminar el producto');
+            });
+        }
+
+        function eliminarTodosProductos() {
+            if (!confirm('¿Está seguro de ELIMINAR TODOS los productos? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            fetch('/admin/productos/eliminar-todos', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                }
+            })
+            .then(async (response) => {
+                const data = await response.json().catch(() => ({}));
+
+                if (response.ok && data.status === 'success') {
+                    alert(data.mensaje || 'Productos eliminados');
+                    window.location.reload();
+                    return;
+                }
+
+                alert('Error: ' + (data.mensaje || data.message || 'No se pudieron eliminar los productos'));
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Error al eliminar todos los productos');
             });
         }
 

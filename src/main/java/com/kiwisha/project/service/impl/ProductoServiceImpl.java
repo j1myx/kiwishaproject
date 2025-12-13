@@ -10,6 +10,7 @@ import com.kiwisha.project.repository.CategoriaRepository;
 import com.kiwisha.project.repository.ProductoRepository;
 import com.kiwisha.project.service.ProductoService;
 import com.kiwisha.project.util.SlugGenerator;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -31,9 +32,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductoServiceImpl implements ProductoService {
 
+    private static final String DEFAULT_PRODUCT_IMAGE_PATH = "defaults/producto-default.svg";
+
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
     private final ModelMapper modelMapper;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -150,14 +154,16 @@ public class ProductoServiceImpl implements ProductoService {
                 .sku(crearProductoDTO.getSku())
                 .peso(crearProductoDTO.getPeso())
                 .unidadMedida(crearProductoDTO.getUnidadMedida())
-                .imagen(crearProductoDTO.getImagen())
+                .imagen((crearProductoDTO.getImagen() == null || crearProductoDTO.getImagen().isBlank())
+                    ? DEFAULT_PRODUCT_IMAGE_PATH
+                    : crearProductoDTO.getImagen())
                 .estado(crearProductoDTO.getEstado() != null ? crearProductoDTO.getEstado() : EstadoProducto.BORRADOR)
                 .metaTitulo(crearProductoDTO.getMetaTitulo())
                 .metaDescripcion(crearProductoDTO.getMetaDescripcion())
                 .build();
 
-        // Configurar valores booleanos con valores seguros
-        producto.setPublicado(Boolean.TRUE.equals(crearProductoDTO.getPublicado()));
+            // Mantener consistencia: `publicado` debe reflejar el `estado`
+            producto.setPublicado(producto.getEstado() == EstadoProducto.PUBLICADO);
         producto.setDestacado(Boolean.TRUE.equals(crearProductoDTO.getDestacado()));
         producto.setNuevo(Boolean.TRUE.equals(crearProductoDTO.getNuevo()));
         producto.setEnOferta(Boolean.TRUE.equals(crearProductoDTO.getEnOferta()));
@@ -229,9 +235,6 @@ public class ProductoServiceImpl implements ProductoService {
         if (actualizarProductoDTO.getImagen() != null) {
             producto.setImagen(actualizarProductoDTO.getImagen());
         }
-        if (actualizarProductoDTO.getPublicado() != null) {
-            producto.setPublicado(actualizarProductoDTO.getPublicado());
-        }
         if (actualizarProductoDTO.getEstado() != null) {
             log.debug("Aplicando estado: {} al producto ID: {}", actualizarProductoDTO.getEstado(), id);
             producto.setEstado(actualizarProductoDTO.getEstado());
@@ -251,6 +254,9 @@ public class ProductoServiceImpl implements ProductoService {
         if (actualizarProductoDTO.getMetaDescripcion() != null) {
             producto.setMetaDescripcion(actualizarProductoDTO.getMetaDescripcion());
         }
+
+        // Mantener consistencia: `publicado` debe reflejar el `estado`
+        producto.setPublicado(producto.getEstado() == EstadoProducto.PUBLICADO);
 
         Producto productoActualizado = productoRepository.save(producto);
         log.info("Producto actualizado exitosamente ID: {}", id);
@@ -356,6 +362,49 @@ public class ProductoServiceImpl implements ProductoService {
                 .stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarProductos() {
+        log.debug("Contando total de productos");
+        return productoRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarProductosPublicados() {
+        log.debug("Contando productos publicados");
+        return productoRepository.countByEstado(EstadoProducto.PUBLICADO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarProductosStockBajo(Integer limite) {
+        log.debug("Contando productos con stock bajo (límite: {})", limite);
+        return productoRepository.countProductosStockBajo(limite);
+    }
+
+    @Override
+    public long eliminarTodosLosProductos() {
+        log.warn("Eliminando TODOS los productos y relaciones directas (operación administrativa)");
+
+        // Importante: borrar primero tablas que referencian a productos para evitar violaciones de FK.
+        // Tablas detectadas en el modelo:
+        // - carrito_items (CarritoItem -> Producto)
+        // - pedido_elementos (PedidoElemento -> Producto)
+        // - reviews (Review -> Producto)
+        // - producto_imagenes (ProductoImagen -> Producto)
+        // - productos_paginas (ProductoPagina -> Producto)
+
+        entityManager.createNativeQuery("DELETE FROM carrito_items").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM pedido_elementos").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM reviews").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM producto_imagenes").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM productos_paginas").executeUpdate();
+
+        int productosEliminados = entityManager.createNativeQuery("DELETE FROM productos").executeUpdate();
+        return productosEliminados;
     }
 
     /**
