@@ -98,9 +98,6 @@ public class CheckoutWebController {
             
             // Crear pedido (el servicio obtendrá los elementos del carrito en sesión)
             var pedido = pedidoService.crearPedido(session.getId(), crearPedidoDTO);
-
-            // El servicio limpia el carrito (persistido por sesión)
-            carritoService.limpiarCarrito(session.getId());
             
             // Guardar pedidoId en sesión para la confirmación
             session.setAttribute("ultimoPedidoId", pedido.getPedidoId());
@@ -182,7 +179,7 @@ public class CheckoutWebController {
      */
     @GetMapping("/estado/{pedidoId}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> obtenerEstadoPedido(@PathVariable Integer pedidoId) {
+    public ResponseEntity<Map<String, Object>> obtenerEstadoPedido(@PathVariable Integer pedidoId, HttpSession session) {
         Map<String, Object> payload = new HashMap<>();
 
         try {
@@ -196,7 +193,11 @@ public class CheckoutWebController {
                 if (mpStatus != null) {
                     String normalized = mpStatus.trim().toLowerCase();
                     if (normalized.equals("approved")) {
-                        pedidoService.actualizarEstadoPedido(pedidoId, "CONFIRMADO");
+                        pedidoService.confirmarPedido(pedidoId);
+                        // Limpia carrito al concretarse el pago (si la sesión sigue activa)
+                        if (session != null) {
+                            carritoService.limpiarCarrito(session.getId());
+                        }
                         estado = "CONFIRMADO";
                     } else if (normalized.equals("rejected") || normalized.equals("cancelled")) {
                         pedidoService.actualizarEstadoPedido(pedidoId, "CANCELADO");
@@ -220,10 +221,13 @@ public class CheckoutWebController {
      * Return URLs de Mercado Pago (Checkout Pro)
      */
     @GetMapping("/mercadopago/success")
-    public String mercadoPagoSuccess(@RequestParam Integer pedidoId, RedirectAttributes redirectAttributes) {
+    public String mercadoPagoSuccess(@RequestParam Integer pedidoId, HttpSession session, RedirectAttributes redirectAttributes) {
         log.info("MercadoPago success para pedidoId={}", pedidoId);
         try {
-            pedidoService.actualizarEstadoPedido(pedidoId, "CONFIRMADO");
+            pedidoService.confirmarPedido(pedidoId);
+            if (session != null) {
+                carritoService.limpiarCarrito(session.getId());
+            }
             redirectAttributes.addFlashAttribute("success", "¡Pago aprobado! Pedido confirmado.");
             return "redirect:/checkout/confirmacion/" + pedidoId;
         } catch (Exception e) {

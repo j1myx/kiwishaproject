@@ -126,16 +126,14 @@ public class PedidoServiceImpl implements PedidoService {
                 .notas(crearPedidoDTO.getNotas())
                 .build();
 
-        // 9. Crear elementos del pedido y reducir stock
+        // 9. Crear elementos del pedido (NO reducir stock aquí; se reduce al confirmar pago)
         for (CarritoItem item : items) {
             Producto producto = item.getProducto();
 
-            // Validar y reducir stock
+            // Validar stock (sin modificarlo)
             if (!producto.tieneSuficienteStock(item.getCantidad())) {
                 throw new BusinessException("Stock insuficiente para el producto: " + producto.getTitulo());
             }
-            producto.reducirStock(item.getCantidad());
-            productoRepository.save(producto);
 
             // Crear elemento del pedido
             PedidoElemento elemento = PedidoElemento.builder()
@@ -154,11 +152,45 @@ public class PedidoServiceImpl implements PedidoService {
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
         log.info("Pedido creado exitosamente con código: {}", codigoPedido);
 
-        // 12. Limpiar el carrito
-        carritoService.limpiarCarrito(sessionId);
-        log.info("Carrito limpiado para sesión: {}", sessionId);
-
         return convertirADTO(pedidoGuardado);
+    }
+
+    @Override
+    public PedidoDTO confirmarPedido(Integer id) {
+        log.info("Confirmando pedido (pago aprobado) ID: {}", id);
+
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido", "id", id));
+
+        // Idempotencia: si ya está confirmado, no volver a descontar stock.
+        if (pedido.getEstado() == Pedido.EstadoPedido.CONFIRMADO) {
+            return convertirADTO(pedido);
+        }
+        if (pedido.getEstado() != Pedido.EstadoPedido.PENDIENTE) {
+            throw new BusinessException("El pedido no puede confirmarse en su estado actual: " + pedido.getEstado());
+        }
+
+        // Descontar stock de cada elemento
+        for (PedidoElemento elemento : pedido.getPedidoElementos()) {
+            Integer productoId = elemento.getProducto() != null ? elemento.getProducto().getProductoId() : null;
+            if (productoId == null) {
+                throw new BusinessException("Elemento de pedido sin producto asociado");
+            }
+
+            Producto producto = productoRepository.findById(productoId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Producto", "id", productoId));
+
+            if (!producto.tieneSuficienteStock(elemento.getCantidad())) {
+                throw new BusinessException("Stock insuficiente para el producto: " + producto.getTitulo());
+            }
+            producto.reducirStock(elemento.getCantidad());
+            productoRepository.save(producto);
+        }
+
+        pedido.setEstado(Pedido.EstadoPedido.CONFIRMADO);
+        Pedido pedidoActualizado = pedidoRepository.save(pedido);
+        log.info("Pedido confirmado exitosamente. pedidoId={}", id);
+        return convertirADTO(pedidoActualizado);
     }
 
     private Integer resolveAuditUserId(CrearPedidoDTO crearPedidoDTO) {
@@ -275,12 +307,19 @@ public class PedidoServiceImpl implements PedidoService {
             throw new BusinessException("El pedido no puede ser cancelado en su estado actual: " + pedido.getEstado());
         }
 
-        // Restaurar stock de los productos
-        for (PedidoElemento elemento : pedido.getPedidoElementos()) {
-            Producto producto = elemento.getProducto();
-            producto.aumentarStock(elemento.getCantidad());
-            productoRepository.save(producto);
-            log.debug("Stock restaurado para producto ID: {}", producto.getProductoId());
+        // Restaurar stock SOLO si el pedido ya había sido confirmado (stock descontado)
+        if (pedido.getEstado() == Pedido.EstadoPedido.CONFIRMADO) {
+            for (PedidoElemento elemento : pedido.getPedidoElementos()) {
+                Integer productoId = elemento.getProducto() != null ? elemento.getProducto().getProductoId() : null;
+                if (productoId == null) {
+                    continue;
+                }
+                Producto producto = productoRepository.findById(productoId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Producto", "id", productoId));
+                producto.aumentarStock(elemento.getCantidad());
+                productoRepository.save(producto);
+                log.debug("Stock restaurado para producto ID: {}", producto.getProductoId());
+            }
         }
 
         // Actualizar estado del pedido

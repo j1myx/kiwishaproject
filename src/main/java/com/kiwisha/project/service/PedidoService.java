@@ -13,10 +13,18 @@ public interface PedidoService {
 
     /**
      * Crea un nuevo pedido desde el carrito actual.
-     * Valida stock, aplica cupón si existe, genera pedido y elementos,
-     * reduce stock de productos y limpia el carrito.
+        * Valida stock y genera pedido + elementos.
+        *
+        * Importante: el stock NO se descuenta aquí. El descuento de stock debe ocurrir
+        * cuando el pago quede confirmado (por ejemplo, Mercado Pago approved).
      */
     PedidoDTO crearPedido(String sessionId, CrearPedidoDTO crearPedidoDTO);
+
+        /**
+        * Confirma un pedido (pago aprobado) y descuenta el stock de los productos.
+        * Debe ser idempotente para tolerar reintentos/polling.
+        */
+        PedidoDTO confirmarPedido(Integer id);
 
     /**
      * Obtiene un pedido por su ID.
@@ -55,7 +63,8 @@ public interface PedidoService {
     PedidoDTO actualizarEstadoPedido(Integer id, String nuevoEstado);
 
     /**
-     * Cancela un pedido y restaura el stock de los productos.
+        * Cancela un pedido. Si el pedido ya había sido confirmado (stock descontado),
+        * restaura el stock de los productos.
      */
     PedidoDTO cancelarPedido(Integer id, String motivo);
 
