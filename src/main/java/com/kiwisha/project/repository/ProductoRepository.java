@@ -52,6 +52,11 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     List<Producto> findByDestacadoTrueAndPublicadoTrueOrderByCreadoEnDesc();
 
     /**
+     * Obtiene los 10 productos publicados con menor stock
+     */
+    List<Producto> findTop10ByPublicadoTrueOrderByCantidadAscCreadoEnDesc();
+
+    /**
      * Obtiene productos nuevos
      */
     List<Producto> findByNuevoTrueAndPublicadoTrueOrderByCreadoEnDesc();

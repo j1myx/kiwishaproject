@@ -105,7 +105,7 @@ public class ProductoServiceImpl implements ProductoService {
     @Transactional(readOnly = true)
     public List<ProductoDTO> obtenerProductosDestacados() {
         log.debug("Obteniendo productos destacados");
-        return productoRepository.findByDestacadoTrueAndPublicadoTrueOrderByCreadoEnDesc()
+        return productoRepository.findTop10ByPublicadoTrueOrderByCantidadAscCreadoEnDesc()
                 .stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
