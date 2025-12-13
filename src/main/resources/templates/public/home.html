@@ -89,10 +89,6 @@
                                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#f98006] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#e07305]">
                                         <span class="truncate">Ver catálogo</span>
                                     </a>
-                                    <a href="#"
-                                       class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#f4ede6] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#e9dbce]">
-                                        <span class="truncate">Ofertas</span>
-                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -100,41 +96,36 @@
                     
                     <!-- Productos Destacados -->
                     <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Destacados</h2>
-                    <div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-3 p-4">
-                        <div class="flex flex-col gap-3 pb-3">
-                            <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                                 style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLl5XK8J6sOEsMCG8irTiY_hdbPiL5CpMJrrkVmNgKHyimMCT8Qmzqyd9j-VDt69rFh2T9mMXHB753FT1NQZ_esvNHaXCLwKFfwaGGptAzXnZlPJN0e82QEhqlUwjcCVJS_FGOBIhApKxyZ2dGzLoQXbsqokb0UGBuZm0pa4BPwBguTapPJu6m-9rXb5p0gOnz5MfmmqxkCLEDVAsCFhg8GOcO5Ke6siLPTpJJft9Q1zFnlbZF5mwyA8DczyGq4wFuoHpQGWm78YXH");'></div>
-                            <div>
-                                <p class="text-[#1c140d] text-base font-medium leading-normal">Kiwicha Orgánica</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">Sabor y nutrición ancestral</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">S/ 12.50</p>
-                            </div>
+                    <div class="p-4">
+                        <div class="flex items-center justify-between gap-3 pb-3">
+                            <button type="button" id="destacadosPrev"
+                                    class="flex min-w-[44px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#e9dbce]"
+                                    aria-label="Ver productos anteriores">
+                                <span class="truncate">‹</span>
+                            </button>
+
+                            <button type="button" id="destacadosNext"
+                                    class="flex min-w-[44px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#e9dbce]"
+                                    aria-label="Ver más productos">
+                                <span class="truncate">›</span>
+                            </button>
                         </div>
-                        <div class="flex flex-col gap-3 pb-3">
-                            <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                                 style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA5jDk_HWNZfupQ9GSQ-Xu-UTfa-lBHnnnN4siutqDOEzvG1sTOrO5yjo6k80xsrZDtCehkAo8DmXXAChxbkqmCrwq70hdV5G0hhfA8SjrN4XoN35a1qPvbcdBUetQW9DAlpDV8UbhBHeLsBXxq3BD9oFa__2J4cFd3Wyrv5fEtF8sw-qJYAsME2YO_oKk0brNcFPut5Rpc0r0PmS-m-ebAheyiJq_57SquzNus8xSqHEF0CZsKFBVltTVZ3oSUuqQ1ucHyk_K3zZx-");'></div>
-                            <div>
-                                <p class="text-[#1c140d] text-base font-medium leading-normal">Quinua Tricolor</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">Mezcla de quinua blanca, roja y negra</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">S/ 15.00</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-3 pb-3">
-                            <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                                 style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVnPTkybUNNFE6z98hAWGv1UyHHgABtFyLQPfWXLJ0ouKzkJ2maozeVQLCFddmWzS72A3WO-XkhFpyZeohe50bWraGHtW3vKQrqaFGLLplWPwn97ohj918giZbK4i0aP3-2IPWTKuLY-IqtrN_SUu4ZoqIOHVTWbVFYeCnzg4v9IovG8f96HQ9UP_N0ejmur0CVJZKyg_ORpldI2MYT45LyGO8PJZj0EiXp106IRVPHSPdm-hanxNjhaJwsyFOb5z4sLl4T4OFtnRj");'></div>
-                            <div>
-                                <p class="text-[#1c140d] text-base font-medium leading-normal">Harina de Kiwicha</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">Fuente de proteínas y fibra</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">S/ 8.00</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-3 pb-3">
-                            <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
-                                 style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBVeYI4QKyWGFJjUMP-D7WyQlxc4J7DZuZUHEMUmAtBtl1HSMGJt7JExhH9lD4FCtaKkHSioRHRzMNgwVOAkAJWZUAR02su7FOjXAW3KPJcAg1wYTS9_pyXAKAGyxCOi6fx1gHtFfUw35biMnZ9NYZt5nSzRo_yZ8AiVNn5huRaVwdO1giswOPM1Ghllb5R1Of_6vLZ9tX74RvcDWvoZeCCm-CaPDBaWL36QATueCgNF9xlpPdhQGLD9z5QsL3Ao8jopdVmXdjev4Hz");'></div>
-                            <div>
-                                <p class="text-[#1c140d] text-base font-medium leading-normal">Granola Andina</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">Energía natural para tu día</p>
-                                <p class="text-[#9e7347] text-sm font-normal leading-normal">S/ 10.00</p>
+
+                        <div id="destacadosViewport" class="overflow-hidden">
+                            <div id="destacadosTrack" class="flex gap-3">
+                                <a th:each="p : ${productosDestacados}"
+                                   th:href="@{/producto/{slug}(slug=${p.slug})}"
+                                   class="flex flex-col gap-3 pb-3 w-[180px] shrink-0">
+                                    <img class="w-full aspect-square object-cover rounded-lg bg-[#f4ede6]"
+                                         th:src="@{${(p.imagen != null and !#strings.isEmpty(p.imagen)) ? '/files/' + p.imagen : '/files/defaults/producto-default.svg'}}"
+                                         onerror="this.onerror=null; this.src='/files/defaults/producto-default.svg';"
+                                         th:alt="${p.titulo}" />
+                                    <div>
+                                        <p class="text-[#1c140d] text-base font-medium leading-normal" th:text="${p.titulo}">Producto</p>
+                                        <p class="text-[#9e7347] text-sm font-normal leading-normal" th:text="${p.resumen}"></p>
+                                        <p class="text-[#9e7347] text-sm font-normal leading-normal" th:text="'S/ ' + ${p.precio}">S/ 0.00</p>
+                                    </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -230,5 +221,28 @@
             </footer>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const viewport = document.getElementById('destacadosViewport');
+            const prevBtn = document.getElementById('destacadosPrev');
+            const nextBtn = document.getElementById('destacadosNext');
+
+            if (!viewport || !prevBtn || !nextBtn) return;
+
+            const scrollByAmount = () => {
+                const firstItem = viewport.querySelector('a');
+                const itemWidth = firstItem ? firstItem.getBoundingClientRect().width : 180;
+                return Math.max(200, itemWidth + 12);
+            };
+
+            prevBtn.addEventListener('click', () => {
+                viewport.scrollBy({ left: -scrollByAmount(), behavior: 'smooth' });
+            });
+            nextBtn.addEventListener('click', () => {
+                viewport.scrollBy({ left: scrollByAmount(), behavior: 'smooth' });
+            });
+        })();
+    </script>
 </body>
 </html>
