@@ -21,6 +21,6 @@ public class ContenidoWebController {
 
     @GetMapping({"/admin/contenidos/editar/{paginaId}"})
     public String editarPagina(@PathVariable Integer paginaId) {
-        return "/admin/contenido/etitar-pagina";
+        return "/admin/contenido/editar-pagina";
     }
 }

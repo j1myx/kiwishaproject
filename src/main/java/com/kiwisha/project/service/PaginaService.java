@@ -9,6 +9,7 @@ import java.util.List;
 public interface PaginaService {
     Page<PaginaDTO> findAll(Pageable pageable);
     PaginaDTO findByUrl(String url);
+    PaginaDTO findById(Integer paginaId);
     List<PaginaDTO> getTops();
     void delete(Integer paginaId);
 }

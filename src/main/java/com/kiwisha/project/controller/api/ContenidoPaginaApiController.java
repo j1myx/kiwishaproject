@@ -41,4 +41,9 @@ public class ContenidoPaginaApiController {
     public PaginaDTO findByUrl(@PathVariable String url) {
         return paginaService.findByUrl(url);
     }
+
+    @GetMapping("/one/{paginaId}")
+    public PaginaDTO findOneByPaginaId(@PathVariable Integer paginaId) {
+        return paginaService.findById(paginaId);
+    }
 }

@@ -8,8 +8,8 @@
     <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
         <div class="flex flex-wrap justify-between gap-3 p-4">
             <div class="flex min-w-72 flex-col gap-3">
-                <p class="text-[#1c140d] tracking-light text-[32px] font-bold leading-tight">Crear Página</p>
-                <p class="text-[#9e7347] text-sm font-normal leading-normal">Completa los campos para agregar una nueva página</p>
+                <p class="text-[#1c140d] tracking-light text-[32px] font-bold leading-tight">Editar Página</p>
+                <p class="text-[#9e7347] text-sm font-normal leading-normal">Modifica los campos para editar la nueva página</p>
             </div>
         </div>
 
@@ -54,9 +54,8 @@
             <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
                 <label class="flex flex-col min-w-40 flex-1">
                     <p class="text-[#1c140d] text-base font-medium leading-normal pb-2">Resumen</p>
-                    <textarea v-model="pagina.resumen"
-                              placeholder="Resumen de la página"
-                              rows="2"
+                    <textarea id="resumen" v-model="pagina.resumen"
+                              placeholder="Resumen el producto"
                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#1c140d] focus:outline-0 focus:ring-0 border border-[#e9dbce] bg-[#f4ede6] focus:border-[#e9dbce] min-h-36 placeholder:text-[#9e7347] p-[15px] text-base font-normal leading-normal transition-colors"></textarea>
                 </label>
             </div>
@@ -126,7 +125,7 @@
             <div class="flex px-4 py-3 justify-stretch">
                 <button type="button" @click="guardar"
                         class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#f98006] text-[#fcfaf8] text-base font-bold leading-normal tracking-[0.015em] ml-3 transition-colors hover:bg-[#e67a05]">
-                    <span class="truncate">Registrar</span>
+                    <span class="truncate">Editar</span>
                 </button>
 
                 <a
@@ -218,19 +217,35 @@
             etiquetaSeleccionada: function (etiqueta) {
                 return this.paginaEtiquetas.find(e => e.etiquetaId == etiqueta.etiquetaId) != null
             },
+            obtenerPagina: function () {
+                const [,,,paginaId] = window.location.pathname.split('/').filter(segment => segment.length > 0);
+                axios.get('/api/contenido/paginas/one/' + paginaId).then(response => {
+                    this.pagina = response.data
+                    this.paginaEtiquetas = this.pagina.etiquetas
+                    this.previewFiles = this.pagina.paginaImagenes.map(pi => '/files/' + pi.ruta)
+                    this.uploadFiles = this.pagina.paginaImagenes.map(pi => pi.ruta)
+
+                    tinymce.activeEditor.setContent(this.pagina.contenido);
+                })
+            },
             guardar: function () {
                 this.pagina.contenido = tinymce.activeEditor.getContent();
 
-                axios.post('/api/contenido/paginas', this.pagina).then(response => {
-                    const requestFiles = this.uploadFiles
-                        .map(file => ({"nombre": file.nombre, "ruta": file.ruta, "pagina": { "paginaId": response.data.paginaId }}))
-                    axios.post('/api/contenido/pagina-imagenes', requestFiles).then(() => {
+                axios.put('/api/contenido/paginas/' + this.pagina.paginaId, this.pagina).then(response => {
 
-                        const requestEtiquetas = this.paginaEtiquetas
-                            .map(etiqueta => ({ "etiqueta": { "etiquetaId": etiqueta.etiquetaId }, "pagina": { "paginaId": response.data.paginaId } }))
+                    axios.delete('/api/contenido/pagina-imagenes', this.pagina.paginaImagenes.map(pi => pi.paginaImagenId)).then(() => {
+                        const requestFiles = this.uploadFiles
+                        .map(file => ({"nombre": file.nombre, "ruta": file.ruta, "pagina": { "paginaId": this.pagina.paginaId }}))
 
-                        axios.post('/api/contenido/pagina-etiquetas', requestEtiquetas).then(() => {
-                            window.location.replace("/admin/contenidos")
+                        axios.post('/api/contenido/pagina-imagenes', requestFiles).then(() => {
+                            axios.delete('/api/contenido/pagina-etiquetas/paginaId/'+this.pagina.paginaId, {}).then(() => {
+                                const requestEtiquetas = this.paginaEtiquetas
+                                    .map(etiqueta => ({ "etiqueta": { "etiquetaId": etiqueta.etiquetaId }, "pagina": { "paginaId": this.pagina.paginaId } }))
+
+                                axios.post('/api/contenido/pagina-etiquetas', requestEtiquetas).then(() => {
+                                    window.location.replace("/admin/contenidos")
+                                })
+                            })
                         })
                     })
                 })
@@ -238,6 +253,7 @@
         },
         mounted: function () {
             this.obtenerEtiquetas()
+            this.obtenerPagina()
         }
     });
 </script>

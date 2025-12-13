@@ -18,8 +18,9 @@ public class ContenidoPaginaEtiquetaApiController {
         return paginaEtiquetaRepository.saveAll(paginaEtiquetas);
     }
 
-    @DeleteMapping
-    public void deleteAllById(@RequestBody List<Integer> paginaEtiquetaIds) {
-        paginaEtiquetaRepository.deleteAllById(paginaEtiquetaIds);
+    @DeleteMapping("paginaId/{paginaId}")
+    public void deleteAllByPaginaId(@PathVariable Integer paginaId) {
+        List<PaginaEtiqueta> paginaEtiquetas = paginaEtiquetaRepository.findByPaginaId(paginaId);
+        paginaEtiquetas.forEach(paginaEtiquetaRepository::delete);
     }
 }
