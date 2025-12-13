@@ -210,16 +210,19 @@
         if (!dropdown) return;
 
         const willOpen = dropdown.classList.contains('hidden');
-        closeAllDropdowns(willOpen ? dropdown : null);
-        dropdown.classList.toggle('hidden');
 
         if (willOpen) {
+          closeAllDropdowns(dropdown);
+          dropdown.classList.remove('hidden');
+
           try {
             await refreshCart(dropdown);
           } catch (err) {
             // Si falla, al menos no rompemos el UI
             console.error(err);
           }
+        } else {
+          dropdown.classList.add('hidden');
         }
       });
     });
