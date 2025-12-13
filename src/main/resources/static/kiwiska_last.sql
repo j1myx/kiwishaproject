@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `paginas` (
   `url` varchar(50) CHARACTER SET utf16 COLLATE utf16_general_ci NOT NULL DEFAULT '',
   `resumen` varchar(50) CHARACTER SET utf16 COLLATE utf16_general_ci NOT NULL DEFAULT '',
   `contenido` longtext CHARACTER SET utf16 COLLATE utf16_general_ci NOT NULL,
-  `tipo` enum('BASE','NOTICIAS','ARTICULOS') CHARACTER SET utf16 COLLATE utf16_general_ci NOT NULL,
+  `tipo` enum('BASE','ARTICULOS') CHARACTER SET utf16 COLLATE utf16_general_ci NOT NULL,
   `publicado` bit(1) NOT NULL,
   `creado_por` int NOT NULL,
   `creado_en` datetime NOT NULL,

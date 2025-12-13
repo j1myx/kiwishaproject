@@ -26,6 +26,8 @@
                 <input
                         id="searchInput"
                         type="text"
+                        v-model="buscartitulo"
+                        @keyup.enter="buscar"
                         placeholder="Buscar páginas..."
                         class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1c140d] focus:outline-0 focus:ring-0 border-none bg-[#f4ede6] focus:border-none h-full placeholder:text-[#9e7347] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
                 />
@@ -168,8 +170,8 @@
             paginas: null,
             pagination: {},
             pagina: {},
-            nombres: "Dajana",
-            modal: null
+            modal: null,
+            buscartitulo: ''
         },
         computed: {
             // Propiedades computadas para facilitar el acceso a los datos
@@ -232,7 +234,7 @@
         },
         methods: {
             listar: function () {
-                axios.get('/api/contenido/paginas?nombres='+this.nombres).then(response => {
+                axios.get('/api/contenido/paginas?titulo='+this.buscartitulo).then(response => {
                     this.paginas = response.data.content
                 });
             },

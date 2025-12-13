@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,16 +20,17 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
             value = """
                         FROM Pagina p
                         LEFT JOIN FETCH p.etiquetas e
+                        WHERE (:titulo IS NULL OR :titulo = '') OR p.titulo = :titulo
                     """,
             countQuery = "SELECT count(*) FROM Pagina"
     )
-    Page<Pagina> findAll(Pageable pageable);
+    Page<Pagina> findAll(@Param("titulo") String titulo, Pageable pageable);
 
     @Query(
             value = """
                         FROM Pagina p
                         LEFT JOIN FETCH p.paginaImagenes
-                        WHERE p.publicado = true AND p.tipo = 'NOTICIAS'
+                        WHERE p.publicado = true AND p.tipo = 'ARTICULOS'
                         ORDER BY p.creadoEn DESC
                         LIMIT 3
                     """
@@ -55,6 +57,26 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
                     """
     )
     Pagina findByPaginaId(Integer paginaId);
+
+    @Query(
+            value = """
+                        FROM Pagina p
+                        LEFT JOIN FETCH p.paginaImagenes
+                        INNER JOIN p.paginaEtiquetas pe
+                        INNER JOIN pe.etiqueta e
+                        WHERE e.nombre = :etiqueta
+                    """
+    )
+    List<Pagina> findByEtiqueta(String etiqueta);
+
+    @Query(
+            value = """
+                        FROM Pagina p
+                        LEFT JOIN FETCH p.paginaImagenes
+                        WHERE p.tipo = 'ARTICULOS'
+                    """
+    )
+    List<Pagina> findArticulos();
 
     /**
      * Obtiene páginas publicadas por tipo

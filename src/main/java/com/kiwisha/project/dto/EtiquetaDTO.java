@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class EtiquetaDTO {
     private Integer etiquetaId;
     private String nombre;
+    private String resumen;
     private Integer creadoPor;
     private LocalDateTime creadoEn;
     private Integer actualizadoPor;

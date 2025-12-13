@@ -23,8 +23,8 @@ public class PaginaServiceImpl implements PaginaService {
     private final PaginaEtiquetaRepository paginaEtiquetaRepository;
 
     @Override
-    public Page<PaginaDTO> findAll(Pageable pageable) {
-        Page<Pagina> page =  paginaRepository.findAll(pageable);
+    public Page<PaginaDTO> findAll(String titulo, Pageable pageable) {
+        Page<Pagina> page =  paginaRepository.findAll(titulo, pageable);
 
         return page.map(pagina -> PaginaDTO.builder()
                 .paginaId(pagina.getPaginaId())
@@ -126,5 +126,51 @@ public class PaginaServiceImpl implements PaginaService {
     @Override
     public void delete(Integer paginaId) {
         paginaRepository.deleteById(paginaId);
+    }
+
+    @Override
+    public List<PaginaDTO> findByEtiqueta(String etiqueta) {
+        return paginaRepository.findByEtiqueta(etiqueta)
+                .stream()
+                .map(p -> PaginaDTO.builder()
+                        .paginaId(p.getPaginaId())
+                        .titulo(p.getTitulo())
+                        .resumen(p.getResumen())
+                        .url(p.getUrl())
+                        .paginaImagenes(p.getPaginaImagenes()
+                                .stream()
+                                .map(imagen -> PaginaImagenDTO.builder()
+                                        .paginaImagenId(imagen.getPaginaImagenId())
+                                        .nombre(imagen.getNombre())
+                                        .ruta(imagen.getRuta())
+                                        .build())
+                                .toList())
+                        .creadoEn(p.getCreadoEn())
+                        .actualizadoEn(p.getActualizadoEn())
+                        .build())
+                .toList();
+    }
+
+    @Override
+    public List<PaginaDTO> findArticulos() {
+        return paginaRepository.findArticulos()
+                .stream()
+                .map(p -> PaginaDTO.builder()
+                        .paginaId(p.getPaginaId())
+                        .titulo(p.getTitulo())
+                        .resumen(p.getResumen())
+                        .url(p.getUrl())
+                        .paginaImagenes(p.getPaginaImagenes()
+                                .stream()
+                                .map(imagen -> PaginaImagenDTO.builder()
+                                        .paginaImagenId(imagen.getPaginaImagenId())
+                                        .nombre(imagen.getNombre())
+                                        .ruta(imagen.getRuta())
+                                        .build())
+                                .toList())
+                        .creadoEn(p.getCreadoEn())
+                        .actualizadoEn(p.getActualizadoEn())
+                        .build())
+                .toList();
     }
 }

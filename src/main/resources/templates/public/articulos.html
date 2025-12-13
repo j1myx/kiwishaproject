@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Novedades - Achisway</title>
+</head>
+<body>
+
+<!-- Main Content -->
+<div layout:fragment="content" class="px-40 flex flex-1 justify-center py-5">
+    <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+        <!-- Hero Section -->
+        <div class="@container">
+            <div class="@[480px]:p-4">
+                <div class="flex min-h-[200px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-lg items-center justify-center p-4">
+                    <div class="flex flex-col gap-2 text-center">
+                        <h1 class="text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+                            >Novedades
+                        </h1>
+                        <h2 class="text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal"
+                            >Encuentra aqui la información noticias de tus productos para estar al tanto de lo beneficios y demás información.
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Páginas -->
+        <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Páginas</h2>
+        <div class="flex overflow-y-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div class="flex w-full flex-column items-stretch p-4 gap-3">
+                <div th:each="pagina : ${paginas}"  class="flex w-full flex-1 flex-row gap-4 rounded-lg min-w-60 card p-2">
+                    <div class="w-[400px] bg-center bg-no-repeat aspect-video bg-cover rounded-lg flex flex-col"
+                         th:style="'background-image: url(/files/' + @{${pagina.paginaImagenes[0].ruta}} + ');'"></div>
+                    <a th:href="'/pagina/' + @{${pagina.url}}" class="w-full">
+                        <p class="text-[#1c140d] text-base font-medium leading-normal" th:text="${pagina.titulo}"></p>
+                        <p class="text-[#9e7347] text-sm font-normal leading-normal" th:text="${pagina.resumen}"></p>
+                    </a>
+                    <p class="text-[#1c140d] text-sm font-medium leading-normal" th:text="${#temporals.format(pagina.actualizadoEn != null ? pagina.actualizadoEn : pagina.creadoEn, 'dd/MM/yyyy')}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

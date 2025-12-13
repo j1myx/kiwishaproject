@@ -2,6 +2,7 @@ package com.kiwisha.project.controller.web;
 
 import com.kiwisha.project.dto.ProductoDTO;
 import com.kiwisha.project.service.CategoriaService;
+import com.kiwisha.project.service.EtiquetaService;
 import com.kiwisha.project.service.PaginaService;
 import com.kiwisha.project.service.ProductoImagenService;
 import com.kiwisha.project.service.ProductoService;
@@ -31,7 +32,9 @@ public class ProductoWebController {
     private final ProductoService productoService;
     private final CategoriaService categoriaService;
     private final PaginaService paginaService;
+    private final EtiquetaService etiquetaService;
     private final ProductoImagenService productoImagenService;
+
 
     /**
      * Página de inicio (Home/Landing)
@@ -68,6 +71,20 @@ public class ProductoWebController {
     public String getPage(@PathVariable String url, Model model) {
         model.addAttribute("pagina", paginaService.findByUrl(url));
         return "public/page";
+    }
+
+    @GetMapping("etiqueta/{etiqueta}")
+    public String paginasByEtiqueta(@PathVariable String etiqueta, Model model) {
+        model.addAttribute("etiqueta", etiqueta);
+        model.addAttribute("resumen", etiquetaService.findByNombre(etiqueta).getResumen());
+        model.addAttribute("paginas", paginaService.findByEtiqueta(etiqueta));
+        return "public/etiqueta";
+    }
+
+    @GetMapping("articulos")
+    public String articulos(Model model) {
+        model.addAttribute("paginas", paginaService.findArticulos());
+        return "public/articulos";
     }
 
     /**

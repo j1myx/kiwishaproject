@@ -20,6 +20,9 @@ public class Etiqueta extends AuditableEntity {
     @Column(name = "nombre", length = 50)
     private String nombre;
 
+    @Column(name = "resumen", length = 255)
+    private String resumen;
+
     @OneToMany(mappedBy = "etiqueta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PaginaEtiqueta> paginaEtiquetas;
 }
