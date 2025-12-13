@@ -47,6 +47,13 @@ public abstract class AuditableEntity {
         if (creadoPor == null) {
             creadoPor = 1; // Usuario del sistema por defecto
         }
+
+        if (actualizadoEn == null) {
+            actualizadoEn = creadoEn;
+        }
+        if (actualizadoPor == null) {
+            actualizadoPor = creadoPor;
+        }
     }
 
     @PreUpdate

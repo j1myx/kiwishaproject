@@ -37,7 +37,7 @@
                     <tbody class="divide-y divide-[#f4ede6]">
                     <tr th:each="p : ${pedidos.content}">
                         <td class="px-4 py-3 text-[#1c140d] text-sm font-medium" th:text="${p.codigo}">CODIGO</td>
-                        <td class="px-4 py-3 text-[#9e7347] text-sm font-normal" th:text="${p.creadoEn != null ? #temporals.format(p.creadoEn, 'dd/MM/yyyy HH:mm') : ''}">-</td>
+                        <td class="px-4 py-3 text-[#9e7347] text-sm font-normal" th:text="${(p.actualizadoEn != null ? p.actualizadoEn : p.creadoEn) != null ? #temporals.format((p.actualizadoEn != null ? p.actualizadoEn : p.creadoEn), 'dd/MM/yyyy HH:mm') : ''}">-</td>
                         <td class="px-4 py-3">
                             <span class="inline-flex items-center rounded-full bg-[#f4ede6] text-[#1c140d] text-xs font-bold px-2 py-1"
                                   th:text="${p.estado}">PENDIENTE</span>
