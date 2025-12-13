@@ -58,15 +58,15 @@ public class CarritoApiController {
         );
     }
 
-    @PutMapping("/items/{itemId}")
-    @Operation(summary = "Actualizar cantidad de item", description = "Actualiza la cantidad de un item específico del carrito")
+        @PutMapping("/items/{productoId}")
+        @Operation(summary = "Actualizar cantidad de item", description = "Actualiza la cantidad de un producto en el carrito")
     public ResponseEntity<ApiResponseDTO<CarritoDTO>> actualizarCantidad(
-            @Parameter(description = "ID del item del carrito") @PathVariable Integer itemId,
+            @Parameter(description = "ID del producto") @PathVariable Integer productoId,
             @Parameter(description = "Nueva cantidad") @RequestParam Integer cantidad,
             HttpSession session) {
         
         String sessionId = session.getId();
-        CarritoDTO carrito = carritoService.actualizarCantidad(sessionId, itemId, cantidad);
+        CarritoDTO carrito = carritoService.actualizarCantidad(sessionId, productoId, cantidad);
         
         return ResponseEntity.ok(
             ApiResponseDTO.<CarritoDTO>builder()
@@ -77,14 +77,14 @@ public class CarritoApiController {
         );
     }
 
-    @DeleteMapping("/items/{itemId}")
-    @Operation(summary = "Eliminar item del carrito", description = "Elimina un item específico del carrito")
+        @DeleteMapping("/items/{productoId}")
+        @Operation(summary = "Eliminar item del carrito", description = "Elimina un producto del carrito")
     public ResponseEntity<ApiResponseDTO<CarritoDTO>> eliminarItem(
-            @Parameter(description = "ID del item del carrito") @PathVariable Integer itemId,
+            @Parameter(description = "ID del producto") @PathVariable Integer productoId,
             HttpSession session) {
         
         String sessionId = session.getId();
-        carritoService.eliminarItem(sessionId, itemId);
+        carritoService.eliminarItem(sessionId, productoId);
         CarritoDTO carrito = carritoService.obtenerCarrito(sessionId);
         
         return ResponseEntity.ok(

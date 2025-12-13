@@ -1,7 +1,7 @@
 package com.kiwisha.project.controller.web;
 
-import com.kiwisha.project.controller.web.CarritoWebController.ItemCarrito;
 import com.kiwisha.project.dto.CrearPedidoDTO;
+import com.kiwisha.project.service.CarritoService;
 import com.kiwisha.project.service.PedidoService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -12,8 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 /**
  * Controlador web para el proceso de checkout.
@@ -26,9 +24,8 @@ import java.util.List;
 public class CheckoutWebController {
 
     private final PedidoService pedidoService;
+    private final CarritoService carritoService;
     
-    private static final String CARRITO_SESSION_KEY = "carrito";
-
     /**
      * Paso 1: Formulario de checkout (datos personales y envío)
      * GET /checkout
@@ -36,11 +33,11 @@ public class CheckoutWebController {
     @GetMapping
     public String mostrarFormularioCheckout(HttpSession session, Model model) {
         log.debug("Mostrando formulario de checkout");
-        
-        var carrito = obtenerCarrito(session);
+
+        var carrito = carritoService.obtenerCarrito(session.getId());
         
         // Validar que el carrito no esté vacío
-        if (carrito == null || carrito.isEmpty()) {
+        if (carrito.getItems() == null || carrito.getItems().isEmpty()) {
             return "redirect:/carrito";
         }
         
@@ -49,7 +46,7 @@ public class CheckoutWebController {
             model.addAttribute("datosCheckout", new DatosCheckoutForm());
         }
         
-        model.addAttribute("itemsCarrito", carrito);
+        model.addAttribute("itemsCarrito", carrito.getItems());
         model.addAttribute("paginaActual", "checkout");
         
         return "public/checkout";
@@ -68,16 +65,16 @@ public class CheckoutWebController {
             RedirectAttributes redirectAttributes) {
         
         log.debug("Procesando pedido de checkout");
+
+        var carrito = carritoService.obtenerCarrito(session.getId());
         
-        var carrito = obtenerCarrito(session);
-        
-        if (carrito == null || carrito.isEmpty()) {
+        if (carrito.getItems() == null || carrito.getItems().isEmpty()) {
             return "redirect:/carrito";
         }
         
         // Si hay errores de validación, volver al formulario
         if (result.hasErrors()) {
-            model.addAttribute("itemsCarrito", carrito);
+            model.addAttribute("itemsCarrito", carrito.getItems());
             return "public/checkout";
         }
         
@@ -87,9 +84,9 @@ public class CheckoutWebController {
             
             // Crear pedido (el servicio obtendrá los elementos del carrito en sesión)
             var pedido = pedidoService.crearPedido(session.getId(), crearPedidoDTO);
-            
-            // El servicio ya limpia el carrito, pero por consistencia lo hacemos aquí también
-            session.removeAttribute(CARRITO_SESSION_KEY);
+
+            // El servicio limpia el carrito (persistido por sesión)
+            carritoService.limpiarCarrito(session.getId());
             
             // Guardar pedidoId en sesión para la confirmación
             session.setAttribute("ultimoPedidoId", pedido.getPedidoId());
@@ -188,9 +185,7 @@ public class CheckoutWebController {
     // ============================================
 
     @SuppressWarnings("unchecked")
-    private List<ItemCarrito> obtenerCarrito(HttpSession session) {
-        return (List<ItemCarrito>) session.getAttribute(CARRITO_SESSION_KEY);
-    }
+    // El carrito se gestiona vía CarritoService (persistido por sesión).
 
     private CrearPedidoDTO convertirACrearPedidoDTO(DatosCheckoutForm form) {
         

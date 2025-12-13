@@ -46,15 +46,27 @@
                         </form>
                     </div>
                     
-                    <!-- Carrito -->
-                    <a th:href="@{/carrito}" class="relative text-gray-600 hover:text-purple-600">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span th:if="${cantidadItems != null and cantidadItems > 0}" 
-                              class="absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
-                              th:text="${cantidadItems}">
-                            0
-                        </span>
-                    </a>
+                    <!-- Carrito (dropdown) -->
+                    <div class="relative" data-cart-wrapper>
+                        <button type="button" data-cart-toggle class="relative text-gray-600 hover:text-purple-600" aria-label="Carrito">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span data-cart-count
+                                  class="hidden absolute -top-2 -right-2 bg-purple-600 text-white text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center">
+                                0
+                            </span>
+                        </button>
+
+                        <div data-cart-dropdown class="hidden absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-3 px-3 z-10">
+                            <p class="text-gray-900 text-sm font-semibold pb-2">Carrito</p>
+                            <p data-cart-dropdown-empty class="text-gray-500 text-sm">Tu carrito está vacío</p>
+                            <div data-cart-dropdown-items class="flex flex-col gap-3 max-h-80 overflow-auto"></div>
+                            <div class="pt-3">
+                                <a th:href="@{/checkout}" class="w-full inline-flex justify-center rounded-lg px-4 py-2 bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700">
+                                    Ir a comprar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     
                     <!-- Usuario -->
                     <div class="relative" sec:authorize="isAuthenticated()">
@@ -124,6 +136,8 @@
             }
         });
     </script>
+
+    <script src="/js/carrito-dropdown.js"></script>
     
 </body>
 </html>
