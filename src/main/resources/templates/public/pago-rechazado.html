@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Pago rechazado - Achisway</title>
+</head>
+<body>
+
+<main layout:fragment="content">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h1 class="text-[#1c140d] text-[28px] font-bold leading-tight text-center">Pago rechazado</h1>
+
+            <div class="mt-4">
+                <p class="text-[#1c140d] text-base font-normal leading-normal text-center">
+                    Lo sentimos, el pago fue rechazado. Verifica tus datos e intenta nuevamente, o consulta con tu banco.
+                </p>
+            </div>
+
+            <h2 class="text-[#1c140d] text-lg font-bold leading-tight tracking-[-0.015em] mt-8">Resumen del pedido</h2>
+            <div class="mt-3 p-4 grid grid-cols-[35%_1fr] gap-x-6 rounded-lg border border-[#e9dbce]">
+                <div class="col-span-2 grid grid-cols-subgrid border-t border-t-[#e9dbce] py-3">
+                    <p class="text-[#9e7347] text-sm font-normal leading-normal">Pedido</p>
+                    <p class="text-[#1c140d] text-sm font-normal leading-normal"
+                       th:text="${pedido.codigo != null ? pedido.codigo : ('#' + pedido.pedidoId)}">#0</p>
+                </div>
+                <div class="col-span-2 grid grid-cols-subgrid border-t border-t-[#e9dbce] py-3">
+                    <p class="text-[#9e7347] text-sm font-normal leading-normal">Total</p>
+                    <p class="text-[#1c140d] text-sm font-normal leading-normal">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span></p>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center gap-3 flex-wrap">
+                <a th:href="@{'/checkout/pago/' + ${pedido.pedidoId}}"
+                   class="flex min-w-[160px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f98006] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em]">
+                    Reintentar pago
+                </a>
+                <a th:href="@{/catalogo}"
+                   class="flex min-w-[160px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f4ede6] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em]">
+                    Cancelar
+                </a>
+            </div>
+
+            <p class="text-[#9e7347] text-sm font-normal leading-normal mt-6 text-center underline">
+                Si necesitas ayuda, contáctanos.
+            </p>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

@@ -34,3 +34,8 @@ build/
 
 ### App ###
 uploads/
+
+### Local env (secrets) ###
+.env.bat
+.env
+.env.*

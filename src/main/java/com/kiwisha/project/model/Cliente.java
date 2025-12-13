@@ -40,4 +40,28 @@ public class Cliente {
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Pedido> pedidos;
+
+    @PrePersist
+    protected void onCreate() {
+        if (creadoEn == null) {
+            creadoEn = LocalDateTime.now();
+        }
+        if (creadoPor == null) {
+            creadoPor = 1;
+        }
+        if (actualizadoEn == null) {
+            actualizadoEn = LocalDateTime.now();
+        }
+        if (actualizadoPor == null) {
+            actualizadoPor = creadoPor != null ? creadoPor : 1;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        actualizadoEn = LocalDateTime.now();
+        if (actualizadoPor == null) {
+            actualizadoPor = 1;
+        }
+    }
 }

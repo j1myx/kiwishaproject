@@ -13,12 +13,16 @@ import com.kiwisha.project.util.SessionIdGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +43,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final MetodoEnvioRepository metodoEnvioRepository;
     private final CarritoService carritoService;
     private final ModelMapper modelMapper;
+    private final UsuarioRepository usuarioRepository;
 
     @Override
     public PedidoDTO crearPedido(String sessionId, CrearPedidoDTO crearPedidoDTO) {
@@ -72,12 +77,30 @@ public class PedidoServiceImpl implements PedidoService {
         BigDecimal costoEnvio = metodoEnvio.getCosto() != null ? metodoEnvio.getCosto() : BigDecimal.ZERO;
         BigDecimal total = subtotal.subtract(descuento).add(costoEnvio);
 
-        // 7. Buscar cliente si está registrado
+        // 7. Resolver cliente (la columna cliente_id en DB es NOT NULL)
         Cliente cliente = null;
         if (crearPedidoDTO.getClienteId() != null) {
             cliente = clienteRepository.findById(crearPedidoDTO.getClienteId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Cliente", "id", 
+                    .orElseThrow(() -> new ResourceNotFoundException("Cliente", "id",
                             crearPedidoDTO.getClienteId()));
+        } else if (crearPedidoDTO.getEmail() != null && !crearPedidoDTO.getEmail().isBlank()) {
+            cliente = clienteRepository.findByEmail(crearPedidoDTO.getEmail()).orElse(null);
+        }
+
+        // Si no existe cliente, crear uno “invitado” basado en los datos del checkout
+        if (cliente == null) {
+            Integer auditUserId = resolveAuditUserId(crearPedidoDTO);
+            Cliente nuevoCliente = new Cliente();
+            nuevoCliente.setNombre(crearPedidoDTO.getNombre());
+            nuevoCliente.setEmail(crearPedidoDTO.getEmail());
+            nuevoCliente.setTelefono(crearPedidoDTO.getTelefono());
+            nuevoCliente.setDireccion(crearPedidoDTO.getDireccion());
+            nuevoCliente.setCreadoEn(LocalDateTime.now());
+            nuevoCliente.setCreadoPor(auditUserId);
+            nuevoCliente.setActualizadoEn(LocalDateTime.now());
+            nuevoCliente.setActualizadoPor(auditUserId);
+            cliente = clienteRepository.save(nuevoCliente);
+            log.info("Cliente creado automáticamente para checkout: clienteId={}, email={}", cliente.getClienteId(), cliente.getEmail());
         }
 
         // 8. Crear el pedido
@@ -136,6 +159,32 @@ public class PedidoServiceImpl implements PedidoService {
         log.info("Carrito limpiado para sesión: {}", sessionId);
 
         return convertirADTO(pedidoGuardado);
+    }
+
+    private Integer resolveAuditUserId(CrearPedidoDTO crearPedidoDTO) {
+        String email = null;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            email = authentication.getName();
+        }
+
+        if ((email == null || email.isBlank())
+                && crearPedidoDTO != null
+                && crearPedidoDTO.getEmail() != null
+                && !crearPedidoDTO.getEmail().isBlank()) {
+            email = crearPedidoDTO.getEmail();
+        }
+
+        if (email == null || email.isBlank()) {
+            return 1;
+        }
+
+        return usuarioRepository.findByEmail(email)
+                .map(Usuario::getUsuarioId)
+                .orElse(1);
     }
 
     @Override

@@ -116,6 +116,51 @@ spring.datasource.username=sql10804802
 spring.datasource.password=SuDZQNHhFB
 ```
 
+### Mercado Pago (Checkout Pro)
+
+Para habilitar el pago con Mercado Pago, configura estas credenciales (recomendado por variables de entorno):
+
+- `MERCADOPAGO_ACCESS_TOKEN`
+- `MERCADOPAGO_PUBLIC_KEY`
+
+Ejemplos en Windows:
+
+**PowerShell (solo para la sesión actual)**
+```powershell
+$env:MERCADOPAGO_ACCESS_TOKEN="TU_ACCESS_TOKEN"
+$env:MERCADOPAGO_PUBLIC_KEY="TU_PUBLIC_KEY"
+./mvnw.cmd spring-boot:run
+```
+
+**CMD (solo para la sesión actual)**
+```bat
+set MERCADOPAGO_ACCESS_TOKEN=TU_ACCESS_TOKEN
+set MERCADOPAGO_PUBLIC_KEY=TU_PUBLIC_KEY
+mvnw.cmd spring-boot:run
+```
+
+También puedes setearlos en `run-server.bat` (ver comentarios) o directamente en `application.properties` usando `mercadopago.access-token` y `mercadopago.public-key`.
+
+**Recomendado (Windows, sin tocar el código):**
+
+1. Copia `.env.example.bat` a `.env.bat`
+2. Coloca tus credenciales en `.env.bat`
+3. Ejecuta `run-server.bat`
+
+El script cargará `.env.bat` automáticamente antes de iniciar Spring Boot.
+
+#### Retorno a la web (éxito/fallo)
+
+Mercado Pago devuelve al usuario a tus `back_urls` solo si esas URLs son accesibles públicamente; en producción normalmente se requiere **HTTPS**.
+
+Para desarrollo local, usa un túnel HTTPS (por ejemplo ngrok) y configura:
+
+- `APP_PUBLIC_BASE_URL=https://<tu-subdominio>.ngrok-free.app`
+
+Así las URLs de retorno quedarán como:
+`/checkout/mercadopago/success|failure|pending` en tu dominio/túnel, y después tu app redirige a:
+`/checkout/confirmacion/{pedidoId}` o `/checkout/pago-rechazado/{pedidoId}`.
+
 4. **Compilar el proyecto**
 ```bash
 mvn clean install

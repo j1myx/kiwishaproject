@@ -32,31 +32,36 @@
     <!-- CSS adicional específico de página -->
     <th:block layout:fragment="styles"></th:block>
 </head>
-<body class="bg-gray-50">
-    
-    <!-- Header -->
-    <div th:replace="~{fragments/header :: header}"></div>
-    
-    <!-- Mensajes Flash -->
-    <div th:if="${success}" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded relative" role="alert">
-            <span class="block sm:inline" th:text="${success}"></span>
+<body>
+
+    <div class="relative flex h-auto min-h-screen w-full flex-col bg-[#fcfaf8] group/design-root overflow-x-hidden"
+         style='font-family: "Work Sans", "Noto Sans", "Inter", sans-serif;'>
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- Header -->
+            <div th:replace="~{fragments/header :: header}"></div>
+
+            <!-- Mensajes Flash -->
+            <div th:if="${success}" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline" th:text="${success}"></span>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline" th:text="${error}"></span>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <main layout:fragment="content">
+                <!-- El contenido de cada página se insertará aquí -->
+            </main>
+
+            <!-- Footer -->
+            <div th:replace="~{fragments/footer :: footer}"></div>
         </div>
     </div>
-    
-    <div th:if="${error}" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded relative" role="alert">
-            <span class="block sm:inline" th:text="${error}"></span>
-        </div>
-    </div>
-    
-    <!-- Contenido principal -->
-    <main layout:fragment="content">
-        <!-- El contenido de cada página se insertará aquí -->
-    </main>
-    
-    <!-- Footer -->
-    <div th:replace="~{fragments/footer :: footer}"></div>
     
     <!-- Scripts globales -->
     <script>

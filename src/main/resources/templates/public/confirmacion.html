@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Confirmación - Achisway</title>
+</head>
+<body>
+
+<main layout:fragment="content">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h1 class="text-[#1c140d] text-[28px] font-bold leading-tight text-center">Compra confirmada</h1>
+            <p class="text-[#9e7347] text-sm font-normal leading-normal mt-2 text-center">
+                Tu pedido fue registrado correctamente. Si el pago fue aprobado, el estado quedará confirmado.
+            </p>
+
+            <div class="mt-6 flex items-center gap-4 bg-[#fcfaf8] px-4 min-h-[72px] py-3 rounded-lg border border-[#f4ede6]">
+                <div class="text-[#1c140d] flex items-center justify-center rounded-lg bg-[#f4ede6] shrink-0 size-12">
+                    <span class="text-xl font-bold">#</span>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <p class="text-[#1c140d] text-base font-medium leading-normal">Número de pedido</p>
+                    <p class="text-[#9e7347] text-sm font-normal leading-normal"
+                       th:text="${pedido.codigo != null ? pedido.codigo : ('Pedido #' + pedido.pedidoId)}">Pedido #0</p>
+                </div>
+            </div>
+
+            <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] mt-8">Resumen</h2>
+            <div class="mt-4 rounded-lg border border-[#e9dbce] overflow-hidden">
+                <div class="grid grid-cols-1 gap-0">
+                    <div th:if="${pedido.elementos != null && !#lists.isEmpty(pedido.elementos)}"
+                         class="border-b border-[#e9dbce] p-4">
+                        <p class="text-[#9e7347] text-sm font-normal leading-normal mb-2">Productos</p>
+                        <div class="space-y-2">
+                            <div th:each="el : ${pedido.elementos}" class="flex justify-between text-sm">
+                                <span class="text-[#1c140d]" th:text="${el.productoTitulo}">Producto</span>
+                                <span class="text-[#1c140d]" th:text="${'x ' + el.cantidad}">x 1</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-[#e9dbce] p-4 flex justify-between text-sm">
+                        <span class="text-[#9e7347]">Subtotal</span>
+                        <span class="text-[#1c140d]">S/ <span th:text="${#numbers.formatDecimal(pedido.subtotal, 1, 2)}">0.00</span></span>
+                    </div>
+                    <div class="border-b border-[#e9dbce] p-4 flex justify-between text-sm">
+                        <span class="text-[#9e7347]">Envío</span>
+                        <span class="text-[#1c140d]">S/ <span th:text="${#numbers.formatDecimal(pedido.costoEnvio, 1, 2)}">0.00</span></span>
+                    </div>
+                    <div class="p-4 flex justify-between text-sm font-bold">
+                        <span class="text-[#9e7347]">Total</span>
+                        <span class="text-[#1c140d]">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-[#1c140d] text-[22px] font-bold leading-tight tracking-[-0.015em] mt-8">Dirección de envío</h2>
+            <div class="mt-4 rounded-lg border border-[#e9dbce] p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <p class="text-[#9e7347]">Nombre</p>
+                        <p class="text-[#1c140d]" th:text="${pedido.nombre + ' ' + pedido.apellido}">Nombre</p>
+                    </div>
+                    <div>
+                        <p class="text-[#9e7347]">Teléfono</p>
+                        <p class="text-[#1c140d]" th:text="${pedido.telefono}">-</p>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <p class="text-[#9e7347]">Dirección</p>
+                        <p class="text-[#1c140d]" th:text="${pedido.direccion}">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[#9e7347]">Ciudad</p>
+                        <p class="text-[#1c140d]" th:text="${pedido.ciudad}">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[#9e7347]">Código postal</p>
+                        <p class="text-[#1c140d]" th:text="${pedido.codigoPostal}">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[#9e7347]">País</p>
+                        <p class="text-[#1c140d]" th:text="${pedido.pais}">-</p>
+                    </div>
+                    <div>
+                        <p class="text-[#9e7347]">Estado</p>
+                        <p class="text-[#1c140d]" th:text="${pedido.estado}">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center">
+                <a th:href="@{/catalogo}"
+                   class="flex min-w-[220px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f98006] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em]">
+                    Continuar comprando
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
