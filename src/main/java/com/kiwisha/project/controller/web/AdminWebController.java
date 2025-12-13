@@ -11,6 +11,7 @@ import com.kiwisha.project.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +39,9 @@ public class AdminWebController {
 
     private static final String DEFAULT_PRODUCT_IMAGE_PATH = "defaults/producto-default.svg";
 
+    @Value("${app.powerbi.report-url:}")
+    private String powerBiReportUrl;
+
     private final ProductoService productoService;
     private final CategoriaService categoriaService;
     private final PedidoService pedidoService;
@@ -59,6 +63,28 @@ public class AdminWebController {
         model.addAttribute("paginaActual", "dashboard");
         
         return "admin/dashboard";
+    }
+
+    /**
+     * Reportes (Power BI)
+     * GET /admin/reportes
+     */
+    @GetMapping("/reportes")
+    public String reportes(RedirectAttributes redirectAttributes) {
+        if (powerBiReportUrl == null || powerBiReportUrl.isBlank()) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Power BI no está configurado. Define 'app.powerbi.report-url' en application.properties.");
+            return "redirect:/admin/dashboard";
+        }
+
+        var url = powerBiReportUrl.trim();
+        if (!url.startsWith("https://")) {
+            redirectAttributes.addFlashAttribute("error",
+                    "URL de Power BI inválida. Debe iniciar con https://");
+            return "redirect:/admin/dashboard";
+        }
+
+        return "redirect:" + url;
     }
 
     // ============================================
