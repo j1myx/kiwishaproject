@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Mis pedidos - Achisway</title>
+</head>
+<body>
+
+<main layout:fragment="content">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-[#1c140d]">Mis pedidos</h1>
+        </div>
+
+        <div th:if="${pedidos == null || pedidos.isEmpty()}" class="bg-white rounded-lg border border-solid border-[#f4ede6] p-6">
+            <p class="text-[#9e7347] text-base font-normal leading-normal">Aún no tienes pedidos registrados.</p>
+            <div class="mt-4">
+                <a th:href="@{/catalogo}"
+                   class="inline-flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f98006] text-[#1c140d] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#e07305]">
+                    <span class="truncate">Ir al catálogo</span>
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${pedidos != null && !pedidos.isEmpty()}" class="bg-white rounded-lg border border-solid border-[#f4ede6] overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-[#fcfaf8] border-b border-solid border-[#f4ede6]">
+                    <tr>
+                        <th class="text-left text-[#1c140d] text-sm font-bold px-4 py-3">Código</th>
+                        <th class="text-left text-[#1c140d] text-sm font-bold px-4 py-3">Fecha</th>
+                        <th class="text-left text-[#1c140d] text-sm font-bold px-4 py-3">Estado</th>
+                        <th class="text-right text-[#1c140d] text-sm font-bold px-4 py-3">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#f4ede6]">
+                    <tr th:each="p : ${pedidos.content}">
+                        <td class="px-4 py-3 text-[#1c140d] text-sm font-medium" th:text="${p.codigo}">CODIGO</td>
+                        <td class="px-4 py-3 text-[#9e7347] text-sm font-normal" th:text="${p.creadoEn != null ? #temporals.format(p.creadoEn, 'dd/MM/yyyy HH:mm') : ''}">-</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center rounded-full bg-[#f4ede6] text-[#1c140d] text-xs font-bold px-2 py-1"
+                                  th:text="${p.estado}">PENDIENTE</span>
+                        </td>
+                        <td class="px-4 py-3 text-right text-[#1c140d] text-sm font-bold" th:text="${p.total}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex items-center justify-between px-4 py-3 border-t border-solid border-[#f4ede6]"
+                 th:if="${pedidos.totalPages > 1}">
+                <div class="text-sm text-[#9e7347]" th:text="'Página ' + ${pedidos.number + 1} + ' de ' + ${pedidos.totalPages}">Página 1 de 1</div>
+                <div class="flex gap-2">
+                    <a th:if="${pedidos.hasPrevious()}" th:href="@{/mis-pedidos(page=${pedidos.number - 1}, size=${pedidos.size})}"
+                       class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-3 bg-[#f4ede6] text-[#1c140d] text-sm font-bold hover:bg-[#e9dbce]">Anterior</a>
+                    <a th:if="${pedidos.hasNext()}" th:href="@{/mis-pedidos(page=${pedidos.number + 1}, size=${pedidos.size})}"
+                       class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-3 bg-[#f4ede6] text-[#1c140d] text-sm font-bold hover:bg-[#e9dbce]">Siguiente</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

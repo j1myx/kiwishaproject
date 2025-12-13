@@ -35,24 +35,10 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initData() {
         return args -> {
-            // Crear roles si no existen
-            if (rolRepository.count() == 0) {
-                log.info("Creando roles por defecto...");
-                
-                Rol adminRole = new Rol();
-                adminRole.setNombre("ADMIN");
-                adminRole.setCreadoPor(1); // Sistema
-                adminRole.setCreadoEn(LocalDateTime.now());
-                rolRepository.save(adminRole);
-                
-                Rol clienteRole = new Rol();
-                clienteRole.setNombre("CLIENTE");
-                clienteRole.setCreadoPor(1); // Sistema
-                clienteRole.setCreadoEn(LocalDateTime.now());
-                rolRepository.save(clienteRole);
-                
-                log.info("Roles creados exitosamente");
-            }
+            // Crear roles base si no existen
+            asegurarRolExiste("ADMIN");
+            asegurarRolExiste("CLIENTE");
+            asegurarRolExiste("USUARIO");
 
             // Crear usuario admin si no existe
             if (usuarioRepository.findByEmail("admin@kiwisha.com").isEmpty()) {
@@ -143,5 +129,18 @@ public class DataInitializer {
                 log.info("Las categorías ya existen en la base de datos");
             }
         };
+    }
+
+    private void asegurarRolExiste(String nombreRol) {
+        if (rolRepository.findByNombre(nombreRol).isPresent()) {
+            return;
+        }
+
+        log.info("Creando rol por defecto: {}", nombreRol);
+        Rol rol = new Rol();
+        rol.setNombre(nombreRol);
+        rol.setCreadoPor(1);
+        rol.setCreadoEn(LocalDateTime.now());
+        rolRepository.save(rol);
     }
 }

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Pago - Achisway</title>
+</head>
+<body>
+
+<main layout:fragment="content">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex flex-wrap justify-between gap-3">
+                <h1 class="text-2xl font-bold text-[#1c140d]">Pago</h1>
+                <a th:href="@{/catalogo}" class="text-sm font-medium text-[#9e7347] hover:underline">Seguir comprando</a>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <p class="text-[#9e7347] text-sm font-normal leading-normal mb-4">
+                        Completa tu pago con Mercado Pago.
+                    </p>
+
+                    <div th:if="${error}" class="rounded-lg border border-red-200 bg-red-50 text-red-800 px-4 py-3 mb-3">
+                        <span th:text="${error}">Error</span>
+                    </div>
+
+                    <div th:if="${mpPublicKey == null || #strings.isEmpty(mpPublicKey)}"
+                         class="rounded-lg border border-red-200 bg-red-50 text-red-800 px-4 py-3">
+                        Falta configurar Mercado Pago: define <strong>MERCADOPAGO_PUBLIC_KEY</strong> (o la propiedad <strong>mercadopago.public-key</strong> en <strong>application.properties</strong>).
+                    </div>
+
+                    <div th:if="${mpPreferenceId == null || #strings.isEmpty(mpPreferenceId)}"
+                         class="rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800 px-4 py-3 mt-3">
+                        No se pudo inicializar la preferencia de pago.
+                        Verifica <strong>MERCADOPAGO_ACCESS_TOKEN</strong> (o <strong>mercadopago.access-token</strong>).
+                        <a class="underline" th:href="@{'/checkout/pago/' + ${pedido.pedidoId}}">Reintentar</a>
+                    </div>
+
+                    <div class="mt-6">
+                        <a th:if="${mpCheckoutUrl != null && !#strings.isEmpty(mpCheckoutUrl)}"
+                           th:href="${mpCheckoutUrl}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="inline-flex items-center justify-center rounded-lg bg-[#f4ede6] px-5 py-3 text-sm font-bold text-[#1c140d] hover:opacity-90">
+                            Pagar con Mercado Pago
+                        </a>
+
+                        <div th:if="${mpCheckoutUrl == null || #strings.isEmpty(mpCheckoutUrl)}"
+                             class="rounded-lg border border-yellow-200 bg-yellow-50 text-yellow-800 px-4 py-3">
+                            No se pudo generar el link de pago.
+                            <a class="underline" th:href="@{'/checkout/pago/' + ${pedido.pedidoId}}">Reintentar</a>
+                        </div>
+                    </div>
+
+                    <p class="text-[#9e7347] text-sm font-normal leading-normal mt-6">
+                        Cuando completes el pago, esta página se actualizará automáticamente.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="bg-[#fcfaf8] rounded-lg border border-[#f4ede6] p-4">
+                        <h2 class="text-[#1c140d] text-lg font-bold leading-tight tracking-[-0.015em]">Resumen</h2>
+
+                        <div class="mt-3 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-[#9e7347]">Pedido</span>
+                                <span class="text-[#1c140d]" th:text="${pedido.codigo != null ? pedido.codigo : ('#' + pedido.pedidoId)}">#0</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-[#9e7347]">Subtotal</span>
+                                <span class="text-[#1c140d]">S/ <span th:text="${#numbers.formatDecimal(pedido.subtotal, 1, 2)}">0.00</span></span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-[#9e7347]">Envío</span>
+                                <span class="text-[#1c140d]">S/ <span th:text="${#numbers.formatDecimal(pedido.costoEnvio, 1, 2)}">0.00</span></span>
+                            </div>
+                            <div class="border-t border-[#e9dbce] pt-2 flex justify-between text-sm font-bold">
+                                <span class="text-[#9e7347]">Total</span>
+                                <span class="text-[#1c140d]">S/ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}">0.00</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block layout:fragment="scripts">
+    <script th:inline="javascript">
+        (function () {
+            const pedidoId = /*[[${pedido.pedidoId}]]*/ 0;
+            const estadoUrl = /*[[@{/checkout/estado/{id}(id=${pedido.pedidoId})}]]*/ "";
+            if (!pedidoId || !estadoUrl) return;
+
+            const maxAttempts = 180; // ~9 minutos si son 3s
+            let attempts = 0;
+
+            async function poll() {
+                attempts += 1;
+                if (attempts > maxAttempts) return;
+
+                try {
+                    const res = await fetch(estadoUrl, { cache: 'no-store' });
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    const estado = (data && data.estado) ? String(data.estado).toUpperCase() : '';
+
+                    if (estado === 'CONFIRMADO') {
+                        window.location.href = /*[[@{'/checkout/confirmacion/' + ${pedido.pedidoId}}]]*/ '';
+                        return;
+                    }
+                    if (estado === 'CANCELADO') {
+                        window.location.href = /*[[@{'/checkout/pago-rechazado/' + ${pedido.pedidoId}}]]*/ '';
+                        return;
+                    }
+                } catch (e) {
+                    // Silencioso: seguimos intentando
+                }
+            }
+
+            poll();
+            setInterval(poll, 3000);
+        })();
+    </script>
+</th:block>
+
+</body>
+</html>

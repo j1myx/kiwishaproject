@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Achisway</title>
+    <title>Iniciar sesión - Achisway</title>
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
     <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
           href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Work+Sans:wght@400;500;700;900" />
@@ -16,7 +16,7 @@
             <div class="px-40 flex flex-1 justify-center py-5">
                 <div class="layout-content-container flex flex-col w-[512px] max-w-[512px] py-5 max-w-[960px] flex-1">
                     <h2 class="text-[#1c140d] tracking-light text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">
-                        Panel de Administración
+                        Iniciar sesión
                     </h2>
                     
                     <!-- Mensajes de error/éxito -->
@@ -30,6 +30,7 @@
                     
                     <!-- Formulario de login -->
                     <form th:action="@{/login}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
                             <label class="flex flex-col min-w-40 flex-1">
                                 <input
@@ -37,7 +38,7 @@
                                     name="email"
                                     type="email"
                                     required
-                                    placeholder="Email o Usuario"
+                                    placeholder="Email"
                                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1c140d] focus:outline-0 focus:ring-0 border-none bg-[#f4ede6] focus:border-none h-14 placeholder:text-[#9e7347] p-4 text-base font-normal leading-normal"
                                 />
                             </label>
@@ -67,6 +68,12 @@
                     <p class="text-[#9e7347] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline cursor-pointer">
                         ¿Olvidaste tu contraseña?
                     </p>
+
+                    <div class="text-center mt-2">
+                        <a th:href="@{/registro}" class="text-sm text-[#9e7347] hover:text-[#1c140d] underline">
+                            ¿No tienes cuenta? Regístrate
+                        </a>
+                    </div>
                     
                     <div class="text-center mt-4">
                         <a th:href="@{/}" class="text-sm text-[#9e7347] hover:text-[#1c140d] underline">
@@ -74,16 +81,6 @@
                         </a>
                     </div>
                     
-                    <!-- Credenciales de prueba (remover en producción) -->
-                    <div class="mx-4 mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p class="text-xs text-blue-800 font-semibold mb-2">
-                            Credenciales de prueba:
-                        </p>
-                        <p class="text-xs text-blue-700">
-                            <strong>Email:</strong> admin@achisway.com<br>
-                            <strong>Contraseña:</strong> admin123
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>

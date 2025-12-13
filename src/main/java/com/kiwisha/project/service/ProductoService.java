@@ -96,4 +96,27 @@ public interface ProductoService {
      * Obtiene productos con stock bajo.
      */
     List<ProductoDTO> obtenerProductosStockBajo(Integer limite);
+
+    /**
+     * Cuenta todos los productos.
+     */
+    long contarProductos();
+
+    /**
+     * Cuenta productos publicados.
+     */
+    long contarProductosPublicados();
+
+    /**
+     * Cuenta productos con stock bajo (cantidad <= límite).
+     */
+    long contarProductosStockBajo(Integer limite);
+
+    /**
+     * Elimina todos los productos y sus relaciones directas (carrito items, reviews, elementos de pedido,
+     * relaciones producto-página e imágenes).
+     *
+     * @return cantidad de productos eliminados
+     */
+    long eliminarTodosLosProductos();
 }

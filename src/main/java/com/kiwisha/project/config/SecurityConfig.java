@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 /**
  * Configuración de Spring Security para el sistema Kiwisha
@@ -15,6 +16,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new RoleBasedAuthenticationSuccessHandler();
+    }
 
     /**
      * Configura la cadena de filtros de seguridad HTTP
@@ -25,10 +31,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Rutas públicas (sin autenticación)
                 .requestMatchers("/", "/home", "/inicio", "/productos/**", "/producto/**", 
-                               "/catalogo", "/buscar", "/login", "/error/**",
+                               "/catalogo", "/buscar", "/login", "/registro", "/error/**",
+                               "/carrito/**", "/checkout/**",
                                "/css/**", "/js/**", "/images/**", "/api/**", "/files/**").permitAll()
-                // Rutas que requieren autenticación
-                .requestMatchers("/carrito/**", "/checkout/**").authenticated()
                 // Rutas administrativas
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
@@ -36,7 +41,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/admin/dashboard", true)
+                .successHandler(authenticationSuccessHandler())
                 .failureUrl("/login?error=true")
                 .usernameParameter("email")
                 .passwordParameter("password")
@@ -44,7 +49,7 @@ public class SecurityConfig {
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
+                .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .permitAll()

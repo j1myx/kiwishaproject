@@ -58,4 +58,9 @@ public interface PedidoService {
      * Cancela un pedido y restaura el stock de los productos.
      */
     PedidoDTO cancelarPedido(Integer id, String motivo);
+
+    /**
+     * Cuenta todos los pedidos.
+     */
+    long contarPedidos();
 }

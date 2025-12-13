@@ -4,7 +4,9 @@ import com.kiwisha.project.dto.ActualizarProductoDTO;
 import com.kiwisha.project.dto.CrearProductoDTO;
 import com.kiwisha.project.model.EstadoProducto;
 import com.kiwisha.project.service.CategoriaService;
+import com.kiwisha.project.service.ImagenProductoService;
 import com.kiwisha.project.service.PedidoService;
+import com.kiwisha.project.service.ProductoImagenService;
 import com.kiwisha.project.service.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +19,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,9 +36,13 @@ import java.util.Map;
 @Slf4j
 public class AdminWebController {
 
+    private static final String DEFAULT_PRODUCT_IMAGE_PATH = "defaults/producto-default.svg";
+
     private final ProductoService productoService;
     private final CategoriaService categoriaService;
     private final PedidoService pedidoService;
+    private final ImagenProductoService imagenProductoService;
+    private final ProductoImagenService productoImagenService;
 
     /**
      * Dashboard principal del administrador
@@ -114,6 +122,8 @@ public class AdminWebController {
             @Valid @ModelAttribute("producto") CrearProductoDTO producto,
             BindingResult result,
             @RequestParam(name = "accion", required = false) String accion,
+            @RequestParam(name = "imagenFile", required = false) MultipartFile imagenFile,
+            @RequestParam(name = "imagenesFiles", required = false) List<MultipartFile> imagenesFiles,
             Model model,
             RedirectAttributes redirectAttributes) {
         
@@ -127,14 +137,25 @@ public class AdminWebController {
         }
         
         try {
+            if (imagenFile != null && !imagenFile.isEmpty()) {
+                producto.setImagen(imagenProductoService.guardarImagenPrincipal(imagenFile));
+            } else if (producto.getImagen() == null || producto.getImagen().isBlank()) {
+                producto.setImagen(DEFAULT_PRODUCT_IMAGE_PATH);
+            }
+
             // Establecer el estado según el botón presionado
             if (accion != null) {
                 producto.setEstado(EstadoProducto.valueOf(accion));
             } else {
                 producto.setEstado(EstadoProducto.BORRADOR); // Por defecto
             }
-            
-            var productoCreado = productoService.crearProducto(producto);
+
+            var creado = productoService.crearProducto(producto);
+
+            if (imagenesFiles != null && !imagenesFiles.isEmpty()) {
+                productoImagenService.agregarImagenes(creado.getProductoId(), imagenesFiles);
+            }
+
             redirectAttributes.addFlashAttribute("success", 
                 "Producto creado exitosamente");
             return "redirect:/admin/productos";
@@ -165,6 +186,7 @@ public class AdminWebController {
             
             model.addAttribute("producto", actualizarDTO);
             model.addAttribute("productoId", id);
+            model.addAttribute("imagenesAdicionalesExistentes", productoImagenService.listarImagenesPorProductoId(id));
             model.addAttribute("categorias", categorias);
             model.addAttribute("estadosProducto", EstadoProducto.values());
             model.addAttribute("paginaActual", "productos");
@@ -177,6 +199,9 @@ public class AdminWebController {
         }
     }
 
+    // Nota: la eliminación de imágenes adicionales se procesa al guardar/publicar
+    // (para que el usuario pueda cancelar sin perder imágenes existentes).
+
     /**
      * Procesar actualización de producto
      * POST /admin/productos/{id}
@@ -187,6 +212,9 @@ public class AdminWebController {
             @Valid @ModelAttribute("producto") ActualizarProductoDTO producto,
             BindingResult result,
             @RequestParam(name = "accion", required = false) String accion,
+            @RequestParam(name = "imagenFile", required = false) MultipartFile imagenFile,
+            @RequestParam(name = "imagenesFiles", required = false) List<MultipartFile> imagenesFiles,
+            @RequestParam(name = "imagenesEliminarIds", required = false) List<Integer> imagenesEliminarIds,
             Model model,
             RedirectAttributes redirectAttributes) {
         
@@ -197,16 +225,39 @@ public class AdminWebController {
             model.addAttribute("categorias", categorias);
             model.addAttribute("estadosProducto", EstadoProducto.values());
             model.addAttribute("productoId", id);
+            model.addAttribute("imagenesAdicionalesExistentes", productoImagenService.listarImagenesPorProductoId(id));
             return "admin/productos/formulario";
         }
         
         try {
+            if (imagenFile != null && !imagenFile.isEmpty()) {
+                producto.setImagen(imagenProductoService.guardarImagenPrincipal(imagenFile));
+            } else {
+                // Si el producto no tiene imagen aún, asignar una por defecto
+                var actual = productoService.obtenerProductoPorId(id);
+                if (actual.getImagen() == null || actual.getImagen().isBlank()) {
+                    producto.setImagen(DEFAULT_PRODUCT_IMAGE_PATH);
+                }
+            }
+
             // Establecer el estado según el botón presionado
             if (accion != null) {
                 producto.setEstado(EstadoProducto.valueOf(accion));
             }
             
             productoService.actualizarProducto(id, producto);
+
+            if (imagenesEliminarIds != null && !imagenesEliminarIds.isEmpty()) {
+                for (Integer imagenId : imagenesEliminarIds) {
+                    if (imagenId == null) continue;
+                    productoImagenService.eliminarImagen(id, imagenId);
+                }
+            }
+
+            if (imagenesFiles != null && !imagenesFiles.isEmpty()) {
+                productoImagenService.agregarImagenes(id, imagenesFiles);
+            }
+
             redirectAttributes.addFlashAttribute("success", 
                 "Producto actualizado exitosamente");
             return "redirect:/admin/productos";
@@ -223,23 +274,49 @@ public class AdminWebController {
      * POST /admin/productos/{id}/eliminar
      */
     @PostMapping("/productos/{id}/eliminar")
-    public String eliminarProducto(
-            @PathVariable Integer id,
-            RedirectAttributes redirectAttributes) {
+        @ResponseBody
+        public Map<String, Object> eliminarProducto(@PathVariable Integer id) {
         
         log.debug("Eliminando producto: {}", id);
         
         try {
             productoService.eliminarProducto(id);
-            redirectAttributes.addFlashAttribute("success", 
-                "Producto eliminado exitosamente");
+            return Map.of(
+                "status", "success",
+                "mensaje", "Producto eliminado exitosamente"
+            );
         } catch (Exception e) {
             log.error("Error al eliminar producto", e);
-            redirectAttributes.addFlashAttribute("error", 
-                "Error al eliminar el producto");
+            return Map.of(
+                "status", "error",
+                "mensaje", "Error al eliminar el producto: " + e.getMessage()
+            );
         }
-        
-        return "redirect:/admin/productos";
+    }
+
+    /**
+     * Eliminar todos los productos (operación administrativa)
+     * POST /admin/productos/eliminar-todos
+     */
+    @PostMapping("/productos/eliminar-todos")
+    @ResponseBody
+    public Map<String, Object> eliminarTodosLosProductos() {
+        log.warn("Eliminando TODOS los productos desde el panel admin");
+
+        try {
+            long eliminados = productoService.eliminarTodosLosProductos();
+            return Map.of(
+                    "status", "success",
+                    "eliminados", eliminados,
+                    "mensaje", "Se eliminaron " + eliminados + " productos"
+            );
+        } catch (Exception e) {
+            log.error("Error al eliminar todos los productos", e);
+            return Map.of(
+                    "status", "error",
+                    "mensaje", "Error al eliminar todos los productos: " + e.getMessage()
+            );
+        }
     }
 
     /**
@@ -354,24 +431,16 @@ public class AdminWebController {
         
         try {
             // Total de productos
-            var todosProductos = productoService.obtenerTodosLosProductos(
-                PageRequest.of(0, 1)
-            );
-            kpis.put("totalProductos", todosProductos.getTotalElements());
-            
+            kpis.put("totalProductos", productoService.contarProductos());
+
             // Productos publicados
-            var publicados = productoService.obtenerProductosPublicados(
-                PageRequest.of(0, 1)
-            );
-            kpis.put("productosPublicados", publicados.getTotalElements());
-            
+            kpis.put("productosPublicados", productoService.contarProductosPublicados());
+
             // Productos con stock bajo
-            var stockBajo = productoService.obtenerProductosStockBajo(5);
-            kpis.put("productosStockBajo", stockBajo.size());
-            
-            // Total de pedidos (últimos 30 días - simplificado)
-            var pedidos = pedidoService.obtenerTodosPedidos(PageRequest.of(0, 1));
-            kpis.put("totalPedidos", pedidos.getTotalElements());
+            kpis.put("productosStockBajo", productoService.contarProductosStockBajo(5));
+
+            // Total de pedidos (simplificado)
+            kpis.put("totalPedidos", pedidoService.contarPedidos());
             
         } catch (Exception e) {
             log.error("Error al calcular KPIs", e);
@@ -389,12 +458,16 @@ public class AdminWebController {
         
         var dto = new ActualizarProductoDTO();
         dto.setTitulo(productoDTO.getTitulo());
+        dto.setResumen((productoDTO.getResumen() != null && !productoDTO.getResumen().isBlank())
+            ? productoDTO.getResumen()
+            : productoDTO.getDescripcion());
         dto.setDescripcion(productoDTO.getDescripcion());
         dto.setPrecio(productoDTO.getPrecio());
         dto.setCantidad(productoDTO.getCantidad());
         dto.setCategoriaId(productoDTO.getCategoriaId());
         dto.setSku(productoDTO.getSku());
         dto.setEstado(productoDTO.getEstado());
+        dto.setImagen(productoDTO.getImagen());
         
         return dto;
     }

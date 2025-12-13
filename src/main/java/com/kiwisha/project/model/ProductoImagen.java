@@ -1,13 +1,16 @@
 package com.kiwisha.project.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.*;
 
-@Data
 @Entity
 @Table(name = "producto_imagenes")
-public class ProductoImagen {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ProductoImagen extends AuditableEntity {
     @Id
     @Column(name = "producto_imagen_id")
     private Integer productoImagenId;
@@ -21,16 +24,4 @@ public class ProductoImagen {
 
     @Column(name = "ruta", length = 100)
     private String ruta;
-
-    @Column(name = "creado_por")
-    private Integer creadoPor;
-
-    @Column(name = "creado_en")
-    private LocalDateTime creadoEn;
-
-    @Column(name = "actualizado_por")
-    private Integer actualizadoPor;
-
-    @Column(name = "actualizado_en")
-    private LocalDateTime actualizadoEn;
 }
