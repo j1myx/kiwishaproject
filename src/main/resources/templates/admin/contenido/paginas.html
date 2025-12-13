@@ -34,17 +34,12 @@
     </div>
 
     <!-- Filtros -->
-    <div class="flex gap-3 p-3 flex-wrap pr-4">
-        <!-- Filtro de Categoría -->
+    <!--<div class="flex gap-3 p-3 flex-wrap pr-4">
         <select id="categoriaFilter" onchange="aplicarFiltros()"
                 class="h-8 min-w-[200px] rounded-lg bg-[#f4ede6] px-3 pr-8 text-[#1c140d] text-sm font-medium hover:bg-[#e9dbce] transition-colors border-0 outline-none cursor-pointer">
             <option value="">Todas las categorías</option>
-            <!--<option th:each="categoria : ${categorias}"
-                    th:value="${categoria.categoriaId}"
-                    th:text="${categoria.titulo}">Granos Andinos</option>-->
         </select>
 
-        <!-- Filtro de Estado -->
         <select id="estadoFilter" onchange="aplicarFiltros()"
                 class="h-8 min-w-[180px] rounded-lg bg-[#f4ede6] px-3 pr-8 text-[#1c140d] text-sm font-medium hover:bg-[#e9dbce] transition-colors border-0 outline-none cursor-pointer">
             <option value="">Todos los estados</option>
@@ -53,7 +48,6 @@
             <option value="ARCHIVADO">Archivado</option>
         </select>
 
-        <!-- Filtro de Precio -->
         <select id="precioFilter" onchange="aplicarFiltros()"
                 class="h-8 min-w-[180px] rounded-lg bg-[#f4ede6] px-3 pr-8 text-[#1c140d] text-sm font-medium hover:bg-[#e9dbce] transition-colors border-0 outline-none cursor-pointer">
             <option value="">Todos los precios</option>
@@ -63,12 +57,11 @@
             <option value="50-999999">S/ 50+</option>
         </select>
 
-        <!-- Botón para limpiar filtros -->
         <button onclick="limpiarFiltros()"
                 class="h-8 shrink-0 rounded-lg bg-[#f98006] px-4 text-white text-sm font-medium hover:bg-[#e07205] transition-colors">
             Limpiar filtros
         </button>
-    </div>
+    </div>-->
 
     <!-- Tabla de productos -->
     <div class="px-4 py-3 @container">
@@ -104,15 +97,17 @@
                     <td class="h-[72px] px-4 py-2 w-[400px] text-sm font-normal leading-normal">{{pagina.actualizadoEn || pagina.creadoEn}}</td>
                     <td class="h-[72px] px-4 py-2 w-60">
                         <div class="flex items-center gap-3">
-                            <a class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
+                            <a
+                                v-bind:href="'/admin/contenidos/editar/' + pagina.paginaId"
+                                class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
                                 Editar
                             </a>
-                            <span class="text-[#e9dbce]">|</span>
+                            <!--<span class="text-[#e9dbce]">|</span>
                             <a href="javascript:void(0)"
                                onclick="duplicarProducto(this.getAttribute('data-producto-id'))"
                                class="text-[#9e7347] hover:text-[#f98006] text-sm font-medium transition-colors">
                                 Duplicar
-                            </a>
+                            </a>-->
                             <span class="text-[#e9dbce]">|</span>
                             <button @click="eliminar(pagina)"
                                class="text-[#9e7347] hover:text-red-600 text-sm font-medium transition-colors">
@@ -127,7 +122,7 @@
     </div>
 
     <!-- Paginación -->
-    <div class="flex items-center justify-center p-4">
+    <!--<div class="flex items-center justify-center p-4">
         <a href="#" class="flex size-10 items-center justify-center hover:bg-[#f4ede6] rounded-full transition-colors">
             <div class="text-[#1c140d]">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" fill="currentColor" viewBox="0 0 256 256">
@@ -147,7 +142,7 @@
                 </svg>
             </div>
         </a>
-    </div>
+    </div>-->
     <div id="deleteConfirm" class="modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">

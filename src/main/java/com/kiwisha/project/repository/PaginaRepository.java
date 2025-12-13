@@ -47,6 +47,15 @@ public interface PaginaRepository extends JpaRepository<Pagina, Integer> {
     )
     Pagina findByUrl(String url);
 
+    @Query(
+            value = """
+                        FROM Pagina p
+                        LEFT JOIN FETCH p.paginaImagenes
+                        WHERE p.paginaId = :paginaId
+                    """
+    )
+    Pagina findByPaginaId(Integer paginaId);
+
     /**
      * Obtiene páginas publicadas por tipo
      */

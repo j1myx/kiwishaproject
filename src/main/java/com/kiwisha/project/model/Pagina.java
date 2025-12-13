@@ -37,7 +37,7 @@ public class Pagina extends AuditableEntity {
     @Column(name = "publicado")
     private Boolean publicado;
 
-    @OneToMany(mappedBy = "pagina", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pagina", fetch = FetchType.LAZY)
     private List<PaginaImagen> paginaImagenes;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -47,10 +47,10 @@ public class Pagina extends AuditableEntity {
             inverseJoinColumns = @JoinColumn(name = "etiqueta_id", insertable = false, updatable = false))
     private List<Etiqueta> etiquetas;
 
-    @OneToMany(mappedBy = "pagina", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pagina", fetch = FetchType.LAZY)
     private List<PaginaEtiqueta> paginaEtiquetas;
 
-    @OneToMany(mappedBy = "pagina", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "pagina", fetch = FetchType.LAZY)
     private List<ProductoPagina> productoPaginas;
 
     public enum TipoPagina {
